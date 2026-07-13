@@ -10,13 +10,15 @@ no locale routing yet) with seed message files. Scaffolded
 builds don't call Stripe. `pnpm build` green.
 
 ## Next up
-Azure resources: rg-tapbon-prod (App Service Node 22 Linux, Postgres Flexible
-Server Sweden Central, Blob, Key Vault) → set AZURE_WEBAPP_NAME + publish-profile
-secret → first deploy on push. Then: local Postgres + `pnpm db:setup && db:migrate`
-to run the app locally.
+Verify first deploy at https://tapbon-app.azurewebsites.net, run Drizzle
+migrations against pg-tapbon-prod (tapbon db), then Phase 1: spec + build the
+public receipt page.
 
 ## Parked decisions
 - MitID auth? Revisit at Phase 6.
+- Key Vault kv-tapbon-prod: tenant policy forces publicNetworkAccess=Disabled —
+  secrets couldn't be written from local CLI. Secrets live in App Service settings
+  for now; revisit KV (private endpoint or policy exemption) later.
 - Starter uses its own JWT auth (jose), not Auth.js — decide whether to swap to
   Auth.js magic-link now or when building merchant auth (Phase 0/1 boundary).
 - Locale routing (/da, /en) vs cookie-only — decide when the public receipt page is built.

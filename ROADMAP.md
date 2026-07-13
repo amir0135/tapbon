@@ -6,8 +6,8 @@ Phases are shippable vertical slices. Finish one before starting the next. Detai
 - [x] Fork `nextjs/saas-starter`, apply design tokens to shadcn theme
 - [x] Add next-intl (da/en)
 - [x] `npm install receiptline`
-- [ ] Azure resource group: App Service + Postgres + Blob + Key Vault
-- [ ] GitHub Actions deploy on push (ship the fork before writing features) — workflow scaffolded, needs Azure app name + publish-profile secret
+- [x] Azure resource group: App Service + Postgres + Blob + Key Vault
+- [x] GitHub Actions deploy on push (ship the fork before writing features)
 - [ ] Register tapbon.dk + tapbon.app; DKPTO/EUIPO TMview screen for "tapbon"
 
 ## Phase 1 — The sales demo

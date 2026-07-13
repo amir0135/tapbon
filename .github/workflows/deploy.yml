@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: tapbon # TODO: set to your App Service name
+  AZURE_WEBAPP_NAME: tapbon-app
   NODE_VERSION: '22'
 
 jobs:
