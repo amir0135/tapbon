@@ -38,6 +38,13 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
+        # Build-time placeholders only — real values come from App Service settings at runtime
+        env:
+          POSTGRES_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
+          AUTH_SECRET: build-time-placeholder-secret
+          BASE_URL: https://tapbon-app.azurewebsites.net
+          STRIPE_SECRET_KEY: sk_test_placeholder
+          STRIPE_WEBHOOK_SECRET: whsec_placeholder
         run: pnpm build
 
       - name: Package for deployment
