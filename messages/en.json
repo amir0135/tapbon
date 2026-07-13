@@ -1,0 +1,26 @@
+{
+  "common": {
+    "appName": "Tapbon",
+    "tagline": "Digital receipts — tap, save, done.",
+    "loading": "Loading…",
+    "error": "Something went wrong. Please try again.",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "receipt": {
+    "title": "Receipt",
+    "total": "Total",
+    "vat": "VAT",
+    "vatOfWhich": "Of which VAT {rate}",
+    "cvr": "CVR no. {cvr}",
+    "downloadPdf": "Download PDF",
+    "issuedAt": "Issued {date}"
+  },
+  "loyalty": {
+    "title": "Loyalty card",
+    "stamps": "{count} of {total} stamps"
+  },
+  "review": {
+    "cta": "Review us on Google"
+  }
+}

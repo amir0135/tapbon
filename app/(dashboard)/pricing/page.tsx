@@ -3,8 +3,9 @@ import { Check } from 'lucide-react';
 import { getStripePrices, getStripeProducts } from '@/lib/payments/stripe';
 import { SubmitButton } from './submit-button';
 
-// Prices are fresh for one hour max
-export const revalidate = 3600;
+// Render at request time — Stripe isn't configured until Phase 6,
+// and calling it at build time breaks CI builds.
+export const dynamic = 'force-dynamic';
 
 export default async function PricingPage() {
   const [prices, products] = await Promise.all([

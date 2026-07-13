@@ -1,0 +1,26 @@
+{
+  "common": {
+    "appName": "Tapbon",
+    "tagline": "Digitale kvitteringer — tap, gem, færdig.",
+    "loading": "Indlæser…",
+    "error": "Noget gik galt. Prøv igen.",
+    "save": "Gem",
+    "cancel": "Annuller"
+  },
+  "receipt": {
+    "title": "Kvittering",
+    "total": "Total",
+    "vat": "Moms",
+    "vatOfWhich": "Heraf moms {rate}",
+    "cvr": "CVR-nr. {cvr}",
+    "downloadPdf": "Hent som PDF",
+    "issuedAt": "Udstedt {date}"
+  },
+  "loyalty": {
+    "title": "Loyalitetskort",
+    "stamps": "{count} af {total} stempler"
+  },
+  "review": {
+    "cta": "Anmeld os på Google"
+  }
+}

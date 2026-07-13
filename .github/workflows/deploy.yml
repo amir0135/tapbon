@@ -1,0 +1,52 @@
+# Deploys to Azure App Service (Linux) on push to main.
+# Prerequisites (Phase 0, once):
+#   1. Create Azure resources: rg-tapbon-prod → App Service (Node 22 LTS, Linux),
+#      Postgres Flexible Server (Sweden Central), Blob Storage, Key Vault.
+#   2. In the App Service: Deployment Center → get the publish profile,
+#      save it as the repo secret AZURE_WEBAPP_PUBLISH_PROFILE.
+#   3. Set AZURE_WEBAPP_NAME below.
+#   4. App settings on the App Service: POSTGRES_URL, AUTH_SECRET, BASE_URL,
+#      STRIPE_* (Phase 6) — pull secrets from Key Vault references.
+
+name: Deploy to Azure App Service
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: tapbon # TODO: set to your App Service name
+  NODE_VERSION: '22'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Package for deployment
+        # Standalone-style zip: app + node_modules + build output
+        run: zip -r deploy.zip .next public package.json node_modules next.config.ts messages i18n -q
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: deploy.zip
