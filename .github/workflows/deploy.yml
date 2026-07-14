@@ -35,7 +35,9 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        # hoisted = flat real-file node_modules; pnpm's default symlink layout
+        # breaks when Kudu re-packs node_modules on App Service
+        run: pnpm install --frozen-lockfile --config.node-linker=hoisted
 
       - name: Build
         # Build-time placeholders only — real values come from App Service settings at runtime
