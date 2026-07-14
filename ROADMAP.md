@@ -16,7 +16,7 @@ Phases are shippable vertical slices. Finish one before starting the next. Detai
 - [x] QR stand: A4 print på /t/[publicId]/stand (NFC-sticker = fysisk opgave, mangler)
 - [x] Receipt entry form i dashboard (bedre end "hidden admin form": rigtig merchant-auth + demo café-seed)
 - [x] Danish landing page (Receiptile-fidelity, da/en)
-- [ ] Real domain (tapbon.dk) foran App Service
+- [x] Real domain (tapbon.dk) foran App Service (HTTPS + managed cert; www afventer CNAME-fix hos Simply)
 - [ ] NFC-tags (NTAG 213) skrevet med terminal-URL
 
 ## Phase 2 — Sell, then pilot (Wizard-of-Oz)
