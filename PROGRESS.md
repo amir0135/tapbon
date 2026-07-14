@@ -13,6 +13,8 @@ Phase 1 polish: real domain (tapbon.dk), demo café content for pitches, print
 QR stand PDF. Then Phase 2: pitch + sign pilots.
 
 ## Parked decisions
+- Printer-emulering (Receiptile-modellen) er spec'et i specs/printer-emulation.md.
+  Byg FØRST når en betalende pilot er begrænset af manuel indtastning (Phase 5).
 - MitID auth? Revisit at Phase 6.
 - Key Vault kv-tapbon-prod: tenant policy forces publicNetworkAccess=Disabled —
   secrets live in App Service settings for now.
