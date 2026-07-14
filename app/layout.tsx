@@ -7,7 +7,7 @@ import { SWRConfig } from 'swr';
 
 export const metadata: Metadata = {
   title: 'Tapbon',
-  description: 'Digitale kvitteringer — tap, gem, færdig.'
+  description: 'Digitale kvitteringer. Tap, gem, færdig.'
 };
 
 export const viewport: Viewport = {
