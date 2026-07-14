@@ -18,6 +18,9 @@
     "issuedAt": "Issued {date}",
     "receiptNumber": "Receipt no. {number}",
     "verified": "Sealed · {hash}",
+    "confirmationCode": "Receipt {code}",
+    "openPdf": "Open PDF",
+    "rawNote": "Raw receipt — exactly as printed by the register.",
     "notFoundTitle": "Receipt not found",
     "notFoundBody": "The link has expired or is incorrect. Ask the staff for a new code."
   },
@@ -73,7 +76,15 @@
   },
   "claim": {
     "noReceiptTitle": "No recent receipt",
-    "noReceiptBody": "No receipt has been issued at {merchant} in the last 15 minutes. Please ask the staff."
+    "noReceiptBody": "There is no unclaimed receipt at {merchant} right now. Please ask the staff."
+  },
+  "bridge": {
+    "title": "Tapbon Bridge",
+    "intro": "Connect the register's print flow: generate a device key and use it in the bridge client (the virtual printer).",
+    "generate": "Generate device key",
+    "rotate": "Generate new key (replaces the old one)",
+    "generating": "Generating…",
+    "tokenOnce": "The key is shown only once — save it now."
   },
   "landing": {
     "navSignup": "Log in",

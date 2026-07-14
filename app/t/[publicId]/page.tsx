@@ -12,8 +12,8 @@ export default async function TerminalClaimPage({
   const { publicId } = await params;
   const t = await getTranslations();
 
-  const { merchant, receipt } = await claimLatestReceipt(publicId);
-  if (receipt) redirect(`/r/${receipt.id}`);
+  const { merchant, receiptId } = await claimLatestReceipt(publicId);
+  if (receiptId) redirect(`/r/${receiptId}`);
 
   return (
     <main className="min-h-dvh bg-secondary flex items-center justify-center p-4">

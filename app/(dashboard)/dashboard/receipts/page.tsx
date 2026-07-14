@@ -12,6 +12,7 @@ import { formatMoney } from '@/lib/receipts/format';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MerchantSetupForm } from './merchant-setup-form';
 import { IssueForm } from './issue-form';
+import { BridgeToken } from './bridge-token';
 
 export const dynamic = 'force-dynamic';
 
@@ -113,6 +114,17 @@ export default async function ReceiptsPage() {
             >
               {t('issue.printStand')}
             </Link>
+          </CardContent>
+        </Card>
+      )}
+
+      {terminal && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('bridge.title')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <BridgeToken hasToken={Boolean(terminal.deviceTokenHash)} />
           </CardContent>
         </Card>
       )}

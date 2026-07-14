@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes, randomInt } from 'node:crypto';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db/drizzle';
@@ -10,6 +10,11 @@ import { getUser } from '@/lib/db/queries';
 import { getMerchantForUser, getDefaultTerminal } from './queries';
 import { computeVat, lineTotalGross } from '@/lib/vat';
 import { hashReceipt } from './hash';
+import { eq } from 'drizzle-orm';
+
+// Claim window for receipts issued manually from the dashboard form. Bridge
+// receipts use a much shorter window (see /api/bridge/receipts).
+const FORM_CLAIM_WINDOW_MS = 15 * 60 * 1000;
 
 const merchantSchema = z.object({
   businessName: z.string().min(1).max(200),
@@ -100,7 +105,8 @@ export async function issueReceipt(input: unknown) {
     items,
   });
 
-  // Insert receipt + items atomically. Receipts are immutable after this.
+  // Insert receipt + items atomically. Receipts are immutable after this
+  // (status/claimed_at are delivery metadata, exempt — see schema).
   const receiptId = await db.transaction(async (tx) => {
     const [receipt] = await tx
       .insert(receipts)
@@ -114,6 +120,8 @@ export async function issueReceipt(input: unknown) {
         totalVat: totals.totalVat,
         vatBreakdown: totals.breakdown,
         hash,
+        confirmationCode: String(randomInt(0, 10_000)).padStart(4, '0'),
+        expiresAt: new Date(issuedAt.getTime() + FORM_CLAIM_WINDOW_MS),
       })
       .returning({ id: receipts.id });
 
@@ -132,4 +140,29 @@ export async function issueReceipt(input: unknown) {
 
   revalidatePath('/dashboard/receipts');
   return { success: true as const, receiptId };
+}
+
+/**
+ * Generate (or rotate) the bridge device token for the merchant's default
+ * terminal. Only the SHA-256 hash is stored; the plaintext is returned once.
+ */
+export async function generateDeviceToken() {
+  const user = await getUser();
+  if (!user) redirect('/sign-in');
+
+  const merchant = await getMerchantForUser(user.id);
+  if (!merchant) return { error: 'no_merchant' as const };
+
+  const terminal = await getDefaultTerminal(merchant.id);
+  if (!terminal) return { error: 'no_terminal' as const };
+
+  const token = `tb_${randomBytes(24).toString('base64url')}`;
+  const tokenHash = createHash('sha256').update(token).digest('hex');
+
+  await db
+    .update(terminals)
+    .set({ deviceTokenHash: tokenHash })
+    .where(eq(terminals.id, terminal.id));
+
+  return { success: true as const, token };
 }

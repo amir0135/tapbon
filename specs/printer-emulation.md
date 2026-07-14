@@ -12,15 +12,18 @@ Backend er ligeglad med kilden. Alt ender som samme *receipt job*:
 format: escpos|pdf|png, file }`. Windows-app, laptop-emulator, Pi og fremtidig custom
 hardware rammer samme endpoint.
 
-## Datamodel (kolonner, ikke nye tabeller)
-- `terminals` **er** devices: + `deviceToken` (hashet secret til upload), + `lastSeenAt`.
-  `publicId` er allerede tap/NFC-identiteten.
-- `receipts`: + `kind: 'structured' | 'file'`, + `fileUrl` + `mimeType` (Blob Storage),
-  + `confirmationCode` (4 cifre), + `expiresAt`, + `claimedAt`, + `printJobId`.
+## Datamodel
+- `terminals` **er** devices: + `deviceTokenHash` (SHA-256 af bearer-token, vises én
+  gang), + `lastSeenAt`. `publicId` er allerede tap/NFC-identiteten.
+- `receipts`: + `kind: 'structured' | 'file'`, + `confirmationCode` (4 cifre),
+  + `status/expiresAt/claimedAt` (leverings-metadata, undtaget immutabilitet),
+  + `printJobId` (unik pr. terminal = idempotens).
+- `receipt_files` (bytea i Postgres — tenant-policy tvinger storage-kontoen
+  netværkslukket ligesom Key Vault, så Blob er parkeret): fil + mimeType + size.
   Fil-kvitteringer hasher **filens bytes** (SHA-256) i stedet for receipt-JSON —
   immutabilitet (hard rule 1) holder. VAT-breakdown/CVR (hard rule 3) gælder
-  `structured`; en `file`-kvittering viser POS'ens egen print (som indeholder moms/CVR)
-  og mærkes "rå kvittering" i UI.
+  `structured`; en `file`-kvittering viser POS'ens egen print (som indeholder
+  moms/CVR) og mærkes "rå kvittering" i UI.
 
 ## API (bridge ↔ SaaS — samme for software og hardware)
 `POST /api/bridge/receipts` — `Authorization: Bearer <deviceToken>`, multipart:

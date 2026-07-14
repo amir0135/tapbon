@@ -8,7 +8,13 @@ import {
   uuid,
   jsonb,
   char,
+  customType,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core';
+
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+  dataType: () => 'bytea',
+});
 import { relations } from 'drizzle-orm';
 
 export const users = pgTable('users', {
@@ -149,25 +155,63 @@ export const terminals = pgTable('terminals', {
     .references(() => merchants.id),
   publicId: varchar('public_id', { length: 12 }).notNull().unique(),
   name: varchar('name', { length: 100 }).notNull(),
+  // Tapbon Bridge (specs/printer-emulation.md): SHA-256 hex of the device's
+  // bearer token — the plaintext token is shown once and never stored.
+  deviceTokenHash: char('device_token_hash', { length: 64 }).unique(),
+  lastSeenAt: timestamp('last_seen_at'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
-export const receipts = pgTable('receipts', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  merchantId: integer('merchant_id')
+export const receipts = pgTable(
+  'receipts',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    merchantId: integer('merchant_id')
+      .notNull()
+      .references(() => merchants.id),
+    terminalId: integer('terminal_id').references(() => terminals.id),
+    receiptNumber: serial('receipt_number'),
+    issuedAt: timestamp('issued_at').notNull().defaultNow(),
+    currency: char('currency', { length: 3 }).notNull(),
+    totalGross: integer('total_gross').notNull(),
+    totalNet: integer('total_net').notNull(),
+    totalVat: integer('total_vat').notNull(),
+    // Per-rate breakdown: [{ rate: 2500, gross: 10000, net: 8000, vat: 2000 }]
+    vatBreakdown: jsonb('vat_breakdown').notNull(),
+    // 'structured' = issued from items (VAT breakdown is real).
+    // 'file' = captured print job (PDF/PNG in receipt_files); totals are 0 and
+    // the VAT/CVR shown is whatever the POS printed on the receipt itself.
+    kind: varchar('kind', { length: 10 }).notNull().default('structured'),
+    // SHA-256: canonical receipt JSON for 'structured', raw file bytes for 'file'.
+    hash: char('hash', { length: 64 }).notNull(),
+    correctsReceiptId: uuid('corrects_receipt_id'),
+    // ── Delivery metadata (tap/claim flow) — NOT covered by the hash and the
+    // only fields that may ever be UPDATEd. Receipt content stays immutable.
+    status: varchar('status', { length: 10 }).notNull().default('pending'), // pending | claimed | expired
+    confirmationCode: char('confirmation_code', { length: 4 }),
+    expiresAt: timestamp('expires_at'),
+    claimedAt: timestamp('claimed_at'),
+    printJobId: varchar('print_job_id', { length: 100 }),
+  },
+  (table) => [
+    uniqueIndex('receipts_terminal_print_job_idx').on(
+      table.terminalId,
+      table.printJobId
+    ),
+  ]
+);
+
+// Captured print jobs (Tapbon Bridge). Files live in Postgres because tenant
+// policy forces the storage account network-disabled (same as Key Vault).
+export const receiptFiles = pgTable('receipt_files', {
+  id: serial('id').primaryKey(),
+  receiptId: uuid('receipt_id')
     .notNull()
-    .references(() => merchants.id),
-  terminalId: integer('terminal_id').references(() => terminals.id),
-  receiptNumber: serial('receipt_number'),
-  issuedAt: timestamp('issued_at').notNull().defaultNow(),
-  currency: char('currency', { length: 3 }).notNull(),
-  totalGross: integer('total_gross').notNull(),
-  totalNet: integer('total_net').notNull(),
-  totalVat: integer('total_vat').notNull(),
-  // Per-rate breakdown: [{ rate: 2500, gross: 10000, net: 8000, vat: 2000 }]
-  vatBreakdown: jsonb('vat_breakdown').notNull(),
-  hash: char('hash', { length: 64 }).notNull(),
-  correctsReceiptId: uuid('corrects_receipt_id'),
+    .unique()
+    .references(() => receipts.id),
+  mimeType: varchar('mime_type', { length: 30 }).notNull(), // image/png | application/pdf
+  byteSize: integer('byte_size').notNull(),
+  data: bytea('data').notNull(),
 });
 
 export const receiptItems = pgTable('receipt_items', {
@@ -218,6 +262,10 @@ export const receiptsRelations = relations(receipts, ({ one, many }) => ({
     references: [terminals.id],
   }),
   items: many(receiptItems),
+  file: one(receiptFiles, {
+    fields: [receipts.id],
+    references: [receiptFiles.receiptId],
+  }),
 }));
 
 export const receiptItemsRelations = relations(receiptItems, ({ one }) => ({
@@ -234,6 +282,7 @@ export type Receipt = typeof receipts.$inferSelect;
 export type NewReceipt = typeof receipts.$inferInsert;
 export type ReceiptItem = typeof receiptItems.$inferSelect;
 export type NewReceiptItem = typeof receiptItems.$inferInsert;
+export type ReceiptFile = typeof receiptFiles.$inferSelect;
 export type LoyaltyCard = typeof loyaltyCards.$inferSelect;
 export type VatBreakdownEntry = {
   rate: number;

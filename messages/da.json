@@ -18,6 +18,9 @@
     "issuedAt": "Udstedt {date}",
     "receiptNumber": "Kvittering nr. {number}",
     "verified": "Forseglet · {hash}",
+    "confirmationCode": "Kvittering {code}",
+    "openPdf": "Åbn PDF",
+    "rawNote": "Rå kvittering — som printet af kassen.",
     "notFoundTitle": "Kvittering ikke fundet",
     "notFoundBody": "Linket er udløbet eller forkert. Spørg personalet om en ny kode."
   },
@@ -73,7 +76,15 @@
   },
   "claim": {
     "noReceiptTitle": "Ingen ny kvittering",
-    "noReceiptBody": "Der er ikke udstedt en kvittering hos {merchant} de sidste 15 minutter. Spørg personalet."
+    "noReceiptBody": "Der er ingen uafhentet kvittering hos {merchant} lige nu. Spørg personalet."
+  },
+  "bridge": {
+    "title": "Tapbon Bridge",
+    "intro": "Forbind kassens printer-flow: generér en enheds-nøgle og brug den i bridge-klienten (den virtuelle printer).",
+    "generate": "Generér enheds-nøgle",
+    "rotate": "Generér ny nøgle (erstatter den gamle)",
+    "generating": "Genererer…",
+    "tokenOnce": "Nøglen vises kun én gang — gem den nu."
   },
   "landing": {
     "navSignup": "Log ind",

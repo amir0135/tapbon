@@ -34,8 +34,10 @@ export default async function PublicReceiptPage({
     );
   }
 
-  const { receipt, merchant, items } = data;
-  const svg = renderReceiptSvg({ merchant, receipt, items });
+  const { receipt, merchant, items, file } = data;
+  const isFile = receipt.kind === 'file';
+  const svg = isFile ? null : renderReceiptSvg({ merchant, receipt, items });
+  const fileHref = `/api/receipts/${receipt.id}/file`;
   const issuedAtText = new Intl.DateTimeFormat(locale, {
     dateStyle: 'long',
     timeStyle: 'short',
@@ -69,14 +71,47 @@ export default async function PublicReceiptPage({
             </p>
           </header>
 
-          <div className="text-3xl font-semibold text-center tracking-tight">
-            {formatMoney(receipt.totalGross, receipt.currency, locale)}
-          </div>
+          {receipt.confirmationCode && (
+            <p className="text-center text-sm font-mono text-muted-foreground">
+              {t('receipt.confirmationCode', { code: receipt.confirmationCode })}
+            </p>
+          )}
 
-          <div
-            className="receipt-body mx-auto [&_svg]:mx-auto [&_svg]:max-w-full"
-            dangerouslySetInnerHTML={{ __html: svg }}
-          />
+          {isFile ? (
+            <div className="space-y-2">
+              {file?.mimeType === 'application/pdf' ? (
+                <a
+                  href={fileHref}
+                  target="_blank"
+                  rel="noopener"
+                  className="block text-center rounded-xl border py-3 text-sm font-medium"
+                >
+                  {t('receipt.openPdf')}
+                </a>
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={fileHref}
+                  alt={t('receipt.title')}
+                  className="mx-auto max-w-full rounded-lg border"
+                />
+              )}
+              <p className="text-center text-[10px] text-muted-foreground">
+                {t('receipt.rawNote')}
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="text-3xl font-semibold text-center tracking-tight">
+                {formatMoney(receipt.totalGross, receipt.currency, locale)}
+              </div>
+
+              <div
+                className="receipt-body mx-auto [&_svg]:mx-auto [&_svg]:max-w-full"
+                dangerouslySetInnerHTML={{ __html: svg! }}
+              />
+            </>
+          )}
 
           <footer className="text-center">
             <p className="text-[10px] text-muted-foreground font-mono">
