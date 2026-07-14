@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/button';
+import { Reveal } from '@/components/reveal';
 import { ArrowRight } from 'lucide-react';
 
 // ── Visuals (pure CSS, our own assets — patterns from Receiptile, not copies) ──
 
 function PhoneReceipt() {
   return (
-    <div className="mx-auto w-[290px] rounded-[2.6rem] bg-primary p-3 shadow-2xl">
+    <div className="float-soft mx-auto w-[290px] rounded-[2.6rem] bg-primary p-3 shadow-2xl">
       <div className="rounded-[2rem] bg-secondary overflow-hidden">
         <div className="h-7 flex items-center justify-center">
           <div className="h-4 w-24 rounded-full bg-primary" />
@@ -65,9 +66,12 @@ function Tile({ size = 'md' }: { size?: 'md' | 'lg' }) {
   const dim = size === 'lg' ? 'h-40 w-40 rounded-[2rem]' : 'h-24 w-24 rounded-3xl';
   return (
     <div
-      className={`${dim} bg-forest shadow-xl flex flex-col items-center justify-center gap-2 rotate-[-6deg]`}
+      className={`${dim} float-tile bg-forest shadow-xl flex flex-col items-center justify-center gap-2`}
     >
-      <span className="h-3.5 w-3.5 rounded-full bg-accent animate-pulse" />
+      <span className="relative inline-flex h-3.5 w-3.5">
+        <span className="dot-ping absolute inset-0" />
+        <span className="relative h-3.5 w-3.5 rounded-full bg-accent" />
+      </span>
       <span className="font-mono text-paper/90 text-[10px] tracking-widest">
         TAPBON
       </span>
@@ -105,7 +109,7 @@ function FeatureBlock({
           flip ? 'lg:[&>*:first-child]:order-2' : ''
         }`}
       >
-        <div className="space-y-4 text-center lg:text-left">
+        <Reveal className="space-y-4 text-center lg:text-left">
           <Kicker>{kicker}</Kicker>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
             {title}
@@ -115,8 +119,10 @@ function FeatureBlock({
               <li key={b}>• {b}</li>
             ))}
           </ul>
-        </div>
-        <div className="flex justify-center">{visual}</div>
+        </Reveal>
+        <Reveal delay={120} className="flex justify-center">
+          {visual}
+        </Reveal>
       </div>
     </section>
   );
@@ -145,18 +151,26 @@ export default async function HomePage() {
   return (
     <main className="bg-paper">
       {/* Hero — big, centered, two-tone like Receiptile */}
-      <section className="pt-20 pb-16 lg:pt-28">
-        <div className="max-w-4xl mx-auto px-4 text-center space-y-8">
-          <h1 className="text-[2.9rem] leading-[1.02] sm:text-7xl font-bold tracking-tight">
+      <section className="relative overflow-hidden pt-20 pb-16 lg:pt-28">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,rgb(52_201_123/0.08),transparent_70%)]"
+        />
+        <div className="relative max-w-4xl mx-auto px-4 text-center space-y-8">
+          <h1 className="hero-enter text-[2.9rem] leading-[1.02] sm:text-7xl font-bold tracking-tight">
             {t('heroA')}
             <br />
             <span className="text-accent">{t('heroB')}</span>
           </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto">
+          <p className="hero-enter hero-enter-delay-1 text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto">
             {t('heroSub')}
           </p>
-          <div className="flex justify-center gap-3">
-            <Button asChild size="lg" className="rounded-full text-base px-8">
+          <div className="hero-enter hero-enter-delay-2 flex justify-center gap-3">
+            <Button
+              asChild
+              size="lg"
+              className="rounded-full text-base px-8 transition-transform duration-300 hover:scale-[1.04] hover:shadow-lg"
+            >
               <Link href="/sign-up">
                 {t('ctaOrder')}
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -164,7 +178,7 @@ export default async function HomePage() {
             </Button>
           </div>
           {/* Tile + phone scene */}
-          <div className="flex items-end justify-center gap-8 pt-6">
+          <div className="hero-enter hero-enter-delay-3 flex items-end justify-center gap-8 pt-6">
             <div className="hidden sm:block pb-10">
               <Tile size="lg" />
             </div>
@@ -273,56 +287,62 @@ export default async function HomePage() {
       {/* Old way / better way */}
       <section className="py-16 bg-secondary">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-6">
-          <div className="bg-paper rounded-2xl p-8 space-y-3">
-            <h3 className="text-2xl font-bold tracking-tight">{t('oldWay')}</h3>
-            <p className="text-muted-foreground">{t('oldWayBody')}</p>
-            <p className="font-mono text-xs text-muted-foreground">
-              {t('oldWayItems')}
-            </p>
-            <p className="font-mono text-sm line-through decoration-destructive/70">
-              {t('oldWayPrice')}
-            </p>
-          </div>
-          <div className="bg-forest text-paper rounded-2xl p-8 space-y-3">
-            <h3 className="text-2xl font-bold tracking-tight">{t('newWay')}</h3>
-            <p className="text-paper/80">{t('newWayBody')}</p>
-            <p className="font-mono text-[10px] tracking-[0.25em] text-accent pt-2">
-              {t('pricePilot')}
-            </p>
-            <p className="text-4xl font-bold tracking-tight">
-              {t('priceAmount')}
-            </p>
-            <p className="text-sm text-paper/70">{t('priceNote')}</p>
-            <Button
-              asChild
-              size="lg"
-              className="rounded-full bg-accent text-forest hover:bg-accent/90 mt-2"
-            >
-              <Link href="/sign-up">
-                {t('ctaPilot')}
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </div>
+          <Reveal>
+            <div className="card-hover bg-paper rounded-2xl p-8 space-y-3 h-full">
+              <h3 className="text-2xl font-bold tracking-tight">{t('oldWay')}</h3>
+              <p className="text-muted-foreground">{t('oldWayBody')}</p>
+              <p className="font-mono text-xs text-muted-foreground">
+                {t('oldWayItems')}
+              </p>
+              <p className="font-mono text-sm line-through decoration-destructive/70">
+                {t('oldWayPrice')}
+              </p>
+            </div>
+          </Reveal>
+          <Reveal delay={120}>
+            <div className="card-hover bg-forest text-paper rounded-2xl p-8 space-y-3 h-full">
+              <h3 className="text-2xl font-bold tracking-tight">{t('newWay')}</h3>
+              <p className="text-paper/80">{t('newWayBody')}</p>
+              <p className="font-mono text-[10px] tracking-[0.25em] text-accent pt-2">
+                {t('pricePilot')}
+              </p>
+              <p className="text-4xl font-bold tracking-tight">
+                {t('priceAmount')}
+              </p>
+              <p className="text-sm text-paper/70">{t('priceNote')}</p>
+              <Button
+                asChild
+                size="lg"
+                className="rounded-full bg-accent text-forest hover:bg-accent/90 mt-2 transition-transform duration-300 hover:scale-[1.04]"
+              >
+                <Link href="/sign-up">
+                  {t('ctaPilot')}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Works for every business */}
       <section className="py-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-8 text-center">
-          <div className="space-y-3">
+          <Reveal className="space-y-3">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
               {t('businessesTitle')}
             </h2>
             <p className="text-muted-foreground">{t('businessesSub')}</p>
-          </div>
+          </Reveal>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
-            {businesses.map((b) => (
-              <div key={b.title} className="bg-secondary rounded-2xl p-6 space-y-1">
-                <span className="text-2xl">{b.emoji}</span>
-                <h3 className="font-semibold">{b.title}</h3>
-                <p className="text-sm text-muted-foreground">{b.body}</p>
-              </div>
+            {businesses.map((b, i) => (
+              <Reveal key={b.title} delay={i * 70}>
+                <div className="card-hover bg-secondary rounded-2xl p-6 space-y-1 h-full">
+                  <span className="text-2xl">{b.emoji}</span>
+                  <h3 className="font-semibold">{b.title}</h3>
+                  <p className="text-sm text-muted-foreground">{b.body}</p>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -330,7 +350,7 @@ export default async function HomePage() {
 
       {/* Mission — full-bleed forest, like Receiptile's "300 billion is why" */}
       <section className="py-20 bg-forest text-paper">
-        <div className="max-w-3xl mx-auto px-4 text-center space-y-5">
+        <Reveal className="max-w-3xl mx-auto px-4 text-center space-y-5">
           <p className="text-[11px] font-mono tracking-[0.25em] text-accent">
             {t('mission')}
           </p>
@@ -339,31 +359,31 @@ export default async function HomePage() {
           </h2>
           <p className="text-paper/80 text-lg">{t('missionBody1')}</p>
           <p className="text-paper/80 text-lg">{t('missionBody2')}</p>
-        </div>
+        </Reveal>
       </section>
 
       {/* FAQ */}
       <section className="py-16">
         <div className="max-w-2xl mx-auto px-4 space-y-8">
-          <div className="text-center space-y-3">
+          <Reveal className="text-center space-y-3">
             <p className="text-[11px] font-mono tracking-[0.25em] text-muted-foreground">
               {t('faqKicker')}
             </p>
             <h2 className="text-3xl font-bold tracking-tight">{t('faqTitle')}</h2>
-          </div>
-          <div className="divide-y">
+          </Reveal>
+          <Reveal delay={100} className="divide-y">
             {faqs.map((f) => (
               <details key={f.q} className="group py-4">
-                <summary className="flex cursor-pointer items-center justify-between font-medium list-none">
+                <summary className="flex cursor-pointer items-center justify-between font-medium list-none transition-colors hover:text-accent">
                   {f.q}
-                  <span className="text-accent transition group-open:rotate-45 text-xl leading-none">
+                  <span className="text-accent transition-transform duration-300 group-open:rotate-45 text-xl leading-none">
                     +
                   </span>
                 </summary>
                 <p className="pt-2 text-sm text-muted-foreground">{f.a}</p>
               </details>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 

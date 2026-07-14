@@ -90,6 +90,133 @@
   }
 }
 
+/* ── Tapbon motion ────────────────────────────────────────────────────── */
+
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes tapbon-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tapbon-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-6deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(-4deg);
+  }
+}
+
+@keyframes tapbon-float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes tapbon-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  80%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-enter {
+  animation: tapbon-fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-enter-delay-1 {
+  animation-delay: 0.12s;
+}
+
+.hero-enter-delay-2 {
+  animation-delay: 0.24s;
+}
+
+.hero-enter-delay-3 {
+  animation-delay: 0.4s;
+}
+
+.float-tile {
+  animation: tapbon-float 5s ease-in-out infinite;
+}
+
+.float-soft {
+  animation: tapbon-float-soft 6s ease-in-out infinite;
+}
+
+.dot-ping::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: hsl(var(--accent, 149 59% 50%));
+  background: #34c97b;
+  animation: tapbon-ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.card-hover {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 32px -12px rgb(35 43 56 / 0.18),
+    0 4px 12px -6px rgb(35 43 56 / 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal,
+  .hero-enter,
+  .float-tile,
+  .float-soft,
+  .dot-ping::after,
+  .card-hover {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @layer base {
   :root {
     /* Tapbon: ink #232B38, paper #FFFFFF, mint #34C97B, forest #3E624C */
