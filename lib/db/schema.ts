@@ -5,6 +5,9 @@ import {
   text,
   timestamp,
   integer,
+  uuid,
+  jsonb,
+  char,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -118,6 +121,126 @@ export type Team = typeof teams.$inferSelect;
 export type NewTeam = typeof teams.$inferInsert;
 export type TeamMember = typeof teamMembers.$inferSelect;
 export type NewTeamMember = typeof teamMembers.$inferInsert;
+
+// ─── Tapbon domain ──────────────────────────────────────────────────────────
+// All money amounts are integer øre/öre/cents. VAT rates are basis points
+// (2500 = 25.00%). Receipts are IMMUTABLE once issued — never UPDATE them;
+// corrections are new receipts referencing the original.
+
+export const merchants = pgTable('merchants', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  businessName: varchar('business_name', { length: 200 }).notNull(),
+  cvrNumber: varchar('cvr_number', { length: 20 }).notNull(),
+  vatNumber: varchar('vat_number', { length: 30 }),
+  logoUrl: text('logo_url'),
+  locale: varchar('locale', { length: 5 }).notNull().default('da'),
+  currency: char('currency', { length: 3 }).notNull().default('DKK'),
+  googleReviewUrl: text('google_review_url'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const terminals = pgTable('terminals', {
+  id: serial('id').primaryKey(),
+  merchantId: integer('merchant_id')
+    .notNull()
+    .references(() => merchants.id),
+  publicId: varchar('public_id', { length: 12 }).notNull().unique(),
+  name: varchar('name', { length: 100 }).notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const receipts = pgTable('receipts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  merchantId: integer('merchant_id')
+    .notNull()
+    .references(() => merchants.id),
+  terminalId: integer('terminal_id').references(() => terminals.id),
+  receiptNumber: serial('receipt_number'),
+  issuedAt: timestamp('issued_at').notNull().defaultNow(),
+  currency: char('currency', { length: 3 }).notNull(),
+  totalGross: integer('total_gross').notNull(),
+  totalNet: integer('total_net').notNull(),
+  totalVat: integer('total_vat').notNull(),
+  // Per-rate breakdown: [{ rate: 2500, gross: 10000, net: 8000, vat: 2000 }]
+  vatBreakdown: jsonb('vat_breakdown').notNull(),
+  hash: char('hash', { length: 64 }).notNull(),
+  correctsReceiptId: uuid('corrects_receipt_id'),
+});
+
+export const receiptItems = pgTable('receipt_items', {
+  id: serial('id').primaryKey(),
+  receiptId: uuid('receipt_id')
+    .notNull()
+    .references(() => receipts.id),
+  name: varchar('name', { length: 200 }).notNull(),
+  qty: integer('qty').notNull(),
+  unitPriceGross: integer('unit_price_gross').notNull(),
+  vatRate: integer('vat_rate').notNull(),
+  lineTotalGross: integer('line_total_gross').notNull(),
+});
+
+export const loyaltyCards = pgTable('loyalty_cards', {
+  id: serial('id').primaryKey(),
+  merchantId: integer('merchant_id')
+    .notNull()
+    .references(() => merchants.id),
+  cardToken: uuid('card_token').notNull().unique().defaultRandom(),
+  stamps: integer('stamps').notNull().default(0),
+  stampsRequired: integer('stamps_required').notNull().default(10),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const merchantsRelations = relations(merchants, ({ one, many }) => ({
+  user: one(users, { fields: [merchants.userId], references: [users.id] }),
+  terminals: many(terminals),
+  receipts: many(receipts),
+}));
+
+export const terminalsRelations = relations(terminals, ({ one, many }) => ({
+  merchant: one(merchants, {
+    fields: [terminals.merchantId],
+    references: [merchants.id],
+  }),
+  receipts: many(receipts),
+}));
+
+export const receiptsRelations = relations(receipts, ({ one, many }) => ({
+  merchant: one(merchants, {
+    fields: [receipts.merchantId],
+    references: [merchants.id],
+  }),
+  terminal: one(terminals, {
+    fields: [receipts.terminalId],
+    references: [terminals.id],
+  }),
+  items: many(receiptItems),
+}));
+
+export const receiptItemsRelations = relations(receiptItems, ({ one }) => ({
+  receipt: one(receipts, {
+    fields: [receiptItems.receiptId],
+    references: [receipts.id],
+  }),
+}));
+
+export type Merchant = typeof merchants.$inferSelect;
+export type NewMerchant = typeof merchants.$inferInsert;
+export type Terminal = typeof terminals.$inferSelect;
+export type Receipt = typeof receipts.$inferSelect;
+export type NewReceipt = typeof receipts.$inferInsert;
+export type ReceiptItem = typeof receiptItems.$inferSelect;
+export type NewReceiptItem = typeof receiptItems.$inferInsert;
+export type LoyaltyCard = typeof loyaltyCards.$inferSelect;
+export type VatBreakdownEntry = {
+  rate: number;
+  gross: number;
+  net: number;
+  vat: number;
+};
 export type ActivityLog = typeof activityLogs.$inferSelect;
 export type NewActivityLog = typeof activityLogs.$inferInsert;
 export type Invitation = typeof invitations.$inferSelect;

@@ -12,15 +12,57 @@
     "total": "Total",
     "vat": "Moms",
     "vatOfWhich": "Heraf moms {rate}",
+    "net": "Beløb ekskl. moms",
     "cvr": "CVR-nr. {cvr}",
     "downloadPdf": "Hent som PDF",
-    "issuedAt": "Udstedt {date}"
+    "issuedAt": "Udstedt {date}",
+    "receiptNumber": "Kvittering nr. {number}",
+    "verified": "Forseglet · {hash}",
+    "notFoundTitle": "Kvittering ikke fundet",
+    "notFoundBody": "Linket er udløbet eller forkert. Spørg personalet om en ny kode."
   },
   "loyalty": {
     "title": "Loyalitetskort",
-    "stamps": "{count} af {total} stempler"
+    "stamps": "{count} af {total} stempler",
+    "add": "Saml stempel",
+    "added": "Stempel samlet!",
+    "full": "Kortet er fuldt — vis det til personalet og få din belønning 🎉"
   },
   "review": {
     "cta": "Anmeld os på Google"
+  },
+  "issue": {
+    "title": "Kvitteringer",
+    "newReceipt": "Ny kvittering",
+    "itemName": "Vare",
+    "qty": "Antal",
+    "unitPrice": "Stykpris (inkl. moms)",
+    "vatRate": "Momssats",
+    "addRow": "Tilføj vare",
+    "removeRow": "Fjern",
+    "runningTotal": "Total: {amount}",
+    "submit": "Udsted kvittering",
+    "submitting": "Udsteder…",
+    "issued": "Kvittering udstedt!",
+    "openReceipt": "Åbn kvitteringen",
+    "issueNext": "Udsted næste",
+    "recent": "Seneste kvitteringer",
+    "empty": "Ingen kvitteringer endnu — udsted din første ovenfor.",
+    "invalidInput": "Udfyld alle felter korrekt.",
+    "scanQr": "Kunden scanner for at åbne kvitteringen:",
+    "terminalQr": "Print denne QR ved kassen — kunden scanner og får sin seneste kvittering:"
+  },
+  "merchantSetup": {
+    "title": "Opret din forretning",
+    "intro": "Ét skridt før du kan udstede kvitteringer.",
+    "businessName": "Forretningens navn",
+    "cvrNumber": "CVR-nummer",
+    "currency": "Valuta",
+    "googleReviewUrl": "Google-anmeldelseslink (valgfrit)",
+    "submit": "Opret forretning"
+  },
+  "claim": {
+    "noReceiptTitle": "Ingen ny kvittering",
+    "noReceiptBody": "Der er ikke udstedt en kvittering hos {merchant} de sidste 15 minutter. Spørg personalet."
   }
 }

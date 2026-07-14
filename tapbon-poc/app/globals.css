@@ -1,0 +1,83 @@
+/* Tapbon design tokens (see docs/build-plan.md §5b) */
+:root {
+  --ink: #232b38;
+  --paper: #ffffff;
+  --accent: #34c97b;
+  --forest: #3e624c;
+  --grey: #6b7280;
+  --bg: #f4f6f5;
+  --radius: 1rem;
+  --font-sans: "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; }
+
+.container { max-width: 480px; margin: 0 auto; padding: 1.25rem; }
+.wide { max-width: 760px; }
+
+.btn {
+  display: block; width: 100%; text-align: center; text-decoration: none;
+  padding: 0.9rem 1.2rem; border-radius: 999px; border: none;
+  font-size: 1rem; font-weight: 600; cursor: pointer;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-dark { background: var(--ink); color: #fff; }
+.btn-ghost { background: #fff; color: var(--ink); border: 1.5px solid #e2e5e9; }
+.btn + .btn { margin-top: 0.6rem; }
+
+.card {
+  background: var(--paper); border-radius: var(--radius);
+  padding: 1.25rem; box-shadow: 0 1px 3px rgba(35, 43, 56, 0.08);
+}
+.card + .card { margin-top: 0.8rem; }
+
+/* Receipt */
+.receipt-body { font-family: var(--font-mono); font-size: 0.85rem; }
+.receipt-line { display: flex; justify-content: space-between; padding: 0.15rem 0; }
+.receipt-rule { border: none; border-top: 1.5px dashed #d5d9de; margin: 0.7rem 0; }
+.receipt-total { display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 700; }
+.muted { color: var(--grey); }
+.small { font-size: 0.78rem; }
+.accent { color: var(--accent); }
+
+.live-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent); margin-right: 6px;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+/* Loyalty stamps */
+.stamps { display: flex; gap: 0.45rem; margin-top: 0.6rem; }
+.stamp {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 2px solid #d5d9de; display: flex; align-items: center; justify-content: center;
+  font-size: 0.95rem;
+}
+.stamp.filled { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+h1.hero { font-size: 2.2rem; line-height: 1.12; letter-spacing: -0.02em; font-weight: 800; }
+h1.hero .accent { color: var(--accent); }
+
+label { display: block; font-size: 0.8rem; font-weight: 600; margin: 0.7rem 0 0.25rem; }
+input, select {
+  width: 100%; padding: 0.6rem 0.7rem; border: 1.5px solid #e2e5e9;
+  border-radius: 0.6rem; font-size: 0.95rem; font-family: inherit; background: #fff;
+}
+.item-row { display: grid; grid-template-columns: 1fr 62px 88px 74px; gap: 0.4rem; margin-bottom: 0.4rem; }
+
+@media print {
+  body { background: #fff; }
+  .no-print { display: none !important; }
+  .card { box-shadow: none; }
+}

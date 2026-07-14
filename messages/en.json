@@ -12,15 +12,57 @@
     "total": "Total",
     "vat": "VAT",
     "vatOfWhich": "Of which VAT {rate}",
+    "net": "Amount excl. VAT",
     "cvr": "CVR no. {cvr}",
     "downloadPdf": "Download PDF",
-    "issuedAt": "Issued {date}"
+    "issuedAt": "Issued {date}",
+    "receiptNumber": "Receipt no. {number}",
+    "verified": "Sealed · {hash}",
+    "notFoundTitle": "Receipt not found",
+    "notFoundBody": "The link has expired or is incorrect. Ask the staff for a new code."
   },
   "loyalty": {
     "title": "Loyalty card",
-    "stamps": "{count} of {total} stamps"
+    "stamps": "{count} of {total} stamps",
+    "add": "Collect stamp",
+    "added": "Stamp collected!",
+    "full": "Card is full — show it to the staff to get your reward 🎉"
   },
   "review": {
     "cta": "Review us on Google"
+  },
+  "issue": {
+    "title": "Receipts",
+    "newReceipt": "New receipt",
+    "itemName": "Item",
+    "qty": "Qty",
+    "unitPrice": "Unit price (incl. VAT)",
+    "vatRate": "VAT rate",
+    "addRow": "Add item",
+    "removeRow": "Remove",
+    "runningTotal": "Total: {amount}",
+    "submit": "Issue receipt",
+    "submitting": "Issuing…",
+    "issued": "Receipt issued!",
+    "openReceipt": "Open the receipt",
+    "issueNext": "Issue next",
+    "recent": "Recent receipts",
+    "empty": "No receipts yet — issue your first one above.",
+    "invalidInput": "Please fill in all fields correctly.",
+    "scanQr": "Customer scans to open the receipt:",
+    "terminalQr": "Print this QR at the counter — customers scan it to get their latest receipt:"
+  },
+  "merchantSetup": {
+    "title": "Set up your business",
+    "intro": "One step before you can issue receipts.",
+    "businessName": "Business name",
+    "cvrNumber": "CVR number",
+    "currency": "Currency",
+    "googleReviewUrl": "Google review link (optional)",
+    "submit": "Create business"
+  },
+  "claim": {
+    "noReceiptTitle": "No recent receipt",
+    "noReceiptBody": "No receipt has been issued at {merchant} in the last 15 minutes. Please ask the staff."
   }
 }

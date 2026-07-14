@@ -48,8 +48,12 @@ jobs:
         run: pnpm build
 
       - name: Package for deployment
-        # Standalone-style zip: app + node_modules + build output
-        run: zip -r deploy.zip .next public package.json node_modules next.config.ts messages i18n -q
+        # Standalone output: self-contained server.js + traced node_modules
+        run: |
+          cp -r .next/static .next/standalone/.next/static
+          if [ -d public ]; then cp -r public .next/standalone/public; fi
+          cp -r messages .next/standalone/messages
+          cd .next/standalone && zip -r ../../deploy.zip . -q
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
