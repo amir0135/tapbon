@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./page-zoom.css";
 /*
   ---break---
 */
@@ -56,10 +57,14 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
-  /* Tapbon brand tokens */
+  /* Tapbon brand tokens (see lib/design/tokens.ts) */
   --color-ink: #232b38;
+  --color-ink-deep: #10151d;
+  --color-ink-raised: #1a202b;
+  --color-canvas: #f8fafb;
   --color-paper: #ffffff;
   --color-mint: #34c97b;
+  --color-mint-tint: #e5f8ee;
   --color-forest: #3e624c;
 
   --font-sans: var(--font-grotesk), Arial, Helvetica, sans-serif;
@@ -200,6 +205,19 @@ html {
     0 4px 12px -6px rgb(35 43 56 / 0.08);
 }
 
+@keyframes tapbon-globe-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(33.333%);
+  }
+}
+
+.globe-spin > div {
+  animation: tapbon-globe-drift 48s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -209,6 +227,7 @@ html {
   .float-tile,
   .float-soft,
   .dot-ping::after,
+  .globe-spin > div,
   .card-hover {
     animation: none !important;
     transition: none !important;

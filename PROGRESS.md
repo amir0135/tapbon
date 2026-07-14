@@ -1,16 +1,22 @@
 # Progress
 
-## Last session (2026-07-14)
-MVP live at https://tapbon-app.azurewebsites.net. Built: full receipt domain
-(schema + migrations on Azure Postgres), VAT engine, issue form with QR,
-public receipt page (receiptline body, moms pr. sats, CVR, hash seal, PDF/print,
-loyalty punch card, Google review), terminal claim route /t/[publicId],
-Tapbon landing page mirroring Receiptile's structure (da/en). Deploy pipeline
-fixed: standalone output + hoisted node_modules + Oryx off + SCM basic auth on.
+## Last session (2026-07-14, pm)
+Rebuilt the landing page as a high-fidelity Receiptile-style recreation:
+new route app/(marketing)/page.tsx + components/landing/* (scrolly-hero with
+pinned 6-panel scrollytelling, dark compare band with VS divider, order band
+with Månedlig/Årlig tablist + colour radios + order card, business grid,
+mission globe, motion FAQ accordion, dark footer). Design tokens in
+lib/design/tokens.ts, plan in specs/landing-page.md. `motion` + lucide added.
+Fixed header inverts over dark bands via data-header-dark scroll probe
+(mix-blend-difference approach failed). 3 visual passes at 1440/1024/390 vs
+reference screenshots (shots/), plus a11y pass: landmarks, heading order,
+labelled inputs, aria-expanded FAQ, keyboard toggling, reduced-motion in all
+motion components. Old landing (app/(dashboard)/page.tsx) deleted — the
+marketing route now owns /.
 
 ## Next up
-Phase 1 polish: real domain (tapbon.dk), demo café content for pitches, print
-QR stand PDF. Then Phase 2: pitch + sign pilots.
+Commit + deploy landing v2. Then Phase 1 polish: real domain (tapbon.dk),
+demo café content for pitches, print QR stand PDF.
 
 ## Parked decisions
 - Printer-emulering (Receiptile-modellen) er spec'et i specs/printer-emulation.md.

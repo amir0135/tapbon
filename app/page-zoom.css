@@ -1,0 +1,48 @@
+/**
+ * Fluid page scaling, the way the reference site does it — pure CSS, no JS.
+ *
+ * The desktop landing is designed on a 1440px canvas. `zoom` is driven by a
+ * CSS variable computed from 100cqw — the ACTUAL usable width of the page
+ * (unlike 100vw, container-query width excludes a classic scrollbar), so the
+ * canvas always renders exactly edge-to-edge with no overhang or gap. The
+ * browser recomputes it atomically on every resize — zero staleness bugs.
+ *
+ * --stagevh is one "100vh" expressed in canvas px (100vh / zoom), used by
+ * the full-height bands. tan(atan2()) performs unit-safe division and is
+ * supported in all evergreen browsers (Safari 16+, Chrome 111+, FF 112+).
+ */
+
+.page-zoom-viewport {
+  container-type: inline-size;
+  width: 100%;
+  overflow-x: clip; /* swallow sub-pixel rounding overhang */
+}
+
+.page-zoom {
+  /* usable width / 1440 as a plain number */
+  --pz: min(1, tan(atan2(100cqw, 1440px)));
+  /* one window-height in canvas px: 100vh / --pz */
+  --stagevh: calc(100vh / min(1, tan(atan2(100cqw, 1440px))));
+  /* device-fit for the pinned hero: (stage - headroom) / 640, clamped */
+  --devfit: clamp(
+    0.4,
+    tan(
+      atan2(calc(var(--stagevh) - 150px), 640px)
+    ),
+    1
+  );
+  zoom: var(--pz);
+}
+
+/* Below the desktop breakpoint the stacked layout is already fluid.
+   `not (min-width: 48rem)` is the EXACT complement of Tailwind's `md:`
+   query — a 47.9999rem max-width rounds to 768px and overlaps at the
+   boundary. */
+@media not all and (min-width: 48rem) {
+  .page-zoom {
+    --pz: 1;
+    --stagevh: 100vh;
+    --devfit: 1;
+    zoom: 1;
+  }
+}
