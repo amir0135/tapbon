@@ -61,6 +61,17 @@ export async function getDefaultTerminal(merchantId: number) {
   return rows[0] ?? null;
 }
 
+/** Terminal + its merchant by public slug (QR stand, claim page). */
+export async function getTerminalWithMerchant(publicId: string) {
+  const rows = await db
+    .select({ terminal: terminals, merchant: merchants })
+    .from(terminals)
+    .innerJoin(merchants, eq(merchants.id, terminals.merchantId))
+    .where(eq(terminals.publicId, publicId))
+    .limit(1);
+  return rows[0] ?? null;
+}
+
 const CLAIM_WINDOW_MS = 15 * 60 * 1000;
 
 /** Latest receipt for a terminal's merchant within the claim window. */

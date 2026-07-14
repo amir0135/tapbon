@@ -50,16 +50,26 @@
     "empty": "No receipts yet. Issue your first one above.",
     "invalidInput": "Please fill in all fields correctly.",
     "scanQr": "Customer scans to open the receipt:",
-    "terminalQr": "Print this QR at the counter. Customers scan it to get their latest receipt:"
+    "terminalQr": "Print this QR at the counter. Customers scan it to get their latest receipt:",
+    "printStand": "Print QR stand (A4)"
   },
   "merchantSetup": {
     "title": "Set up your business",
     "intro": "One step before you can issue receipts.",
     "businessName": "Business name",
     "cvrNumber": "CVR number",
+    "cvrPlaceholder": "8 digits, e.g. 12345678",
     "currency": "Currency",
     "googleReviewUrl": "Google review link (optional)",
     "submit": "Create business"
+  },
+  "stand": {
+    "headline": "Scan your receipt",
+    "explainer": "Open your camera, point it at the code — and the receipt is on your phone.",
+    "noApp": "No app. No email. No paper.",
+    "qrAlt": "QR code for receipts at {merchant}",
+    "print": "Print (A4)",
+    "printHint": "Print on A4, fold or place in a holder at the counter."
   },
   "claim": {
     "noReceiptTitle": "No recent receipt",

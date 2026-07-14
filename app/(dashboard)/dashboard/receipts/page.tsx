@@ -106,6 +106,13 @@ export default async function ReceiptsPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={terminalQr} alt="Terminal QR" className="rounded-lg" />
             <p className="font-mono text-xs break-all">{terminalUrl}</p>
+            <Link
+              className="inline-block text-accent underline underline-offset-2 text-sm"
+              href={`/t/${terminal!.publicId}/stand`}
+              target="_blank"
+            >
+              {t('issue.printStand')}
+            </Link>
           </CardContent>
         </Card>
       )}

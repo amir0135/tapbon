@@ -38,8 +38,10 @@ export function MerchantSetupForm() {
               id="cvrNumber"
               name="cvrNumber"
               required
+              minLength={8}
               maxLength={20}
               inputMode="numeric"
+              placeholder={t('cvrPlaceholder')}
             />
           </div>
           <div className="space-y-1">

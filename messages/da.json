@@ -50,16 +50,26 @@
     "empty": "Ingen kvitteringer endnu. Udsted din første ovenfor.",
     "invalidInput": "Udfyld alle felter korrekt.",
     "scanQr": "Kunden scanner for at åbne kvitteringen:",
-    "terminalQr": "Print denne QR ved kassen. Kunden scanner og får sin seneste kvittering:"
+    "terminalQr": "Print denne QR ved kassen. Kunden scanner og får sin seneste kvittering:",
+    "printStand": "Print QR-stander (A4)"
   },
   "merchantSetup": {
     "title": "Opret din forretning",
     "intro": "Ét skridt før du kan udstede kvitteringer.",
     "businessName": "Forretningens navn",
     "cvrNumber": "CVR-nummer",
+    "cvrPlaceholder": "8 cifre, fx 12345678",
     "currency": "Valuta",
     "googleReviewUrl": "Google-anmeldelseslink (valgfrit)",
     "submit": "Opret forretning"
+  },
+  "stand": {
+    "headline": "Scan din kvittering",
+    "explainer": "Åbn kameraet, peg på koden — så har du kvitteringen på din telefon.",
+    "noApp": "Ingen app. Ingen e-mail. Intet papir.",
+    "qrAlt": "QR-kode til kvitteringer hos {merchant}",
+    "print": "Print (A4)",
+    "printHint": "Print på A4, fold eller sæt i holder ved kassen."
   },
   "claim": {
     "noReceiptTitle": "Ingen ny kvittering",
