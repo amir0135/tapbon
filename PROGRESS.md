@@ -9,10 +9,15 @@ TM-m30II, minimal ESC/POS-parser (CP865 → æøå OK, skipper bitmaps/stregkode
 cut = job-grænse + idle-timeout), renderer visuelt til PNG, uploader til
 /api/bridge/receipts, offline-kø med 30 s retry, svarer DLE EOT "online".
 E2E verificeret lokalt: nc-printjob → PNG → upload → tap-claim 307 — køen
-beviste sig selv undervejs. PITFALL: en stale editor-session havde gemt gamle
-buffere oven i 6 bridge-filer (ren revertering til e72dc81) — gendannet med
-git checkout HEAD. Domæne i går aftes: tapbon.dk + www LIVE (Simply DNS,
-managed certs, BASE_URL opdateret).
+beviste sig selv undervejs. MILEPÆL samme aften: **rigtig POS-app testet OK** —
+Loyverse POS (tablet) tilføjede emulatoren som Epson/Ethernet-printer via IP,
+testprint modtaget, uploadet og claimet på tapbon.dk. Loyverse sender bonen som
+GS v 0 raster-striber → emulator opgraderet til at afkode og samle dem til
+bonbillede (første forsøg viste [logo]-linjer; fixet + verificeret med rigtigt
+print, kode 9451). Zettle kræver CVR ved signup — Loyverse er test-POS'en.
+PITFALL: en stale editor-session havde gemt gamle buffere oven i 6 bridge-filer
+(ren revertering til e72dc81) — gendannet med git checkout HEAD. Domæne i går
+aftes: tapbon.dk + www LIVE (Simply DNS, managed certs, BASE_URL opdateret).
 
 ## Previous session (2026-07-14, night)
 Tapbon Bridge fase 1 (SaaS-siden af printer-emuleringen, spec v2): migration

@@ -36,8 +36,8 @@ Phases are shippable vertical slices. Finish one before starting the next. Detai
 - [x] Printer-emulering, SaaS-siden (Bridge fase 1: /api/bridge/receipts, fil-kvitteringer,
       atomisk claim + confirmationCode — specs/printer-emulation.md)
 - [x] Printer-emulering, emulator (fase 2: bridge-emulator/emulator.py — 9100 + mDNS som
-      Epson TM-m30II, ESC/POS→PNG, offline-kø; E2E OK. Mangler: test mod Zettle Go,
-      docs/pos-test-plan.md)
+      Epson TM-m30II, ESC/POS+raster→PNG, offline-kø; E2E BESTÅET mod Loyverse POS via
+      Ethernet/IP. Zettle-test afventer CVR/pilot-caféens egen konto)
 - [ ] Printer-emulering, pilot på laptop/Pi hos kunde (fase 3)
 - [ ] ESC/POS → structured parse (opgraderer fil-kvitteringer)
 - [ ] POS APIs on demand: Zettle first
