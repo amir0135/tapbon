@@ -60,6 +60,44 @@ export async function createMerchant(formData: FormData) {
   return { success: true };
 }
 
+const updateMerchantSchema = z.object({
+  businessName: z.string().min(1).max(200),
+  cvrNumber: z.string().min(4).max(20),
+  logoUrl: z.union([z.string().url().max(500), z.literal('')]),
+  googleReviewUrl: z.union([z.string().url().max(500), z.literal('')]),
+});
+
+/** Rediger forretningsprofil (spec: specs/settings.md). Valuta er låst. */
+export async function updateMerchant(prevState: unknown, formData: FormData) {
+  const user = await getUser();
+  if (!user) redirect('/sign-in');
+
+  const merchant = await getMerchantForUser(user.id);
+  if (!merchant) return { error: 'no_merchant' as const };
+
+  const parsed = updateMerchantSchema.safeParse({
+    businessName: formData.get('businessName'),
+    cvrNumber: formData.get('cvrNumber'),
+    logoUrl: formData.get('logoUrl') ?? '',
+    googleReviewUrl: formData.get('googleReviewUrl') ?? '',
+  });
+  if (!parsed.success) return { error: 'invalid_input' as const };
+
+  await db
+    .update(merchants)
+    .set({
+      businessName: parsed.data.businessName,
+      cvrNumber: parsed.data.cvrNumber,
+      logoUrl: parsed.data.logoUrl || null,
+      googleReviewUrl: parsed.data.googleReviewUrl || null,
+    })
+    .where(eq(merchants.id, merchant.id));
+
+  revalidatePath('/dashboard/general');
+  revalidatePath('/dashboard');
+  return { success: true as const };
+}
+
 const issueSchema = z.object({
   items: z
     .array(

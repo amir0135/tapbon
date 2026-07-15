@@ -19,6 +19,7 @@ import {
 import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import { getTranslations } from 'next-intl/server';
 import { createCheckoutSession } from '@/lib/payments/stripe';
 import { getUser, getUserWithTeam } from '@/lib/db/queries';
 import {
@@ -51,6 +52,7 @@ const signInSchema = z.object({
 
 export const signIn = validatedAction(signInSchema, async (data, formData) => {
   const { email, password } = data;
+  const t = await getTranslations('actionMsg');
 
   const userWithTeam = await db
     .select({
@@ -65,7 +67,7 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
 
   if (userWithTeam.length === 0) {
     return {
-      error: 'Invalid email or password. Please try again.',
+      error: t('invalidCredentials'),
       email,
       password
     };
@@ -80,7 +82,7 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
 
   if (!isPasswordValid) {
     return {
-      error: 'Invalid email or password. Please try again.',
+      error: t('invalidCredentials'),
       email,
       password
     };
@@ -108,6 +110,7 @@ const signUpSchema = z.object({
 
 export const signUp = validatedAction(signUpSchema, async (data, formData) => {
   const { email, password, inviteId } = data;
+  const t = await getTranslations('actionMsg');
 
   const existingUser = await db
     .select()
@@ -117,7 +120,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
 
   if (existingUser.length > 0) {
     return {
-      error: 'Failed to create user. Please try again.',
+      error: t('signUpFailed'),
       email,
       password
     };
@@ -135,7 +138,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
 
   if (!createdUser) {
     return {
-      error: 'Failed to create user. Please try again.',
+      error: t('signUpFailed'),
       email,
       password
     };
@@ -238,6 +241,7 @@ export const updatePassword = validatedActionWithUser(
   updatePasswordSchema,
   async (data, _, user) => {
     const { currentPassword, newPassword, confirmPassword } = data;
+    const t = await getTranslations('actionMsg');
 
     const isPasswordValid = await comparePasswords(
       currentPassword,
@@ -249,7 +253,7 @@ export const updatePassword = validatedActionWithUser(
         currentPassword,
         newPassword,
         confirmPassword,
-        error: 'Current password is incorrect.'
+        error: t('currentPasswordWrong')
       };
     }
 
@@ -258,7 +262,7 @@ export const updatePassword = validatedActionWithUser(
         currentPassword,
         newPassword,
         confirmPassword,
-        error: 'New password must be different from the current password.'
+        error: t('passwordMustDiffer')
       };
     }
 
@@ -267,7 +271,7 @@ export const updatePassword = validatedActionWithUser(
         currentPassword,
         newPassword,
         confirmPassword,
-        error: 'New password and confirmation password do not match.'
+        error: t('passwordMismatch')
       };
     }
 
@@ -283,7 +287,7 @@ export const updatePassword = validatedActionWithUser(
     ]);
 
     return {
-      success: 'Password updated successfully.'
+      success: t('passwordUpdated')
     };
   }
 );
@@ -296,12 +300,13 @@ export const deleteAccount = validatedActionWithUser(
   deleteAccountSchema,
   async (data, _, user) => {
     const { password } = data;
+    const t = await getTranslations('actionMsg');
 
     const isPasswordValid = await comparePasswords(password, user.passwordHash);
     if (!isPasswordValid) {
       return {
         password,
-        error: 'Incorrect password. Account deletion failed.'
+        error: t('deleteWrongPassword')
       };
     }
 
@@ -347,6 +352,7 @@ export const updateAccount = validatedActionWithUser(
   updateAccountSchema,
   async (data, _, user) => {
     const { name, email } = data;
+    const t = await getTranslations('actionMsg');
     const userWithTeam = await getUserWithTeam(user.id);
 
     await Promise.all([
@@ -354,7 +360,7 @@ export const updateAccount = validatedActionWithUser(
       logActivity(userWithTeam?.teamId, user.id, ActivityType.UPDATE_ACCOUNT)
     ]);
 
-    return { name, success: 'Account updated successfully.' };
+    return { name, success: t('accountUpdated') };
   }
 );
 
