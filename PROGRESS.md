@@ -15,6 +15,8 @@ testprint modtaget, uploadet og claimet på tapbon.dk. Loyverse sender bonen som
 GS v 0 raster-striber → emulator opgraderet til at afkode og samle dem til
 bonbillede (første forsøg viste [logo]-linjer; fixet + verificeret med rigtigt
 print, kode 9451). Zettle kræver CVR ved signup — Loyverse er test-POS'en.
+NFC-kort skrevet med tap-URL'en (NFC Tools) og verificeret: fysisk tap →
+kvittering på telefonen. Hele Receiptile-oplevelsen virker fysisk.
 PITFALL: en stale editor-session havde gemt gamle buffere oven i 6 bridge-filer
 (ren revertering til e72dc81) — gendannet med git checkout HEAD. Domæne i går
 aftes: tapbon.dk + www LIVE (Simply DNS, managed certs, BASE_URL opdateret).
@@ -45,9 +47,9 @@ DKK receipts through the real computeVat+hash path. Seeded to Azure db
 receipt locally.
 
 ## Next up
-Test emulatoren mod rigtig POS-software: Zettle Go på tablet efter
-docs/pos-test-plan.md fase 0/0b. NFC-tags (NTAG213) med tapbon.dk-URL.
-Derefter Phase 2: pitch pilot-caféer.
+Phase 2: pitch pilot-caféer (demo: Loyverse + emulator + NFC-kort + tapbon.dk).
+Bestil NTAG213-stickers til pilot-standere. Roter tb_demo_kaffebar-token før
+første rigtige pilot.
 
 ## Parked decisions
 - Printer-emulering spec v2: fase 1 (SaaS) + fase 2 (emulator) BYGGET.

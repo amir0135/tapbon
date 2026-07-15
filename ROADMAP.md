@@ -17,7 +17,8 @@ Phases are shippable vertical slices. Finish one before starting the next. Detai
 - [x] Receipt entry form i dashboard (bedre end "hidden admin form": rigtig merchant-auth + demo café-seed)
 - [x] Danish landing page (Receiptile-fidelity, da/en)
 - [x] Real domain (tapbon.dk) foran App Service (HTTPS + managed cert; www afventer CNAME-fix hos Simply)
-- [ ] NFC-tags (NTAG 213) skrevet med terminal-URL
+- [x] NFC-kort skrevet med terminal-URL (NFC Tools → https://tapbon.dk/t/fpFALI-3) — tap virker;
+      NTAG213-stickers til pilot-caféer når de findes
 
 ## Phase 2 — Sell, then pilot (Wizard-of-Oz)
 - [ ] Pitch; sign 3–5 pilots (~DKK 199–249/mo, free period first)
@@ -29,7 +30,8 @@ Phases are shippable vertical slices. Finish one before starting the next. Detai
 - [ ] Admin screen (you are the dashboard); simple analytics
 
 ## Phase 4 — NFC hardware
-- [ ] NTAG 213/216 tags + 3D-printed housing
+- [x] Første NFC-kort skrevet og verificeret (tap → kvittering, 2026-07-15)
+- [ ] NTAG 213/216 tags + 3D-printed housing (pilot-standere)
 
 ## Phase 5 — Capture ladder & integrations
 - [ ] Accounting export: e-conomic, Dinero, Billy (before printer emulation)
