@@ -1,6 +1,18 @@
 # Progress
 
-## Last session (2026-07-15)
+## Last session (2026-07-15, aften)
+To slices mod "proper MVP": (1) **Auth-sider i Receiptile-stil**
+(specs/auth-pages.md) — mørkt ink-kort, mono-kickers/-labels, vis/skjul
+adgangskode, forest pill-knap, mint-links, da/en; ingen døde OAuth/glemt-
+adgangskode-knapper. Verificeret desktop+mobil+login-flow. (2) **Dashboard v1**
+(specs/dashboard.md) — /dashboard er nu Tapbon Oversigt (nøgletal i dag/7 dage
+via getDashboardStats, Bridge online/offline fra lastSeenAt<3 min, seneste 5
+boner m/ statusbadges, genveje); sidebar på dansk uden Team/Activity; starter-
+Team-siden slettet. PITFALL: Date-params i drizzle sql`` templates fejler i
+select-kontekst (postgres-js) — brug ISO-streng + ::timestamp cast. Repo
+flyttet til privat amir0135/tapbon (fork slettet, secrets re-sat, deploy grøn).
+
+## Previous session (2026-07-15)
 Prod smoke-test af bridge på tapbon.dk: upload → første tap claimer (streamet
 NEXT_REDIRECT), andet tap venteskærm, fil-stream 200. Byggede Bridge fase 2:
 printer-emulatoren (bridge-emulator/emulator.py, Python + zeroconf/Pillow/

@@ -1,287 +1,193 @@
-'use client';
-
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { getTranslations, getLocale } from 'next-intl/server';
+import { ReceiptText, Printer, ArrowRight } from 'lucide-react';
+import { getUser } from '@/lib/db/queries';
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter
-} from '@/components/ui/card';
-import { customerPortalAction } from '@/lib/payments/actions';
-import { useActionState } from 'react';
-import { TeamDataWithMembers, User } from '@/lib/db/schema';
-import { removeTeamMember, inviteTeamMember } from '@/app/(login)/actions';
-import useSWR from 'swr';
-import { Suspense } from 'react';
-import { Input } from '@/components/ui/input';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Loader2, PlusCircle } from 'lucide-react';
+  getMerchantForUser,
+  getDefaultTerminal,
+  getDashboardStats,
+  listRecentReceipts,
+} from '@/lib/receipts/queries';
+import { formatMoney } from '@/lib/receipts/format';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-type ActionState = {
-  error?: string;
-  success?: string;
-};
+export const dynamic = 'force-dynamic';
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const BRIDGE_ONLINE_MS = 3 * 60 * 1000;
 
-function SubscriptionSkeleton() {
+function StatusBadge({
+  status,
+  labels,
+}: {
+  status: string;
+  labels: { pending: string; claimed: string; expired: string };
+}) {
+  const styles: Record<string, string> = {
+    pending: 'bg-amber-100 text-amber-800',
+    claimed: 'bg-mint-tint text-forest',
+    expired: 'bg-gray-100 text-gray-500',
+  };
+  const label = labels[status as keyof typeof labels] ?? status;
   return (
-    <Card className="mb-8 h-[140px]">
-      <CardHeader>
-        <CardTitle>Team Subscription</CardTitle>
-      </CardHeader>
-    </Card>
+    <span
+      className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${styles[status] ?? styles.expired}`}
+    >
+      {label}
+    </span>
   );
 }
 
-function ManageSubscription() {
-  const { data: teamData } = useSWR<TeamDataWithMembers>('/api/team', fetcher);
+export default async function DashboardOverviewPage() {
+  const user = await getUser();
+  if (!user) redirect('/sign-in');
 
-  return (
-    <Card className="mb-8">
-      <CardHeader>
-        <CardTitle>Team Subscription</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-            <div className="mb-4 sm:mb-0">
-              <p className="font-medium">
-                Current Plan: {teamData?.planName || 'Free'}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {teamData?.subscriptionStatus === 'active'
-                  ? 'Billed monthly'
-                  : teamData?.subscriptionStatus === 'trialing'
-                  ? 'Trial period'
-                  : 'No active subscription'}
-              </p>
-            </div>
-            <form action={customerPortalAction}>
-              <Button type="submit" variant="outline">
-                Manage Subscription
-              </Button>
-            </form>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+  const [t, locale, merchant] = await Promise.all([
+    getTranslations('dash'),
+    getLocale(),
+    getMerchantForUser(user.id),
+  ]);
 
-function TeamMembersSkeleton() {
-  return (
-    <Card className="mb-8 h-[140px]">
-      <CardHeader>
-        <CardTitle>Team Members</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="animate-pulse space-y-4 mt-1">
-          <div className="flex items-center space-x-4">
-            <div className="size-8 rounded-full bg-gray-200"></div>
-            <div className="space-y-2">
-              <div className="h-4 w-32 bg-gray-200 rounded"></div>
-              <div className="h-3 w-14 bg-gray-200 rounded"></div>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+  if (!merchant) redirect('/dashboard/receipts');
 
-function TeamMembers() {
-  const { data: teamData } = useSWR<TeamDataWithMembers>('/api/team', fetcher);
-  const [removeState, removeAction, isRemovePending] = useActionState<
-    ActionState,
-    FormData
-  >(removeTeamMember, {});
+  const [stats, terminal, recent] = await Promise.all([
+    getDashboardStats(merchant.id),
+    getDefaultTerminal(merchant.id),
+    listRecentReceipts(merchant.id, 5),
+  ]);
 
-  const getUserDisplayName = (user: Pick<User, 'id' | 'name' | 'email'>) => {
-    return user.name || user.email || 'Unknown User';
+  const bridgeOnline =
+    terminal?.lastSeenAt &&
+    Date.now() - terminal.lastSeenAt.getTime() < BRIDGE_ONLINE_MS;
+  const bridgeConfigured = Boolean(terminal?.deviceTokenHash);
+
+  const statCards = [
+    { label: t('todayReceipts'), value: String(stats.todayCount) },
+    {
+      label: t('todayRevenue'),
+      value: formatMoney(stats.todayRevenue, merchant.currency, locale),
+    },
+    { label: t('weekReceipts'), value: String(stats.weekCount) },
+  ];
+
+  const statusLabels = {
+    pending: t('statusPending'),
+    claimed: t('statusClaimed'),
+    expired: t('statusExpired'),
   };
 
-  if (!teamData?.teamMembers?.length) {
-    return (
-      <Card className="mb-8">
+  return (
+    <section className="flex-1 p-4 lg:p-8 space-y-6 max-w-4xl">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-lg lg:text-2xl font-medium">
+          {t('overviewTitle', { business: merchant.businessName })}
+        </h1>
+        <Link
+          href="/dashboard/receipts"
+          className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-paper hover:bg-accent/90"
+        >
+          <ReceiptText className="h-4 w-4" aria-hidden="true" />
+          {t('issueCta')}
+        </Link>
+      </div>
+
+      {/* Nøgletal */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {statCards.map((s) => (
+          <Card key={s.label}>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">{s.label}</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight">
+                {s.value}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Terminal / Bridge status */}
+      {terminal && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>{terminal.name}</span>
+              <span
+                className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${
+                  bridgeOnline
+                    ? 'bg-mint-tint text-forest'
+                    : 'bg-gray-100 text-gray-500'
+                }`}
+              >
+                <span
+                  className={`h-2 w-2 rounded-full ${bridgeOnline ? 'bg-mint' : 'bg-gray-400'}`}
+                  aria-hidden="true"
+                />
+                {bridgeOnline
+                  ? t('bridgeOnline')
+                  : bridgeConfigured
+                    ? t('bridgeOffline')
+                    : t('bridgeNotConfigured')}
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-center justify-between gap-3">
+            <p className="font-mono text-xs text-muted-foreground break-all">
+              {process.env.BASE_URL ?? ''}/t/{terminal.publicId}
+            </p>
+            <Link
+              href={`/t/${terminal.publicId}/stand`}
+              target="_blank"
+              className="inline-flex items-center gap-2 text-sm text-accent underline underline-offset-2"
+            >
+              <Printer className="h-4 w-4" aria-hidden="true" />
+              {t('printStand')}
+            </Link>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Seneste kvitteringer */}
+      <Card>
         <CardHeader>
-          <CardTitle>Team Members</CardTitle>
+          <CardTitle>{t('recentTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">No team members yet.</p>
+          {recent.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t('recentEmpty')}</p>
+          ) : (
+            <ul className="divide-y">
+              {recent.map((r) => (
+                <li
+                  key={r.id}
+                  className="py-2.5 flex items-center justify-between gap-3 text-sm"
+                >
+                  <span className="font-mono shrink-0">#{r.receiptNumber}</span>
+                  <span className="text-muted-foreground shrink-0">
+                    {new Intl.DateTimeFormat(locale, {
+                      dateStyle: 'short',
+                      timeStyle: 'short',
+                    }).format(r.issuedAt)}
+                  </span>
+                  <span className="ml-auto tabular-nums">
+                    {r.kind === 'file'
+                      ? t('fileReceipt')
+                      : formatMoney(r.totalGross, r.currency, locale)}
+                  </span>
+                  <StatusBadge status={r.status} labels={statusLabels} />
+                  <Link
+                    href={`/r/${r.id}`}
+                    target="_blank"
+                    className="text-accent"
+                    aria-label={t('openReceipt')}
+                  >
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </CardContent>
       </Card>
-    );
-  }
-
-  return (
-    <Card className="mb-8">
-      <CardHeader>
-        <CardTitle>Team Members</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ul className="space-y-4">
-          {teamData.teamMembers.map((member, index) => (
-            <li key={member.id} className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <Avatar>
-                  {/* 
-                    This app doesn't save profile images, but here
-                    is how you'd show them:
-
-                    <AvatarImage
-                      src={member.user.image || ''}
-                      alt={getUserDisplayName(member.user)}
-                    />
-                  */}
-                  <AvatarFallback>
-                    {getUserDisplayName(member.user)
-                      .split(' ')
-                      .map((n) => n[0])
-                      .join('')}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">
-                    {getUserDisplayName(member.user)}
-                  </p>
-                  <p className="text-sm text-muted-foreground capitalize">
-                    {member.role}
-                  </p>
-                </div>
-              </div>
-              {index > 1 ? (
-                <form action={removeAction}>
-                  <input type="hidden" name="memberId" value={member.id} />
-                  <Button
-                    type="submit"
-                    variant="outline"
-                    size="sm"
-                    disabled={isRemovePending}
-                  >
-                    {isRemovePending ? 'Removing...' : 'Remove'}
-                  </Button>
-                </form>
-              ) : null}
-            </li>
-          ))}
-        </ul>
-        {removeState?.error && (
-          <p className="text-red-500 mt-4">{removeState.error}</p>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-function InviteTeamMemberSkeleton() {
-  return (
-    <Card className="h-[260px]">
-      <CardHeader>
-        <CardTitle>Invite Team Member</CardTitle>
-      </CardHeader>
-    </Card>
-  );
-}
-
-function InviteTeamMember() {
-  const { data: user } = useSWR<User>('/api/user', fetcher);
-  const isOwner = user?.role === 'owner';
-  const [inviteState, inviteAction, isInvitePending] = useActionState<
-    ActionState,
-    FormData
-  >(inviteTeamMember, {});
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Invite Team Member</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form action={inviteAction} className="space-y-4">
-          <div>
-            <Label htmlFor="email" className="mb-2">
-              Email
-            </Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Enter email"
-              required
-              disabled={!isOwner}
-            />
-          </div>
-          <div>
-            <Label>Role</Label>
-            <RadioGroup
-              defaultValue="member"
-              name="role"
-              className="flex space-x-4"
-              disabled={!isOwner}
-            >
-              <div className="flex items-center space-x-2 mt-2">
-                <RadioGroupItem value="member" id="member" />
-                <Label htmlFor="member">Member</Label>
-              </div>
-              <div className="flex items-center space-x-2 mt-2">
-                <RadioGroupItem value="owner" id="owner" />
-                <Label htmlFor="owner">Owner</Label>
-              </div>
-            </RadioGroup>
-          </div>
-          {inviteState?.error && (
-            <p className="text-red-500">{inviteState.error}</p>
-          )}
-          {inviteState?.success && (
-            <p className="text-green-500">{inviteState.success}</p>
-          )}
-          <Button
-            type="submit"
-            className="bg-orange-500 hover:bg-orange-600 text-white"
-            disabled={isInvitePending || !isOwner}
-          >
-            {isInvitePending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Inviting...
-              </>
-            ) : (
-              <>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Invite Member
-              </>
-            )}
-          </Button>
-        </form>
-      </CardContent>
-      {!isOwner && (
-        <CardFooter>
-          <p className="text-sm text-muted-foreground">
-            You must be a team owner to invite new members.
-          </p>
-        </CardFooter>
-      )}
-    </Card>
-  );
-}
-
-export default function SettingsPage() {
-  return (
-    <section className="flex-1 p-4 lg:p-8">
-      <h1 className="text-lg lg:text-2xl font-medium mb-6">Team Settings</h1>
-      <Suspense fallback={<SubscriptionSkeleton />}>
-        <ManageSubscription />
-      </Suspense>
-      <Suspense fallback={<TeamMembersSkeleton />}>
-        <TeamMembers />
-      </Suspense>
-      <Suspense fallback={<InviteTeamMemberSkeleton />}>
-        <InviteTeamMember />
-      </Suspense>
     </section>
   );
 }

@@ -3,23 +3,24 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { Users, Settings, Shield, Activity, Menu, ReceiptText } from 'lucide-react';
+import { LayoutDashboard, Settings, Shield, Menu, ReceiptText } from 'lucide-react';
 
 export default function DashboardLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
+  const t = useTranslations('dash');
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const navItems = [
-    { href: '/dashboard/receipts', icon: ReceiptText, label: 'Receipts' },
-    { href: '/dashboard', icon: Users, label: 'Team' },
-    { href: '/dashboard/general', icon: Settings, label: 'General' },
-    { href: '/dashboard/activity', icon: Activity, label: 'Activity' },
-    { href: '/dashboard/security', icon: Shield, label: 'Security' }
+    { href: '/dashboard', icon: LayoutDashboard, label: t('navOverview') },
+    { href: '/dashboard/receipts', icon: ReceiptText, label: t('navReceipts') },
+    { href: '/dashboard/general', icon: Settings, label: t('navSettings') },
+    { href: '/dashboard/security', icon: Shield, label: t('navSecurity') }
   ];
 
   return (
@@ -27,7 +28,7 @@ export default function DashboardLayout({
       {/* Mobile header */}
       <div className="lg:hidden flex items-center justify-between bg-white border-b border-gray-200 p-4">
         <div className="flex items-center">
-          <span className="font-medium">Settings</span>
+          <span className="font-medium">{t('navTitle')}</span>
         </div>
         <Button
           className="-mr-3"
@@ -35,7 +36,7 @@ export default function DashboardLayout({
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         >
           <Menu className="h-6 w-6" />
-          <span className="sr-only">Toggle sidebar</span>
+          <span className="sr-only">{t('toggleSidebar')}</span>
         </Button>
       </div>
 

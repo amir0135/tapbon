@@ -79,6 +79,35 @@ export async function listRecentReceipts(merchantId: number, limit = 10) {
     .limit(limit);
 }
 
+/** Nøgletal til dashboardets oversigt (spec: specs/dashboard.md). */
+export async function getDashboardStats(merchantId: number) {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  // postgres-js in this select context rejects Date params — pass ISO (UTC,
+  // matching stored timestamps)
+  const dayIso = startOfDay.toISOString();
+  const weekIso = weekAgo.toISOString();
+
+  const [row] = await db
+    .select({
+      todayCount: sql<number>`count(*) filter (where issued_at >= ${dayIso}::timestamp)::int`,
+      // Omsætning = kun structured (fil-boner har totalGross 0)
+      todayRevenue: sql<number>`coalesce(sum(total_gross) filter (where issued_at >= ${dayIso}::timestamp), 0)::bigint`,
+      weekCount: sql<number>`count(*) filter (where issued_at >= ${weekIso}::timestamp)::int`,
+      weekRevenue: sql<number>`coalesce(sum(total_gross) filter (where issued_at >= ${weekIso}::timestamp), 0)::bigint`,
+    })
+    .from(receipts)
+    .where(eq(receipts.merchantId, merchantId));
+
+  return {
+    todayCount: Number(row?.todayCount ?? 0),
+    todayRevenue: Number(row?.todayRevenue ?? 0),
+    weekCount: Number(row?.weekCount ?? 0),
+    weekRevenue: Number(row?.weekRevenue ?? 0),
+  };
+}
+
 export async function getDefaultTerminal(merchantId: number) {
   const rows = await db
     .select()
