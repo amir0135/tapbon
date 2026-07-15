@@ -12,6 +12,22 @@ Backend er ligeglad med kilden. Alt ender som samme *receipt job*:
 format: escpos|pdf|png, file }`. Windows-app, laptop-emulator, Pi og fremtidig custom
 hardware rammer samme endpoint.
 
+## Hos kunden
+
+```mermaid
+flowchart LR
+    POS["Caféens POS<br/>(Zettle, OnlinePOS…)"] -- "printer via Wi-Fi<br/>(tror det er en Epson)" --> BOX["Tapbon-boksen<br/>(Raspberry Pi, ~400 kr)<br/>= emulatoren"]
+    BOX -- "upload via internet" --> CLOUD["tapbon.dk"]
+    KUNDE["Kundens telefon"] -- "tap på NFC-stander" --> CLOUD
+```
+
+Engangsopsætning (~30 min): caféen opretter sig på tapbon.dk og genererer
+enheds-nøgle i dashboardets Bridge-kort → boksen (Pi — eller din laptop under
+pilot) får nøglen og kobles på caféens Wi-Fi → i POS'ens printerindstillinger
+tilføjes "Epson"-printer på boksens IP → NFC-stander ved terminalen. Hvert
+salg: medarbejder trykker print som altid → boksen fanger og uploader →
+kunden tapper inden 90 sek. → kode på POS-skærm matcher telefonen.
+
 ## Datamodel
 - `terminals` **er** devices: + `deviceTokenHash` (SHA-256 af bearer-token, vises én
   gang), + `lastSeenAt`. `publicId` er allerede tap/NFC-identiteten.
