@@ -1,6 +1,16 @@
 # Progress
 
-## Last session (2026-07-15, aften)
+## Last session (2026-07-15, nat)
+Settings-slice (specs/settings.md): /dashboard/general = server component med
+Forretning-kort (navn, CVR, logo-URL, review-URL via ny updateMerchant; valuta
+låst) + Konto-kort; /dashboard/security oversat; action-beskeder (login/opret/
+adgangskode/slet/konto) oversat via getTranslations — team-invite-flows stadig
+engelske (død kode). FIX: dev HMR lækkede pg-forbindelser ("remaining
+connection slots are reserved for SUPERUSER") — lib/db/drizzle.ts genbruger nu
+klienten via globalThis + max 5 conns i dev. Verificeret i browser: gem
+forretning/konto, sikkerhedsside, da-tekster hele vejen.
+
+## Previous session (2026-07-15, aften)
 To slices mod "proper MVP": (1) **Auth-sider i Receiptile-stil**
 (specs/auth-pages.md) — mørkt ink-kort, mono-kickers/-labels, vis/skjul
 adgangskode, forest pill-knap, mint-links, da/en; ingen døde OAuth/glemt-
