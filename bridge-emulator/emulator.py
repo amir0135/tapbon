@@ -29,7 +29,7 @@ import time
 from pathlib import Path
 
 import requests
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 # ── ESC/POS constants ────────────────────────────────────────────────────────
 ESC, GS, FS, DLE, LF, CR = 0x1B, 0x1D, 0x1C, 0x10, 0x0A, 0x0D
@@ -67,15 +67,24 @@ GS_PARAMS = {
 }
 
 
-def parse_escpos(data: bytes) -> list[str]:
-    """Best-effort visual decode: text lines out, commands/bitmaps skipped."""
-    lines: list[str] = []
+def decode_raster(width_bytes: int, height: int, blob: bytes) -> "Image.Image | None":
+    """GS v 0 raster block → PIL image (1 bit/px, MSB first, 1 = black dot)."""
+    expected = width_bytes * height
+    if width_bytes <= 0 or height <= 0 or len(blob) < expected:
+        return None
+    img = Image.frombytes("1", (width_bytes * 8, height), blob[:expected])
+    return ImageOps.invert(img.convert("L"))  # set bits = black
+
+
+def parse_escpos(data: bytes) -> list:
+    """Best-effort visual decode: ordered text lines and raster images."""
+    segments: list = []
     buf = bytearray()
     i, n = 0, len(data)
 
     def flush():
         text = buf.decode("cp865", errors="replace").rstrip()
-        lines.append(text)
+        segments.append(text)
         buf.clear()
 
     while i < n:
@@ -101,15 +110,17 @@ def parse_escpos(data: bytes) -> list[str]:
                 i += 4 if i + 2 < n and data[i + 2] in (0x41, 0x42) else 3
             elif c == 0x76 and i + 7 < n:  # GS v 0 raster bitmap
                 xl, xh, yl, yh = data[i + 4:i + 8]
-                i += 8 + (xl + xh * 256) * (yl + yh * 256)
-                lines.append("[logo]")
+                wb, h = xl + xh * 256, yl + yh * 256
+                img = decode_raster(wb, h, bytes(data[i + 8:i + 8 + wb * h]))
+                segments.append(img if img is not None else "[logo]")
+                i += 8 + wb * h
             elif c == 0x6B:  # GS k barcode (NUL-terminated or length-prefixed)
                 if i + 2 < n and data[i + 2] <= 6:  # system A: NUL-terminated
                     j = data.index(b"\x00", i + 3) if b"\x00" in data[i + 3:] else n - 1
                     i = j + 1
                 else:  # system B: length byte
                     i += 4 + (data[i + 3] if i + 3 < n else 0)
-                lines.append("[stregkode]")
+                segments.append("[stregkode]")
             elif c == 0x28 and i + 4 < n:  # GS ( x: pL pH payload (QR etc.)
                 pl, ph = data[i + 3], data[i + 4]
                 i += 5 + pl + ph * 256
@@ -125,9 +136,9 @@ def parse_escpos(data: bytes) -> list[str]:
             buf.append(b); i += 1
     if buf:
         flush()
-    while lines and not lines[-1]:
-        lines.pop()
-    return lines
+    while segments and isinstance(segments[-1], str) and not segments[-1]:
+        segments.pop()
+    return segments
 
 
 # ── PNG rendering ────────────────────────────────────────────────────────────
@@ -149,17 +160,28 @@ def load_font(size: int = 20):
     return ImageFont.load_default()
 
 
-def render_png(lines: list[str], width: int = 576) -> bytes:
+def render_png(segments: list, width: int = 576) -> bytes:
     font = load_font()
     pad, line_h = 24, 26
-    height = pad * 2 + max(1, len(lines)) * line_h
-    img = Image.new("RGB", (width, height), "white")
-    draw = ImageDraw.Draw(img)
-    for idx, line in enumerate(lines):
-        draw.text((pad, pad + idx * line_h), line, fill=(35, 43, 56), font=font)
+    images = [s for s in segments if isinstance(s, Image.Image)]
+    if images:
+        width = max(width, max(img.width for img in images))
+    height = pad * 2 + sum(
+        s.height if isinstance(s, Image.Image) else line_h for s in segments
+    ) or pad * 2 + line_h
+    canvas = Image.new("RGB", (width, height), "white")
+    draw = ImageDraw.Draw(canvas)
+    y = pad
+    for seg in segments:
+        if isinstance(seg, Image.Image):
+            canvas.paste(seg.convert("RGB"), ((width - seg.width) // 2, y))
+            y += seg.height
+        else:
+            draw.text((pad, y), seg, fill=(35, 43, 56), font=font)
+            y += line_h
     from io import BytesIO
     out = BytesIO()
-    img.save(out, format="PNG")
+    canvas.save(out, format="PNG")
     return out.getvalue()
 
 
@@ -247,11 +269,13 @@ class PrintHandler(socketserver.BaseRequestHandler):
     def _finish(self, job: bytearray):
         data = bytes(job)
         job_id = hashlib.sha256(data).hexdigest()[:16]
-        lines = parse_escpos(data)
-        print(f"[job {job_id}] {len(data)} bytes → {len(lines)} linjer")
-        for line in lines[:6]:
-            print(f"    | {line}")
-        png = render_png(lines)
+        segments = parse_escpos(data)
+        n_img = sum(1 for s in segments if isinstance(s, Image.Image))
+        print(f"[job {job_id}] {len(data)} bytes → {len(segments)} segmenter ({n_img} billeder)")
+        for seg in segments[:6]:
+            if isinstance(seg, str):
+                print(f"    | {seg}")
+        png = render_png(segments)
         server: "PrintServer" = self.server  # type: ignore[assignment]
         server.uploader.submit(png, job_id)
 
