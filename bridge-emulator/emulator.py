@@ -268,14 +268,17 @@ class PrintServer(socketserver.ThreadingTCPServer):
 def announce_mdns(port: int, name: str):
     from zeroconf import Zeroconf, ServiceInfo
 
-    ip = socket.gethostbyname(socket.gethostname())
-    try:  # a routable local IP beats the hostname lookup
+    ip = "127.0.0.1"
+    try:  # a routable local IP; hostname lookup is unreliable on macOS
         probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         probe.connect(("8.8.8.8", 80))
         ip = probe.getsockname()[0]
         probe.close()
     except OSError:
-        pass
+        try:
+            ip = socket.gethostbyname(socket.gethostname())
+        except OSError:
+            pass
 
     txt = {
         "txtvers": "1",
