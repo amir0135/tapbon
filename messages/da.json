@@ -78,6 +78,28 @@
     "noReceiptTitle": "Ingen ny kvittering",
     "noReceiptBody": "Der er ingen uafhentet kvittering hos {merchant} lige nu. Spørg personalet."
   },
+  "auth": {
+    "signInKicker": "Log ind",
+    "signUpKicker": "Opret konto",
+    "signInTitle": "Velkommen tilbage",
+    "signUpTitle": "Opret din konto",
+    "signInSub": "Fortsæt hvor du slap.",
+    "signUpSub": "Gratis at komme i gang — klar på 2 minutter.",
+    "email": "E-mail",
+    "emailPlaceholder": "dig@eksempel.dk",
+    "password": "Adgangskode",
+    "passwordPlaceholder": "Din adgangskode",
+    "showPassword": "Vis adgangskode",
+    "hidePassword": "Skjul adgangskode",
+    "submitSignIn": "Log ind",
+    "submitSignUp": "Opret konto",
+    "loading": "Vent…",
+    "or": "eller",
+    "noAccount": "Har du ikke en konto?",
+    "createLink": "Opret gratis konto",
+    "hasAccount": "Har du allerede en konto?",
+    "signInLink": "Log ind"
+  },
   "bridge": {
     "title": "Tapbon Bridge",
     "intro": "Forbind kassens printer-flow: generér en enheds-nøgle og brug den i bridge-klienten (den virtuelle printer).",
