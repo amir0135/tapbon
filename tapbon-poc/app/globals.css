@@ -43,6 +43,7 @@ a { color: inherit; }
 
 /* Receipt */
 .receipt-body { font-family: var(--font-mono); font-size: 0.85rem; }
+.receipt-svg svg { display: block; width: 100%; height: auto; }
 .receipt-line { display: flex; justify-content: space-between; padding: 0.15rem 0; }
 .receipt-rule { border: none; border-top: 1.5px dashed #d5d9de; margin: 0.7rem 0; }
 .receipt-total { display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 700; }
