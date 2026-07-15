@@ -1,0 +1,4 @@
+# Tapbon Bridge emulator — fase 2 (specs/printer-emulation.md, docs/pos-test-plan.md)
+zeroconf>=0.147
+Pillow>=10.0
+requests>=2.32

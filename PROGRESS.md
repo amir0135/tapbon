@@ -1,6 +1,20 @@
 # Progress
 
-## Last session (2026-07-14, night)
+## Last session (2026-07-15)
+Prod smoke-test af bridge på tapbon.dk: upload → første tap claimer (streamet
+NEXT_REDIRECT), andet tap venteskærm, fil-stream 200. Byggede Bridge fase 2:
+printer-emulatoren (bridge-emulator/emulator.py, Python + zeroconf/Pillow/
+requests i egen venv). Lytter på TCP 9100, annoncerer sig via mDNS som EPSON
+TM-m30II, minimal ESC/POS-parser (CP865 → æøå OK, skipper bitmaps/stregkoder,
+cut = job-grænse + idle-timeout), renderer visuelt til PNG, uploader til
+/api/bridge/receipts, offline-kø med 30 s retry, svarer DLE EOT "online".
+E2E verificeret lokalt: nc-printjob → PNG → upload → tap-claim 307 — køen
+beviste sig selv undervejs. PITFALL: en stale editor-session havde gemt gamle
+buffere oven i 6 bridge-filer (ren revertering til e72dc81) — gendannet med
+git checkout HEAD. Domæne i går aftes: tapbon.dk + www LIVE (Simply DNS,
+managed certs, BASE_URL opdateret).
+
+## Previous session (2026-07-14, night)
 Tapbon Bridge fase 1 (SaaS-siden af printer-emuleringen, spec v2): migration
 0002 (terminals + deviceTokenHash/lastSeenAt; receipts + kind/status/
 confirmationCode/expiresAt/claimedAt/printJobId; ny receipt_files bytea-tabel —
@@ -26,14 +40,14 @@ DKK receipts through the real computeVat+hash path. Seeded to Azure db
 receipt locally.
 
 ## Next up
-Deploy + smoke-test bridge/stand/onboarding in prod. Bridge fase 2:
-9100-emulator på laptop efter docs/pos-test-plan.md (Zettle Go som test-POS).
-Så: tapbon.dk-domæne, find 2–3 pilot caféer og print deres stands.
+Test emulatoren mod rigtig POS-software: Zettle Go på tablet efter
+docs/pos-test-plan.md fase 0/0b. NFC-tags (NTAG213) med tapbon.dk-URL.
+Derefter Phase 2: pitch pilot-caféer.
 
 ## Parked decisions
-- Printer-emulering spec v2 (specs/printer-emulation.md): fase 1 (SaaS-siden) er
-  BYGGET. Næste ryk = fase 2-emulator (docs/pos-test-plan.md); bridge-klienten
-  kan udliciteres; hardware først efter bevist pilot.
+- Printer-emulering spec v2: fase 1 (SaaS) + fase 2 (emulator) BYGGET.
+  Næste ryk = Zettle Go-test (docs/pos-test-plan.md); hardware først efter
+  bevist pilot.
 - MitID auth? Revisit at Phase 6.
 - Key Vault kv-tapbon-prod: tenant policy forces publicNetworkAccess=Disabled —
   secrets live in App Service settings for now.

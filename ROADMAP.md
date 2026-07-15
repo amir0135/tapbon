@@ -35,8 +35,10 @@ Phases are shippable vertical slices. Finish one before starting the next. Detai
 - [ ] Accounting export: e-conomic, Dinero, Billy (before printer emulation)
 - [x] Printer-emulering, SaaS-siden (Bridge fase 1: /api/bridge/receipts, fil-kvitteringer,
       atomisk claim + confirmationCode — specs/printer-emulation.md)
-- [ ] Printer-emulering, klient-siden (fase 2: 9100/mDNS-emulator → Zettle-testplan i
-      docs/pos-test-plan.md; fase 3: pilot på laptop/Pi)
+- [x] Printer-emulering, emulator (fase 2: bridge-emulator/emulator.py — 9100 + mDNS som
+      Epson TM-m30II, ESC/POS→PNG, offline-kø; E2E OK. Mangler: test mod Zettle Go,
+      docs/pos-test-plan.md)
+- [ ] Printer-emulering, pilot på laptop/Pi hos kunde (fase 3)
 - [ ] ESC/POS → structured parse (opgraderer fil-kvitteringer)
 - [ ] POS APIs on demand: Zettle first
 
