@@ -51,6 +51,10 @@ Phases are shippable vertical slices. Finish one before starting the next. Detai
 - [ ] Pilot with 2–3 Copenhagen cafés
 
 ## Wishes / not now
+- Kunde-app (EFTER pilot, ovenpå valgfri konto): brikken er bare en URL, så appen
+  fanger tap via Universal Links/App Links (apple-app-site-association + assetlinks.json
+  på tapbon.dk) — app installeret ⇒ bon gemmes automatisk i appen; ellers browser-fallback.
+  Ingen ændring af brikker/backend. Mellemtrin: gør /mine til PWA ("Føj til hjemmeskærm").
 - Valgfri shopper-konto (progressiv, EFTER pilot): tap virker altid uden konto;
   tilbud på bon/arkiv om "gem på tværs af enheder" via e-mail magic-link (ACS findes).
   Bruger customers-tabellen (opt-in). Ændrer privatlivspolitikken → jurist-tjek.
