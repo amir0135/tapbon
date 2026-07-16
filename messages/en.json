@@ -102,6 +102,23 @@
     "statusExpired": "Expired",
     "openReceipt": "Open receipt"
   },
+  "pricing": {
+    "title": "Pricing",
+    "subtitle": "30-day free trial. No lock-in — cancel anytime.",
+    "basisName": "Tapbon Basis",
+    "proName": "Tapbon Pro",
+    "trial": "{days}-day free trial",
+    "perMonth": "per month",
+    "basisF1": "Unlimited digital receipts",
+    "basisF2": "QR stand and NFC tap",
+    "basisF3": "Loyalty cards and Google reviews",
+    "proF1": "Everything in Basis",
+    "proF2": "Printer bridge — the register prints straight to Tapbon",
+    "proF3": "Priority support",
+    "cta": "Get started",
+    "loading": "Please wait…",
+    "unavailable": "Temporarily unavailable — please try again later."
+  },
   "settings": {
     "title": "Settings",
     "businessTitle": "Business",

@@ -102,6 +102,23 @@
     "statusExpired": "Udløbet",
     "openReceipt": "Åbn kvittering"
   },
+  "pricing": {
+    "title": "Priser",
+    "subtitle": "30 dages gratis prøve. Ingen binding — opsig når som helst.",
+    "basisName": "Tapbon Basis",
+    "proName": "Tapbon Pro",
+    "trial": "{days} dages gratis prøve",
+    "perMonth": "pr. måned",
+    "basisF1": "Ubegrænsede digitale kvitteringer",
+    "basisF2": "QR-stander og NFC-tap",
+    "basisF3": "Loyalitetskort og Google-anmeldelser",
+    "proF1": "Alt i Basis",
+    "proF2": "Printer-bridge — kassen printer direkte til Tapbon",
+    "proF3": "Prioriteret support",
+    "cta": "Kom i gang",
+    "loading": "Vent…",
+    "unavailable": "Midlertidigt utilgængelig — prøv igen senere."
+  },
   "settings": {
     "title": "Indstillinger",
     "businessTitle": "Forretning",
