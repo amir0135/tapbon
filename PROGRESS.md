@@ -1,6 +1,17 @@
 # Progress
 
-## Last session (2026-07-16, eftermiddag)
+## Last session (2026-07-16, aften)
+To forbruger-/merchant-slices: (1) **Logo-upload** — merchant_logos-tabel
+(bytea, migration 0005), uploadLogo/removeLogo m/ magic-byte-validering (png/
+jpeg/webp, 1 MB), route /api/merchants/[id]/logo m/ cache-bust, Logo-kort under
+Indstillinger; E2E: logo vises på kvitteringen. (2) **Kunde-arkiv "Mine
+kvitteringer"** (specs/customer-archive.md) — localStorage på kundens telefon,
+nul PII (privatlivspolitikkens løfte holder): /r gemmer automatisk + viser
+"Dine kvitteringer (N)"-kort → /mine med liste, åbn/fjern og "kun på denne
+enhed"-note. E2E-testet begge. Turbopack-cache korrumperede undervejs (kendt
+dev-bug) — fix: rm -rf .next.
+
+## Previous session (2026-07-16, eftermiddag)
 Pilot-blokkere lukket (specs/legal-pages.md): (1) /privatliv + /vilkaar —
 lyse legal-sider, da/en content-blokke, sandfærdige ift. implementeringen
 (ingen shopper-PII, kun tekniske cookies, Azure EU, bogføringslov-retention);
