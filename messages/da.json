@@ -29,6 +29,8 @@
     "title": "Mine kvitteringer",
     "subtitle": "Alle boner du har hentet — gemt på din telefon.",
     "viewAll": "Dine kvitteringer ({count})",
+    "pitchTitle": "Alle dine kvitteringer ét sted",
+    "pitchSub": "{count, plural, one {1 kvittering gemt} other {# kvitteringer gemt}} på din telefon — ingen konto nødvendig",
     "emptyTitle": "Ingen kvitteringer endnu",
     "emptyBody": "Når du scanner eller tapper ved kassen, samles dine kvitteringer her.",
     "fileReceipt": "Fil-bon",

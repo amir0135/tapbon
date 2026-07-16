@@ -29,6 +29,8 @@
     "title": "My receipts",
     "subtitle": "Every receipt you've collected — stored on your phone.",
     "viewAll": "Your receipts ({count})",
+    "pitchTitle": "All your receipts in one place",
+    "pitchSub": "{count, plural, one {1 receipt saved} other {# receipts saved}} on your phone — no account needed",
     "emptyTitle": "No receipts yet",
     "emptyBody": "When you scan or tap at the counter, your receipts collect here.",
     "fileReceipt": "File receipt",
