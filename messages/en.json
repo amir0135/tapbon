@@ -121,6 +121,13 @@
   },
   "settings": {
     "title": "Settings",
+    "subscriptionTitle": "Subscription",
+    "noPlan": "No subscription",
+    "statusTrialing": "Free trial",
+    "statusActive": "Active — billed monthly",
+    "statusNone": "Choose a plan to get started.",
+    "manageSubscription": "Manage subscription",
+    "choosePlan": "Choose plan",
     "businessTitle": "Business",
     "accountTitle": "Account",
     "name": "Name",

@@ -121,6 +121,13 @@
   },
   "settings": {
     "title": "Indstillinger",
+    "subscriptionTitle": "Abonnement",
+    "noPlan": "Intet abonnement",
+    "statusTrialing": "Gratis prøveperiode",
+    "statusActive": "Aktivt — betales månedligt",
+    "statusNone": "Vælg en plan for at komme i gang.",
+    "manageSubscription": "Administrér abonnement",
+    "choosePlan": "Vælg plan",
     "businessTitle": "Forretning",
     "accountTitle": "Konto",
     "name": "Navn",
