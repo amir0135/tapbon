@@ -21,6 +21,7 @@
     "confirmationCode": "Receipt {code}",
     "openPdf": "Open PDF",
     "rawNote": "Raw receipt — exactly as printed by the register.",
+    "privacyLink": "Privacy",
     "notFoundTitle": "Receipt not found",
     "notFoundBody": "The link has expired or is incorrect. Ask the staff for a new code."
   },
@@ -206,7 +207,11 @@
     "passwordMismatch": "The two passwords do not match.",
     "passwordUpdated": "Password updated.",
     "deleteWrongPassword": "Incorrect password — the account was not deleted.",
-    "accountUpdated": "Account updated."
+    "accountUpdated": "Account updated.",
+    "resetLinkSent": "If that email exists with us, we've sent a reset link. Check your inbox.",
+    "resetLinkInvalid": "The link is invalid or expired. Request a new one.",
+    "resetEmailSubject": "Reset your Tapbon password",
+    "resetEmailBody": "Click the link to choose a new password (valid for 1 hour): {url}"
   },
   "auth": {
     "signInKicker": "Sign in",
@@ -228,7 +233,25 @@
     "noAccount": "Don't have an account?",
     "createLink": "Create a free account",
     "hasAccount": "Already have an account?",
-    "signInLink": "Sign in"
+    "signInLink": "Sign in",
+    "legalLine": "By continuing you accept our <terms>terms</terms> and <privacy>privacy policy</privacy>.",
+    "forgotPassword": "Forgot password?"
+  },
+  "resetPw": {
+    "kicker": "Password",
+    "forgotTitle": "Forgot password",
+    "forgotSub": "Enter your email and we'll send you a reset link.",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "sendLink": "Send reset link",
+    "backToSignIn": "Back to sign in",
+    "resetTitle": "Choose a new password",
+    "resetSub": "At least 8 characters.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "setPassword": "Save new password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "bridge": {
     "title": "Tapbon Bridge",

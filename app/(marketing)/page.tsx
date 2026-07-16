@@ -156,9 +156,9 @@ export default async function LandingPage() {
       {
         heading: t('footerLegal'),
         links: [
-          { label: t('footerPrivacy'), href: '#' },
-          { label: t('footerTerms'), href: '#' },
-          { label: t('footerRefund'), href: '#' }
+          { label: t('footerPrivacy'), href: '/privatliv' },
+          { label: t('footerTerms'), href: '/vilkaar' },
+          { label: t('footerRefund'), href: '/vilkaar' }
         ]
       },
       {

@@ -21,6 +21,7 @@
     "confirmationCode": "Kvittering {code}",
     "openPdf": "Åbn PDF",
     "rawNote": "Rå kvittering — som printet af kassen.",
+    "privacyLink": "Privatliv",
     "notFoundTitle": "Kvittering ikke fundet",
     "notFoundBody": "Linket er udløbet eller forkert. Spørg personalet om en ny kode."
   },
@@ -206,7 +207,11 @@
     "passwordMismatch": "De to adgangskoder er ikke ens.",
     "passwordUpdated": "Adgangskoden er opdateret.",
     "deleteWrongPassword": "Forkert adgangskode — kontoen blev ikke slettet.",
-    "accountUpdated": "Kontoen er opdateret."
+    "accountUpdated": "Kontoen er opdateret.",
+    "resetLinkSent": "Hvis e-mailen findes hos os, har vi sendt et nulstillingslink. Tjek din indbakke.",
+    "resetLinkInvalid": "Linket er ugyldigt eller udløbet. Bestil et nyt.",
+    "resetEmailSubject": "Nulstil din adgangskode til Tapbon",
+    "resetEmailBody": "Klik på linket for at vælge en ny adgangskode (gælder 1 time): {url}"
   },
   "auth": {
     "signInKicker": "Log ind",
@@ -228,7 +233,25 @@
     "noAccount": "Har du ikke en konto?",
     "createLink": "Opret gratis konto",
     "hasAccount": "Har du allerede en konto?",
-    "signInLink": "Log ind"
+    "signInLink": "Log ind",
+    "legalLine": "Ved at fortsætte accepterer du vores <terms>vilkår</terms> og <privacy>privatlivspolitik</privacy>.",
+    "forgotPassword": "Glemt adgangskode?"
+  },
+  "resetPw": {
+    "kicker": "Adgangskode",
+    "forgotTitle": "Glemt adgangskode",
+    "forgotSub": "Indtast din e-mail, så sender vi et link til at nulstille.",
+    "email": "E-mail",
+    "emailPlaceholder": "dig@eksempel.dk",
+    "sendLink": "Send nulstillingslink",
+    "backToSignIn": "Tilbage til log ind",
+    "resetTitle": "Vælg ny adgangskode",
+    "resetSub": "Mindst 8 tegn.",
+    "newPassword": "Ny adgangskode",
+    "confirmPassword": "Gentag adgangskode",
+    "setPassword": "Gem ny adgangskode",
+    "showPassword": "Vis adgangskode",
+    "hidePassword": "Skjul adgangskode"
   },
   "bridge": {
     "title": "Tapbon Bridge",

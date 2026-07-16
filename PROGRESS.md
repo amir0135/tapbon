@@ -1,6 +1,19 @@
 # Progress
 
-## Last session (2026-07-16, fortsat)
+## Last session (2026-07-16, eftermiddag)
+Pilot-blokkere lukket (specs/legal-pages.md): (1) /privatliv + /vilkaar —
+lyse legal-sider, da/en content-blokke, sandfærdige ift. implementeringen
+(ingen shopper-PII, kun tekniske cookies, Azure EU, bogføringslov-retention);
+linket fra footer-Jura, auth-sidernes "Ved at fortsætte..." og kvitterings-
+sidens footer. SKABELON — juridisk gennemsyn før betalende kunder. (2) Glemt
+adgangskode: ACS provisioneret (acs-tapbon + acs-email-tapbon, Europe data-
+location, AzureManaged domæne DoNotReply@aadf2091….azurecomm.net), migration
+0004 (users.reset_token_hash/expires), forgotPassword/resetPassword actions
+(enumeration-sikre, 1 times token), /forgot-password + /reset-password i mørk
+auth-stil, link på sign-in. E2E: kendt token → ny kode → session; ACS-send
+verificeret (Succeeded). GDPR-sletteflow fandtes allerede (Sikkerhed).
+
+## Previous session (2026-07-16, fortsat)
 Onboarding-wizard (Receiptile-mønster, specs/onboarding-wizard.md): sign-up →
 /onboarding med 4 trin (forretningstype, kassesystem — Phase 5-guld!, boner/dag,
 forretningsinfo). Svar i ny jsonb merchants.onboarding_profile (migration 0003).

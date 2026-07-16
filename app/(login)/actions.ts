@@ -1,7 +1,8 @@
 'use server';
 
 import { z } from 'zod';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, gt, sql } from 'drizzle-orm';
+import { createHash, randomBytes } from 'node:crypto';
 import { db } from '@/lib/db/drizzle';
 import {
   User,
@@ -22,6 +23,7 @@ import { cookies } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
 import { createCheckoutSession } from '@/lib/payments/stripe';
 import { getUser, getUserWithTeam } from '@/lib/db/queries';
+import { sendEmail } from '@/lib/email/send';
 import {
   validatedAction,
   validatedActionWithUser
@@ -362,6 +364,89 @@ export const updateAccount = validatedActionWithUser(
     ]);
 
     return { name, success: t('accountUpdated') };
+  }
+);
+
+// ── Glemt adgangskode (specs/legal-pages.md) ────────────────────────────────
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 time
+
+const forgotPasswordSchema = z.object({ email: z.string().email() });
+
+export const forgotPassword = validatedAction(
+  forgotPasswordSchema,
+  async (data) => {
+    const t = await getTranslations('actionMsg');
+    const rows = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, data.email))
+      .limit(1);
+    const user = rows[0];
+
+    // Svar altid ens — afslør aldrig om e-mailen findes.
+    if (user && !user.deletedAt) {
+      const token = randomBytes(32).toString('base64url');
+      const tokenHash = createHash('sha256').update(token).digest('hex');
+      await db
+        .update(users)
+        .set({
+          resetTokenHash: tokenHash,
+          resetTokenExpires: new Date(Date.now() + RESET_TOKEN_TTL_MS),
+        })
+        .where(eq(users.id, user.id));
+
+      const url = `${process.env.BASE_URL ?? ''}/reset-password?token=${token}`;
+      await sendEmail({
+        to: user.email,
+        subject: t('resetEmailSubject'),
+        plainText: t('resetEmailBody', { url }),
+        html: `<p>${t('resetEmailBody', { url: `<a href="${url}">${url}</a>` })}</p>`,
+      });
+    }
+
+    return { success: t('resetLinkSent') };
+  }
+);
+
+const resetPasswordSchema = z.object({
+  token: z.string().min(20).max(100),
+  password: z.string().min(8).max(100),
+  confirmPassword: z.string().min(8).max(100),
+});
+
+export const resetPassword = validatedAction(
+  resetPasswordSchema,
+  async (data) => {
+    const t = await getTranslations('actionMsg');
+    if (data.password !== data.confirmPassword) {
+      return { error: t('passwordMismatch') };
+    }
+
+    const tokenHash = createHash('sha256').update(data.token).digest('hex');
+    const rows = await db
+      .select()
+      .from(users)
+      .where(
+        and(
+          eq(users.resetTokenHash, tokenHash),
+          gt(users.resetTokenExpires, new Date())
+        )
+      )
+      .limit(1);
+    const user = rows[0];
+    if (!user) return { error: t('resetLinkInvalid') };
+
+    await db
+      .update(users)
+      .set({
+        passwordHash: await hashPassword(data.password),
+        resetTokenHash: null,
+        resetTokenExpires: null,
+      })
+      .where(eq(users.id, user.id));
+
+    await setSession(user);
+    redirect('/dashboard');
   }
 );
 

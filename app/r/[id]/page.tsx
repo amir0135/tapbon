@@ -129,6 +129,10 @@ export default async function PublicReceiptPage({
 
         <p className="text-center text-xs text-muted-foreground print:hidden">
           {t('common.appName')} · {t('common.tagline')}
+          {' · '}
+          <a href="/privatliv" className="underline underline-offset-2">
+            {t('receipt.privacyLink')}
+          </a>
         </p>
       </div>
     </main>

@@ -81,12 +81,22 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
           </div>
 
           <div className="space-y-2">
-            <label
-              htmlFor="password"
-              className="block font-mono text-xs font-semibold uppercase tracking-[0.15em] text-white/40"
-            >
-              {t('password')}
-            </label>
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="password"
+                className="block font-mono text-xs font-semibold uppercase tracking-[0.15em] text-white/40"
+              >
+                {t('password')}
+              </label>
+              {mode === 'signin' && (
+                <Link
+                  href="/forgot-password"
+                  className="text-xs font-medium text-mint hover:text-mint/80"
+                >
+                  {t('forgotPassword')}
+                </Link>
+              )}
+            </div>
             <div className="relative">
               <input
                 id="password"
@@ -158,6 +168,21 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
           >
             {mode === 'signin' ? t('createLink') : t('signInLink')}
           </Link>
+        </p>
+
+        <p className="mt-6 text-center text-xs text-white/35">
+          {t.rich('legalLine', {
+            terms: (chunks) => (
+              <Link href="/vilkaar" className="underline underline-offset-2 hover:text-white/60">
+                {chunks}
+              </Link>
+            ),
+            privacy: (chunks) => (
+              <Link href="/privatliv" className="underline underline-offset-2 hover:text-white/60">
+                {chunks}
+              </Link>
+            ),
+          })}
         </p>
       </div>
     </main>
