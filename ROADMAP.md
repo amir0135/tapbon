@@ -51,6 +51,10 @@ Phases are shippable vertical slices. Finish one before starting the next. Detai
 - [ ] Pilot with 2–3 Copenhagen cafés
 
 ## Wishes / not now
+- Valgfri shopper-konto (progressiv, EFTER pilot): tap virker altid uden konto;
+  tilbud på bon/arkiv om "gem på tværs af enheder" via e-mail magic-link (ACS findes).
+  Bruger customers-tabellen (opt-in). Ændrer privatlivspolitikken → jurist-tjek.
+  Besluttet 2026-07-16: IKKE tvungen konto — kø-friktion + GDPR-fortælling vejer tungest.
 - github/spec-kit: overvejet 2026-07-14 — afvist; repoet har allerede spec-first-systemet
   (build-plan/specs/ROADMAP/PROGRESS/DECISIONS). Genbesøg kun hvis workflowet knækker.
 - (park new tool/service ideas here mid-phase)
