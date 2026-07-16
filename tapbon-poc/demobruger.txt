@@ -1,0 +1,5 @@
+Demo-brugeren er:
+
+E-mail: demo@tapbon.dk
+Adgangskode: tapbon-demo1
+Virker både på http://localhost:3000/sign-in og https://tapbon.dk/sign-in (forretningen "Kaffebar Botanik", terminal fpFALI-3).
