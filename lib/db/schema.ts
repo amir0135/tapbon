@@ -220,6 +220,20 @@ export const receiptFiles = pgTable('receipt_files', {
   data: bytea('data').notNull(),
 });
 
+// Uploadede forretningslogoer (vises på kvitteringssiden). Egen tabel så
+// logo-bytes ikke slæbes med på hvert merchant-select.
+export const merchantLogos = pgTable('merchant_logos', {
+  id: serial('id').primaryKey(),
+  merchantId: integer('merchant_id')
+    .notNull()
+    .unique()
+    .references(() => merchants.id),
+  mimeType: varchar('mime_type', { length: 30 }).notNull(), // image/png | image/jpeg | image/webp
+  byteSize: integer('byte_size').notNull(),
+  data: bytea('data').notNull(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
 export const receiptItems = pgTable('receipt_items', {
   id: serial('id').primaryKey(),
   receiptId: uuid('receipt_id')

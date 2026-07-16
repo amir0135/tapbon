@@ -5,7 +5,7 @@ import { createHash, randomBytes, randomInt } from 'node:crypto';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db/drizzle';
-import { merchants, receipts, receiptItems, terminals } from '@/lib/db/schema';
+import { merchants, merchantLogos, receipts, receiptItems, terminals } from '@/lib/db/schema';
 import { getUser } from '@/lib/db/queries';
 import { getMerchantForUser, getDefaultTerminal } from './queries';
 import { computeVat, lineTotalGross } from '@/lib/vat';
@@ -77,11 +77,10 @@ export async function createMerchant(formData: FormData) {
 const updateMerchantSchema = z.object({
   businessName: z.string().min(1).max(200),
   cvrNumber: z.string().min(4).max(20),
-  logoUrl: z.union([z.string().url().max(500), z.literal('')]),
   googleReviewUrl: z.union([z.string().url().max(500), z.literal('')]),
 });
 
-/** Rediger forretningsprofil (spec: specs/settings.md). Valuta er låst. */
+/** Rediger forretningsprofil (spec: specs/settings.md). Valuta er låst; logo håndteres af uploadLogo/removeLogo. */
 export async function updateMerchant(prevState: unknown, formData: FormData) {
   const user = await getUser();
   if (!user) redirect('/sign-in');
@@ -92,7 +91,6 @@ export async function updateMerchant(prevState: unknown, formData: FormData) {
   const parsed = updateMerchantSchema.safeParse({
     businessName: formData.get('businessName'),
     cvrNumber: formData.get('cvrNumber'),
-    logoUrl: formData.get('logoUrl') ?? '',
     googleReviewUrl: formData.get('googleReviewUrl') ?? '',
   });
   if (!parsed.success) return { error: 'invalid_input' as const };
@@ -102,13 +100,80 @@ export async function updateMerchant(prevState: unknown, formData: FormData) {
     .set({
       businessName: parsed.data.businessName,
       cvrNumber: parsed.data.cvrNumber,
-      logoUrl: parsed.data.logoUrl || null,
       googleReviewUrl: parsed.data.googleReviewUrl || null,
     })
     .where(eq(merchants.id, merchant.id));
 
   revalidatePath('/dashboard/general');
   revalidatePath('/dashboard');
+  return { success: true as const };
+}
+
+// ── Logo-upload (gemmes i Postgres — Blob er policy-låst) ───────────────────
+const LOGO_MAX_BYTES = 1024 * 1024; // 1 MB
+
+function sniffImageMime(buf: Buffer): 'image/png' | 'image/jpeg' | 'image/webp' | null {
+  if (buf.length > 8 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47)
+    return 'image/png';
+  if (buf.length > 3 && buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff)
+    return 'image/jpeg';
+  if (
+    buf.length > 12 &&
+    buf.subarray(0, 4).toString('latin1') === 'RIFF' &&
+    buf.subarray(8, 12).toString('latin1') === 'WEBP'
+  )
+    return 'image/webp';
+  return null;
+}
+
+export async function uploadLogo(prevState: unknown, formData: FormData) {
+  const user = await getUser();
+  if (!user) redirect('/sign-in');
+
+  const merchant = await getMerchantForUser(user.id);
+  if (!merchant) return { error: 'no_merchant' as const };
+
+  const file = formData.get('logo');
+  if (!(file instanceof File) || file.size === 0)
+    return { error: 'invalid_input' as const };
+  if (file.size > LOGO_MAX_BYTES) return { error: 'too_large' as const };
+
+  const buf = Buffer.from(await file.arrayBuffer());
+  const mimeType = sniffImageMime(buf);
+  if (!mimeType) return { error: 'invalid_input' as const };
+
+  await db.transaction(async (tx) => {
+    await tx.delete(merchantLogos).where(eq(merchantLogos.merchantId, merchant.id));
+    await tx.insert(merchantLogos).values({
+      merchantId: merchant.id,
+      mimeType,
+      byteSize: buf.length,
+      data: buf,
+    });
+    // Cache-bust med updatedAt-timestamp i query-strengen
+    await tx
+      .update(merchants)
+      .set({ logoUrl: `/api/merchants/${merchant.id}/logo?v=${Date.now()}` })
+      .where(eq(merchants.id, merchant.id));
+  });
+
+  revalidatePath('/dashboard/general');
+  return { success: true as const };
+}
+
+export async function removeLogo() {
+  const user = await getUser();
+  if (!user) redirect('/sign-in');
+
+  const merchant = await getMerchantForUser(user.id);
+  if (!merchant) return { error: 'no_merchant' as const };
+
+  await db.transaction(async (tx) => {
+    await tx.delete(merchantLogos).where(eq(merchantLogos.merchantId, merchant.id));
+    await tx.update(merchants).set({ logoUrl: null }).where(eq(merchants.id, merchant.id));
+  });
+
+  revalidatePath('/dashboard/general');
   return { success: true as const };
 }
 

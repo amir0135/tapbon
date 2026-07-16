@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { getUser, getTeamForUser } from '@/lib/db/queries';
 import { getMerchantForUser } from '@/lib/receipts/queries';
 import { customerPortalAction } from '@/lib/payments/actions';
-import { AccountSettingsForm, BusinessSettingsForm } from './settings-forms';
+import { AccountSettingsForm, BusinessSettingsForm, LogoForm } from './settings-forms';
 
 export const dynamic = 'force-dynamic';
 
@@ -67,6 +67,17 @@ export default async function GeneralPage() {
           </CardHeader>
           <CardContent>
             <BusinessSettingsForm merchant={merchant} />
+          </CardContent>
+        </Card>
+      )}
+
+      {merchant && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('logoTitle')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LogoForm merchant={merchant} />
           </CardContent>
         </Card>
       )}

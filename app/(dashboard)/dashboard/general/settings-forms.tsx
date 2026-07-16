@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 import { updateAccount } from '@/app/(login)/actions';
-import { updateMerchant } from '@/lib/receipts/actions';
+import { updateMerchant, uploadLogo, removeLogo } from '@/lib/receipts/actions';
 import type { Merchant } from '@/lib/db/schema';
 
 type AccountState = { name?: string; error?: string; success?: string };
@@ -63,6 +63,70 @@ export function AccountSettingsForm({
 
 type MerchantState = { error?: string; success?: boolean };
 
+/** Logo-upload (gemmes i Postgres; vises øverst på kvitteringen). */
+export function LogoForm({ merchant }: { merchant: Merchant }) {
+  const t = useTranslations('settings');
+  const [state, formAction, pending] = useActionState<MerchantState, FormData>(
+    uploadLogo,
+    {}
+  );
+  const [removeState, removeAction, removePending] = useActionState<
+    MerchantState,
+    FormData
+  >(async () => removeLogo(), {});
+
+  return (
+    <div className="space-y-4">
+      {merchant.logoUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={merchant.logoUrl}
+          alt={t('logoPreviewAlt')}
+          className="h-16 object-contain rounded-lg border bg-white p-2"
+        />
+      )}
+      <form action={formAction} className="space-y-3">
+        <div>
+          <Label htmlFor="logo" className="mb-2">
+            {t('logoUpload')}
+          </Label>
+          <Input id="logo" name="logo" type="file" accept="image/png,image/jpeg,image/webp" required />
+          <p className="mt-1 text-xs text-muted-foreground">{t('logoHint')}</p>
+        </div>
+        {state.error && (
+          <p className="text-red-500 text-sm">
+            {state.error === 'too_large' ? t('logoTooLarge') : t('invalidInput')}
+          </p>
+        )}
+        {state.success && <p className="text-forest text-sm">{t('saved')}</p>}
+        <div className="flex items-center gap-3">
+          <Button type="submit" disabled={pending}>
+            {pending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t('saving')}
+              </>
+            ) : (
+              t('logoSave')
+            )}
+          </Button>
+          {merchant.logoUrl && (
+            <Button
+              type="submit"
+              variant="outline"
+              formAction={removeAction}
+              formNoValidate
+              disabled={removePending}
+            >
+              {t('logoRemove')}
+            </Button>
+          )}
+        </div>
+      </form>
+    </div>
+  );
+}
+
 export function BusinessSettingsForm({ merchant }: { merchant: Merchant }) {
   const t = useTranslations('settings');
   const [state, formAction, pending] = useActionState<MerchantState, FormData>(
@@ -95,19 +159,6 @@ export function BusinessSettingsForm({ merchant }: { merchant: Merchant }) {
           required
           maxLength={20}
         />
-      </div>
-      <div>
-        <Label htmlFor="logoUrl" className="mb-2">
-          {t('logoUrl')}
-        </Label>
-        <Input
-          id="logoUrl"
-          name="logoUrl"
-          type="url"
-          placeholder="https://…"
-          defaultValue={merchant.logoUrl ?? ''}
-        />
-        <p className="mt-1 text-xs text-muted-foreground">{t('logoHint')}</p>
       </div>
       <div>
         <Label htmlFor="googleReviewUrl" className="mb-2">
