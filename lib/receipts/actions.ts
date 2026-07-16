@@ -12,8 +12,8 @@ import { computeVat, lineTotalGross } from '@/lib/vat';
 import { hashReceipt } from './hash';
 import { eq } from 'drizzle-orm';
 
-// Claim window for receipts issued manually from the dashboard form. Bridge
-// receipts use a much shorter window (see /api/bridge/receipts).
+// Claim window for receipts issued manually from the dashboard form.
+// Bridge receipts use 10 min (see /api/bridge/receipts).
 const FORM_CLAIM_WINDOW_MS = 15 * 60 * 1000;
 
 const merchantSchema = z.object({

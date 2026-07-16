@@ -47,7 +47,9 @@ fil + printJobId + timestamp. Svar: `{ receiptId, confirmationCode, expiresAt }`
 Idempotent på (terminal, printJobId). Nyt job udløber tidligere `pending` jobs.
 
 ## Claim-flow (/t/[publicId], skærpet)
-1. Tap → find terminalens nyeste `pending` kvittering inden for vinduet (60–90 s).
+1. Tap → find terminalens nyeste `pending` kvittering inden for vinduet (10 min —
+   hævet fra 90 s efter pilot-feedback; kvitteringen gemmes for evigt, vinduet
+   styrer kun tap-udlevering).
 2. Claim er **én atomisk UPDATE** (status pending→claimed WHERE status='pending') —
    første tap vinder, kan aldrig re-claimes til anden telefon.
 3. `confirmationCode` vises både i bridge-status (kasseskærm) og på telefonen,

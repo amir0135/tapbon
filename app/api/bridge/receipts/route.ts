@@ -12,7 +12,10 @@ import { getTerminalByDeviceTokenHash } from '@/lib/receipts/queries';
 export const dynamic = 'force-dynamic';
 
 const MAX_BYTES = 5 * 1024 * 1024;
-const BRIDGE_CLAIM_WINDOW_MS = 90 * 1000;
+// Tap-vindue for uafhentede boner. Kvitteringen GEMMES for evigt — vinduet
+// styrer kun hvor længe /t-tap'et udleverer den. Forkert-kunde-beskyttelse
+// håndteres af: nyt job fortrænger gamle pending + første tap vinder + kode.
+const BRIDGE_CLAIM_WINDOW_MS = 10 * 60 * 1000;
 
 function sniffMimeType(buf: Buffer): 'image/png' | 'application/pdf' | null {
   if (
