@@ -45,7 +45,9 @@ Phases are shippable vertical slices. Finish one before starting the next. Detai
 - [ ] POS APIs on demand: Zettle first
 
 ## Phase 6 — Billing & launch
-- [ ] Stripe subscriptions, pricing page, onboarding
+- [x] Stripe subscriptions i TEST-mode: produkter (Basis 199/Pro 249), dansk pricing-side,
+      webhook, checkout verificeret E2E (live-nøgler + moms/Stripe Tax udestår)
+- [ ] Skift til live-nøgler efter Stripe-kontoverifikation (CVR)
 - [ ] Pilot with 2–3 Copenhagen cafés
 
 ## Wishes / not now

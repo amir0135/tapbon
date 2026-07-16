@@ -1,6 +1,15 @@
 # Progress
 
-## Last session (2026-07-15, nat)
+## Last session (2026-07-16)
+Stripe-billing (Phase 6, TEST-mode): webhook oprettet via Stripe API
+(we_1Ttjs6… → tapbon.dk/api/stripe/webhook, subscription.updated/deleted),
+produkter Tapbon Basis 199/Pro 249 kr/md m/ 30 dages trial, nøgler i .env +
+App Service. /pricing omskrevet: dansk, DKK via formatMoney, Pro fremhævet,
+i18n (specs/pricing.md). Checkout E2E-testet med 4242-kort → team fik
+plan='Tapbon Basis', status='trialing'. LIVE-nøgler + Stripe Tax udestår
+(kræver rigtig konto-verifikation).
+
+## Previous session (2026-07-15, nat)
 Settings-slice (specs/settings.md): /dashboard/general = server component med
 Forretning-kort (navn, CVR, logo-URL, review-URL via ny updateMerchant; valuta
 låst) + Konto-kort; /dashboard/security oversat; action-beskeder (login/opret/
