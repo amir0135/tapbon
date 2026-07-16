@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getTranslations, getLocale } from 'next-intl/server';
-import { ReceiptText, Printer, ArrowRight } from 'lucide-react';
+import { ReceiptText, Printer, ArrowRight, CircleCheck, Circle } from 'lucide-react';
 import { getUser } from '@/lib/db/queries';
 import {
   getMerchantForUser,
@@ -61,6 +61,16 @@ export default async function DashboardOverviewPage() {
     Date.now() - terminal.lastSeenAt.getTime() < BRIDGE_ONLINE_MS;
   const bridgeConfigured = Boolean(terminal?.deviceTokenHash);
 
+  // Setup-tjekliste (specs/onboarding-wizard.md) — skjules ved 100 %
+  const checklist = [
+    { key: 'account', done: true },
+    { key: 'business', done: true },
+    { key: 'bridge', done: bridgeConfigured, href: '/dashboard/receipts' },
+    { key: 'firstReceipt', done: recent.length > 0, href: '/dashboard/receipts' },
+  ];
+  const doneCount = checklist.filter((c) => c.done).length;
+  const setupPct = Math.round((doneCount / checklist.length) * 100);
+
   const statCards = [
     { label: t('todayReceipts'), value: String(stats.todayCount) },
     {
@@ -90,6 +100,48 @@ export default async function DashboardOverviewPage() {
           {t('issueCta')}
         </Link>
       </div>
+
+      {/* Setup-tjekliste */}
+      {setupPct < 100 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between text-sm font-mono uppercase tracking-wider text-muted-foreground">
+              <span>{t('setupTitle')}</span>
+              <span>{setupPct}%</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="h-2 w-full rounded-full bg-secondary">
+              <div
+                className="h-2 rounded-full bg-accent transition-all"
+                style={{ width: `${setupPct}%` }}
+              />
+            </div>
+            <ul className="space-y-2">
+              {checklist.map((item) => (
+                <li key={item.key} className="flex items-center gap-3 text-sm">
+                  {item.done ? (
+                    <CircleCheck className="h-5 w-5 text-accent shrink-0" aria-hidden="true" />
+                  ) : (
+                    <Circle className="h-5 w-5 text-muted-foreground/40 shrink-0" aria-hidden="true" />
+                  )}
+                  {item.done ? (
+                    <span className="text-muted-foreground line-through">
+                      {t(`setup_${item.key}`)}
+                    </span>
+                  ) : item.href ? (
+                    <Link href={item.href} className="hover:underline">
+                      {t(`setup_${item.key}`)}
+                    </Link>
+                  ) : (
+                    <span>{t(`setup_${item.key}`)}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Nøgletal */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

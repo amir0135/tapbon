@@ -221,7 +221,8 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
     return createCheckoutSession({ team: createdTeam, priceId });
   }
 
-  redirect('/dashboard/receipts');
+  // Nye brugere gennem onboarding-wizard'en (specs/onboarding-wizard.md)
+  redirect('/onboarding');
 });
 
 export async function signOut() {

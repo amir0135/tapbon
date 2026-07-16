@@ -21,6 +21,10 @@ const merchantSchema = z.object({
   cvrNumber: z.string().min(4).max(20),
   currency: z.enum(['DKK', 'SEK', 'NOK', 'EUR']),
   googleReviewUrl: z.union([z.string().url().max(500), z.literal('')]),
+  // Onboarding-svar (valgfri — kommer fra wizard'en, specs/onboarding-wizard.md)
+  businessType: z.string().max(30).optional(),
+  posSystem: z.string().max(30).optional(),
+  dailyReceipts: z.string().max(30).optional(),
 });
 
 export async function createMerchant(formData: FormData) {
@@ -35,8 +39,17 @@ export async function createMerchant(formData: FormData) {
     cvrNumber: formData.get('cvrNumber'),
     currency: formData.get('currency'),
     googleReviewUrl: formData.get('googleReviewUrl') ?? '',
+    businessType: formData.get('businessType') ?? undefined,
+    posSystem: formData.get('posSystem') ?? undefined,
+    dailyReceipts: formData.get('dailyReceipts') ?? undefined,
   });
   if (!parsed.success) return { error: 'invalid_input' };
+
+  const { businessType, posSystem, dailyReceipts } = parsed.data;
+  const onboardingProfile =
+    businessType || posSystem || dailyReceipts
+      ? { businessType, posSystem, dailyReceipts }
+      : null;
 
   const [merchant] = await db
     .insert(merchants)
@@ -46,6 +59,7 @@ export async function createMerchant(formData: FormData) {
       cvrNumber: parsed.data.cvrNumber,
       currency: parsed.data.currency,
       googleReviewUrl: parsed.data.googleReviewUrl || null,
+      onboardingProfile,
     })
     .returning();
 

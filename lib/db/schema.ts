@@ -145,6 +145,9 @@ export const merchants = pgTable('merchants', {
   locale: varchar('locale', { length: 5 }).notNull().default('da'),
   currency: char('currency', { length: 3 }).notNull().default('DKK'),
   googleReviewUrl: text('google_review_url'),
+  // Onboarding-svar (specs/onboarding-wizard.md):
+  // { businessType, posSystem, dailyReceipts }
+  onboardingProfile: jsonb('onboarding_profile'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
