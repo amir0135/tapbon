@@ -1,6 +1,16 @@
 # Progress
 
-## Last session (2026-07-16)
+## Last session (2026-07-16, fortsat)
+Onboarding-wizard (Receiptile-mønster, specs/onboarding-wizard.md): sign-up →
+/onboarding med 4 trin (forretningstype, kassesystem — Phase 5-guld!, boner/dag,
+forretningsinfo). Svar i ny jsonb merchants.onboarding_profile (migration 0003).
+Setup-tjekliste på Oversigten (konto/forretning/bridge-nøgle/første bon, %-bar,
+skjules ved 100 %). Abonnement-kort under Indstillinger (plan/status + Stripe
+kundeportal). E2E-testet: ny bruger → wizard → dashboard 50 % → profil gemt
+(zettle/cafe/v100); testdata ryddet op. PITFALL: playwright click hænger på
+"element not stable" i delt browser-side — brug evaluate + dispatchEvent.
+
+## Previous session (2026-07-16)
 Stripe-billing (Phase 6, TEST-mode): webhook oprettet via Stripe API
 (we_1Ttjs6… → tapbon.dk/api/stripe/webhook, subscription.updated/deleted),
 produkter Tapbon Basis 199/Pro 249 kr/md m/ 30 dages trial, nøgler i .env +
