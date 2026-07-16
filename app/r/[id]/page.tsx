@@ -4,6 +4,7 @@ import { getReceiptWithDetails } from '@/lib/receipts/queries';
 import { renderReceiptSvg } from '@/lib/receipts/render';
 import { formatMoney } from '@/lib/receipts/format';
 import { ReceiptActions } from './receipt-actions';
+import { ArchiveSaver } from './archive-saver';
 
 export const dynamic = 'force-dynamic';
 
@@ -125,6 +126,18 @@ export default async function PublicReceiptPage({
           merchantId={merchant.id}
           receiptId={receipt.id}
           googleReviewUrl={merchant.googleReviewUrl}
+        />
+
+        {/* Gem i telefonens arkiv + link til /mine */}
+        <ArchiveSaver
+          entry={{
+            id: receipt.id,
+            merchant: merchant.businessName,
+            totalGross: receipt.totalGross,
+            currency: receipt.currency,
+            kind: receipt.kind === 'file' ? 'file' : 'structured',
+            issuedAt: receipt.issuedAt.toISOString(),
+          }}
         />
 
         <p className="text-center text-xs text-muted-foreground print:hidden">

@@ -25,6 +25,17 @@
     "notFoundTitle": "Kvittering ikke fundet",
     "notFoundBody": "Linket er udløbet eller forkert. Spørg personalet om en ny kode."
   },
+  "archive": {
+    "title": "Mine kvitteringer",
+    "subtitle": "Alle boner du har hentet — gemt på din telefon.",
+    "viewAll": "Dine kvitteringer ({count})",
+    "emptyTitle": "Ingen kvitteringer endnu",
+    "emptyBody": "Når du scanner eller tapper ved kassen, samles dine kvitteringer her.",
+    "fileReceipt": "Fil-bon",
+    "open": "Åbn kvittering",
+    "remove": "Fjern fra arkivet",
+    "localNote": "Arkivet ligger kun på denne enhed — vi gemmer ingen oplysninger om dig."
+  },
   "loyalty": {
     "title": "Loyalitetskort",
     "stamps": "{count} af {total} stempler",

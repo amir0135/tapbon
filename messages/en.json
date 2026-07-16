@@ -25,6 +25,17 @@
     "notFoundTitle": "Receipt not found",
     "notFoundBody": "The link has expired or is incorrect. Ask the staff for a new code."
   },
+  "archive": {
+    "title": "My receipts",
+    "subtitle": "Every receipt you've collected — stored on your phone.",
+    "viewAll": "Your receipts ({count})",
+    "emptyTitle": "No receipts yet",
+    "emptyBody": "When you scan or tap at the counter, your receipts collect here.",
+    "fileReceipt": "File receipt",
+    "open": "Open receipt",
+    "remove": "Remove from archive",
+    "localNote": "The archive lives only on this device — we store nothing about you."
+  },
   "loyalty": {
     "title": "Loyalty card",
     "stamps": "{count} of {total} stamps",
