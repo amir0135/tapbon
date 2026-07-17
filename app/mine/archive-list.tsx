@@ -10,7 +10,9 @@ import {
   LogOut,
   ReceiptText,
   Stamp,
+  Store,
   Trash2,
+  User,
 } from 'lucide-react';
 import {
   mergeIntoArchive,
@@ -156,7 +158,13 @@ function SyncCard({ customerEmail }: { customerEmail: string | null }) {
 }
 
 /** Personligt dashboard — arkiv, forbrug og loyalitet, alt fra enheden (specs/customer-archive.md v2). */
-export function ArchiveList({ customerEmail }: { customerEmail: string | null }) {
+export function ArchiveList({
+  customerEmail,
+  hasBusiness = false,
+}: {
+  customerEmail: string | null;
+  hasBusiness?: boolean;
+}) {
   const t = useTranslations('archive');
   const locale = useLocale();
   const [entries, setEntries] = useState<ArchiveEntry[] | null>(null);
@@ -204,6 +212,23 @@ export function ArchiveList({ customerEmail }: { customerEmail: string | null })
           <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
           <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
         </header>
+
+        {/* Personlig/Forretning-skifter (Receiptile-mønster) — kun når begge findes */}
+        {hasBusiness && (
+          <div className="grid grid-cols-2 gap-1 rounded-full bg-paper p-1 shadow-sm" role="navigation" aria-label={t('viewToggle')}>
+            <span className="inline-flex items-center justify-center gap-2 rounded-full bg-ink text-paper py-2 text-sm font-medium">
+              <User className="h-4 w-4" aria-hidden="true" />
+              {t('viewPersonal')}
+            </span>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center justify-center gap-2 rounded-full py-2 text-sm font-medium text-muted-foreground hover:text-ink"
+            >
+              <Store className="h-4 w-4" aria-hidden="true" />
+              {t('viewBusiness')}
+            </Link>
+          </div>
+        )}
 
         {/* Denne måned */}
         <div className="rounded-2xl bg-forest text-paper shadow-sm p-5 flex items-end justify-between">

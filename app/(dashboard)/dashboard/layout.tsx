@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Settings, Shield, Menu, ReceiptText } from 'lucide-react';
+import { LayoutDashboard, Settings, Shield, Menu, ReceiptText, User } from 'lucide-react';
 
 export default function DashboardLayout({
   children
@@ -49,7 +49,7 @@ export default function DashboardLayout({
             isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
-          <nav className="h-full overflow-y-auto p-4">
+          <nav className="h-full overflow-y-auto p-4 flex flex-col">
             {navItems.map((item) => (
               <Link key={item.href} href={item.href} passHref>
                 <Button
@@ -64,6 +64,18 @@ export default function DashboardLayout({
                 </Button>
               </Link>
             ))}
+            <div className="mt-auto border-t pt-3">
+              <Link href="/mine" passHref>
+                <Button
+                  variant="ghost"
+                  className="shadow-none w-full justify-start text-muted-foreground"
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  <User className="h-4 w-4" />
+                  {t('navPersonal')}
+                </Button>
+              </Link>
+            </div>
           </nav>
         </aside>
 
