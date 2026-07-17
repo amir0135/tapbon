@@ -25,6 +25,20 @@
     "notFoundTitle": "Receipt not found",
     "notFoundBody": "The link has expired or is incorrect. Ask the staff for a new code."
   },
+  "customerSync": {
+    "pitchTitle": "Keep your receipts on every device",
+    "pitchSub": "Optional — we'll send a login link, no password.",
+    "emailPlaceholder": "you@example.com",
+    "sendLink": "Send link",
+    "linkSent": "Check your inbox — we've sent a login link (valid 15 min).",
+    "invalidEmail": "Enter a valid email.",
+    "emailSubject": "Your Tapbon login link",
+    "emailBody": "Click to sign in and sync your receipts (valid for 15 minutes): {url}",
+    "syncedTitle": "Synced across devices",
+    "logout": "Sign out",
+    "deleteAccount": "Delete account",
+    "deleteConfirm": "Delete your account and all receipt links? Receipts remain with the businesses, but your collection disappears."
+  },
   "archive": {
     "title": "My receipts",
     "subtitle": "Every receipt you've collected — stored on your phone.",

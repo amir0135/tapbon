@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getCustomerSession } from '@/lib/auth/customer';
 import { ArchiveList } from './archive-list';
 
 export const metadata: Metadata = {
@@ -6,6 +7,9 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-export default function MinePage() {
-  return <ArchiveList />;
+export const dynamic = 'force-dynamic';
+
+export default async function MinePage() {
+  const session = await getCustomerSession();
+  return <ArchiveList customerEmail={session?.email ?? null} />;
 }

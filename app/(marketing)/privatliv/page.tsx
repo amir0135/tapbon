@@ -21,6 +21,7 @@ const CONTENT = {
         p: [
           'Når du som kunde henter en kvittering hos en Tapbon-forretning, opretter du ikke en konto, afgiver ikke din e-mail og identificerer dig ikke på nogen måde. Kvitteringssiden indeholder ingen sporingsteknologier, ingen tredjeparts-cookies og ingen annoncenetværk.',
           'Loyalitetskort fungerer med et anonymt, tilfældigt token, der kun ligger på din egen telefon. Tokenet kan ikke kobles til din identitet.',
+          'Vælger du frivilligt at oprette en synk-konto (”Gem dine kvitteringer på alle enheder”), gemmer vi din e-mailadresse og en liste over de kvitteringer, du har hentet — intet andet. Kontoen kan slettes med ét klik under Mine kvitteringer, hvorefter e-mail og kvitteringslinks slettes straks.',
         ],
       },
       {
@@ -80,6 +81,7 @@ const CONTENT = {
         p: [
           'When you collect a receipt at a Tapbon business, you do not create an account, provide an email, or identify yourself in any way. The receipt page contains no tracking technologies, no third-party cookies and no ad networks.',
           'Loyalty cards work with an anonymous random token stored only on your own phone. The token cannot be linked to your identity.',
+          'If you voluntarily create a sync account (“Keep your receipts on every device”), we store your email address and a list of the receipts you have collected — nothing else. The account can be deleted with one click under My Receipts, immediately erasing the email and receipt links.',
         ],
       },
       {

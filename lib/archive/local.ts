@@ -44,3 +44,18 @@ export function removeFromArchive(id: string): ArchiveEntry[] {
   } catch {}
   return next;
 }
+
+/** Merge server-entries ind (sync) — union på id, nyeste først. */
+export function mergeIntoArchive(incoming: ArchiveEntry[]): ArchiveEntry[] {
+  const byId = new Map<string, ArchiveEntry>();
+  for (const e of [...incoming, ...readArchive()]) {
+    if (!byId.has(e.id)) byId.set(e.id, e);
+  }
+  const next = [...byId.values()]
+    .sort((a, b) => new Date(b.issuedAt).getTime() - new Date(a.issuedAt).getTime())
+    .slice(0, MAX_ENTRIES);
+  try {
+    localStorage.setItem(KEY, JSON.stringify(next));
+  } catch {}
+  return next;
+}

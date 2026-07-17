@@ -13,6 +13,12 @@ export function ArchiveSaver({ entry }: { entry: ArchiveEntry }) {
 
   useEffect(() => {
     setCount(saveToArchive(entry).length);
+    // Synk til kunde-konto hvis logget ind (no-op ellers — 401 ignoreres)
+    fetch('/api/archive', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ receiptIds: [entry.id] }),
+    }).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entry.id]);
 

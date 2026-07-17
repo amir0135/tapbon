@@ -25,6 +25,20 @@
     "notFoundTitle": "Kvittering ikke fundet",
     "notFoundBody": "Linket er udløbet eller forkert. Spørg personalet om en ny kode."
   },
+  "customerSync": {
+    "pitchTitle": "Gem dine kvitteringer på alle enheder",
+    "pitchSub": "Valgfrit — vi sender et login-link, ingen adgangskode.",
+    "emailPlaceholder": "dig@eksempel.dk",
+    "sendLink": "Send link",
+    "linkSent": "Tjek din indbakke — vi har sendt et login-link (gælder 15 min).",
+    "invalidEmail": "Indtast en gyldig e-mail.",
+    "emailSubject": "Dit login-link til Tapbon",
+    "emailBody": "Klik for at logge ind og synke dine kvitteringer (gælder 15 minutter): {url}",
+    "syncedTitle": "Synket på tværs af enheder",
+    "logout": "Log ud",
+    "deleteAccount": "Slet konto",
+    "deleteConfirm": "Slet din konto og alle kvitteringslinks? Kvitteringerne består hos forretningerne, men din samling forsvinder."
+  },
   "archive": {
     "title": "Mine kvitteringer",
     "subtitle": "Alle boner du har hentet — gemt på din telefon.",

@@ -1,15 +1,29 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useActionState, useEffect, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { ArrowRight, ReceiptText, Stamp, Trash2 } from 'lucide-react';
 import {
+  ArrowRight,
+  CloudUpload,
+  Loader2,
+  LogOut,
+  ReceiptText,
+  Stamp,
+  Trash2,
+} from 'lucide-react';
+import {
+  mergeIntoArchive,
   readArchive,
   removeFromArchive,
   type ArchiveEntry,
 } from '@/lib/archive/local';
 import { formatMoney } from '@/lib/receipts/format';
+import {
+  requestCustomerLogin,
+  customerLogout,
+  deleteCustomerAccount,
+} from './actions';
 
 type LoyaltyCard = {
   cardToken: string;
@@ -54,15 +68,121 @@ function readLoyaltyTokens(): string[] {
   return tokens;
 }
 
+/** Konto-sektion: magic-link login / synk-status (specs/customer-account.md). */
+function SyncCard({ customerEmail }: { customerEmail: string | null }) {
+  const t = useTranslations('customerSync');
+  const [state, formAction, pending] = useActionState<
+    { error?: string; success?: string },
+    FormData
+  >(requestCustomerLogin, {});
+  const [busy, startTransition] = useTransition();
+
+  if (customerEmail) {
+    return (
+      <div className="bg-paper rounded-2xl shadow-sm p-4 space-y-3">
+        <div className="flex items-center gap-3">
+          <CloudUpload className="h-5 w-5 text-accent shrink-0" aria-hidden="true" />
+          <div className="flex-1 min-w-0">
+            <p className="font-medium">{t('syncedTitle')}</p>
+            <p className="text-sm text-muted-foreground truncate">{customerEmail}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4 text-sm">
+          <button
+            onClick={() =>
+              startTransition(async () => {
+                await customerLogout();
+                window.location.reload();
+              })
+            }
+            disabled={busy}
+            className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-ink"
+          >
+            <LogOut className="h-4 w-4" aria-hidden="true" />
+            {t('logout')}
+          </button>
+          <button
+            onClick={() => {
+              if (!window.confirm(t('deleteConfirm'))) return;
+              startTransition(async () => {
+                await deleteCustomerAccount();
+                window.location.reload();
+              });
+            }}
+            disabled={busy}
+            className="text-muted-foreground/60 hover:text-red-500"
+          >
+            {t('deleteAccount')}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-paper rounded-2xl shadow-sm p-4 space-y-3">
+      <div className="flex items-center gap-3">
+        <CloudUpload className="h-5 w-5 text-accent shrink-0" aria-hidden="true" />
+        <div>
+          <p className="font-medium">{t('pitchTitle')}</p>
+          <p className="text-sm text-muted-foreground">{t('pitchSub')}</p>
+        </div>
+      </div>
+      {state.success ? (
+        <p className="rounded-xl bg-mint-tint p-3 text-sm text-forest">{state.success}</p>
+      ) : (
+        <form action={formAction} className="flex gap-2">
+          <input
+            type="email"
+            name="email"
+            required
+            placeholder={t('emailPlaceholder')}
+            aria-label={t('emailPlaceholder')}
+            className="min-w-0 flex-1 rounded-full border border-border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+          />
+          <button
+            type="submit"
+            disabled={pending}
+            className="shrink-0 rounded-full bg-forest px-4 py-2.5 text-sm font-semibold text-paper disabled:opacity-60 inline-flex items-center gap-2"
+          >
+            {pending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+            {t('sendLink')}
+          </button>
+        </form>
+      )}
+      {state.error && <p className="text-sm text-red-500">{state.error}</p>}
+    </div>
+  );
+}
+
 /** Personligt dashboard — arkiv, forbrug og loyalitet, alt fra enheden (specs/customer-archive.md v2). */
-export function ArchiveList() {
+export function ArchiveList({ customerEmail }: { customerEmail: string | null }) {
   const t = useTranslations('archive');
   const locale = useLocale();
   const [entries, setEntries] = useState<ArchiveEntry[] | null>(null);
   const [cards, setCards] = useState<LoyaltyCard[]>([]);
 
   useEffect(() => {
-    setEntries(readArchive());
+    const local = readArchive();
+    setEntries(local);
+
+    if (customerEmail) {
+      // PULL: server-arkiv → merge lokalt; PUSH: lokale ids op
+      fetch('/api/archive')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (data?.entries) setEntries(mergeIntoArchive(data.entries));
+        })
+        .catch(() => {});
+      if (local.length > 0) {
+        fetch('/api/archive', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ receiptIds: local.map((e) => e.id) }),
+        }).catch(() => {});
+      }
+    }
+
     Promise.all(
       readLoyaltyTokens().map((token) =>
         fetch(`/api/loyalty?token=${encodeURIComponent(token)}`)
@@ -70,6 +190,7 @@ export function ArchiveList() {
           .catch(() => null)
       )
     ).then((results) => setCards(results.filter(Boolean)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (entries === null) return null;
@@ -101,6 +222,9 @@ export function ArchiveList() {
             <p className="mt-1 text-3xl font-semibold tabular-nums">{stats.count}</p>
           </div>
         </div>
+
+        {/* Synk-konto (valgfri) */}
+        <SyncCard customerEmail={customerEmail} />
 
         {/* Loyalitetskort */}
         {cards.length > 0 && (

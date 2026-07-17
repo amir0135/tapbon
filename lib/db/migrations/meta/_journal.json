@@ -43,6 +43,13 @@
       "when": 1784194875512,
       "tag": "0005_optimal_joystick",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1784282599585,
+      "tag": "0006_short_warpath",
+      "breakpoints": true
     }
   ]
 }

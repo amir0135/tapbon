@@ -258,6 +258,32 @@ export const loyaltyCards = pgTable('loyalty_cards', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
+// ── Valgfri kunde-konto (specs/customer-account.md) — opt-in, kun e-mail ────
+export const customers = pgTable('customers', {
+  id: serial('id').primaryKey(),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  loginTokenHash: char('login_token_hash', { length: 64 }),
+  loginTokenExpires: timestamp('login_token_expires'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const customerReceipts = pgTable(
+  'customer_receipts',
+  {
+    id: serial('id').primaryKey(),
+    customerId: integer('customer_id')
+      .notNull()
+      .references(() => customers.id),
+    receiptId: uuid('receipt_id')
+      .notNull()
+      .references(() => receipts.id),
+    savedAt: timestamp('saved_at').notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex('customer_receipts_pair_idx').on(table.customerId, table.receiptId),
+  ]
+);
+
 export const merchantsRelations = relations(merchants, ({ one, many }) => ({
   user: one(users, { fields: [merchants.userId], references: [users.id] }),
   terminals: many(terminals),
