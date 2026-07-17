@@ -13,3 +13,10 @@ nyeste først, cap 300.
    "tap en stander". Note om at arkivet ligger lokalt på enheden.
 Alle strings da/en. Out of scope: konto/sync på tværs af enheder (kræver
 shopper-PII → bevidst fravalgt), søgning, eksport.
+
+**v2 — personligt dashboard (Receiptile-mønster):** /mine udvides med
+(a) "Denne måned"-kort (forest-baggrund): sum af structured-boner i
+indeværende måned pr. dominerende valuta + antal boner; (b) loyalitets-
+sektion: scanner localStorage-nøgler `tapbon-loyalty-*`, henter kort via
+GET /api/loyalty (udvidet m/ merchantName) og viser mini-stempelkort.
+Stadig nul PII — alt afledt af enhedens egen localStorage.

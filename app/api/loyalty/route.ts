@@ -12,10 +12,17 @@ export async function GET(request: NextRequest) {
   }
   const card = await getLoyaltyCard(token);
   if (!card) return NextResponse.json({ error: 'not_found' }, { status: 404 });
+  const merchantRows = await db
+    .select({ businessName: merchants.businessName })
+    .from(merchants)
+    .where(eq(merchants.id, card.merchantId))
+    .limit(1);
   return NextResponse.json({
     cardToken: card.cardToken,
     stamps: card.stamps,
     stampsRequired: card.stampsRequired,
+    merchantId: card.merchantId,
+    merchantName: merchantRows[0]?.businessName ?? null,
   });
 }
 
