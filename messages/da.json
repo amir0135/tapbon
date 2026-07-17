@@ -286,6 +286,7 @@
     "signInLink": "Log ind",
     "legalLine": "Ved at fortsætte accepterer du vores <terms>vilkår</terms> og <privacy>privatlivspolitik</privacy>.",
     "forgotPassword": "Glemt adgangskode?",
+    "signInFailHint": "Ny hos Tapbon? Måske har du ikke en konto endnu —",
     "continueGoogle": "Fortsæt med Google"
   },
   "resetPw": {

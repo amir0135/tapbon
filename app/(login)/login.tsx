@@ -128,9 +128,20 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
           </div>
 
           {state?.error && (
-            <p className="text-sm text-red-400" role="alert">
-              {state.error}
-            </p>
+            <div className="space-y-1" role="alert">
+              <p className="text-sm text-red-400">{state.error}</p>
+              {mode === 'signin' && (
+                <p className="text-sm text-white/50">
+                  {t('signInFailHint')}{' '}
+                  <Link
+                    href={switchHref}
+                    className="font-semibold text-mint hover:text-mint/80"
+                  >
+                    {t('createLink')}
+                  </Link>
+                </p>
+              )}
+            </div>
           )}
 
           <button
