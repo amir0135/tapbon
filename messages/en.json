@@ -266,9 +266,9 @@
   "auth": {
     "signInKicker": "Sign in",
     "signUpKicker": "Create account",
-    "signInTitle": "Welcome back",
+    "signInTitle": "Sign in to Tapbon",
     "signUpTitle": "Create your account",
-    "signInSub": "Pick up where you left off.",
+    "signInSub": "New here? You can create a free account below.",
     "signUpSub": "Free to get started — ready in 2 minutes.",
     "email": "Email",
     "emailPlaceholder": "you@example.com",

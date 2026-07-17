@@ -266,9 +266,9 @@
   "auth": {
     "signInKicker": "Log ind",
     "signUpKicker": "Opret konto",
-    "signInTitle": "Velkommen tilbage",
+    "signInTitle": "Log ind på Tapbon",
     "signUpTitle": "Opret din konto",
-    "signInSub": "Fortsæt hvor du slap.",
+    "signInSub": "Ny her? Du kan oprette en gratis konto nedenfor.",
     "signUpSub": "Gratis at komme i gang — klar på 2 minutter.",
     "email": "E-mail",
     "emailPlaceholder": "dig@eksempel.dk",
