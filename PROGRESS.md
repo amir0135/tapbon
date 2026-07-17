@@ -1,6 +1,18 @@
 # Progress
 
-## Last session (2026-07-16, aften)
+## Last session (2026-07-17)
+Personligt kunde-dashboard på /mine (specs/customer-archive.md v2): "Denne
+måned"-kort (forest-baggrund; sum af structured-boner pr. dominerende valuta +
+antal), loyalitetskort-sektion på tværs af forretninger (scanner localStorage
+tapbon-loyalty-*, GET /api/loyalty udvidet m/ merchantId+merchantName),
+bon-liste m/ åbn/fjern. Stadig nul PII. Arkiv-kortet på bonen opgraderet til
+tydeligt tilbud ("Alle dine kvitteringer ét sted — ingen konto nødvendig").
+Beslutninger parkeret i ROADMAP: shopper-konto = valgfrit lag EFTER pilot
+(aldrig tvungen); kunde-app via Universal Links/App Links (samme brik,
+browser-fallback), PWA som mellemtrin. PITFALL igen: lokal IP skiftet →
+pg-firewall-regel re-peget.
+
+## Previous session (2026-07-16, aften)
 To forbruger-/merchant-slices: (1) **Logo-upload** — merchant_logos-tabel
 (bytea, migration 0005), uploadLogo/removeLogo m/ magic-byte-validering (png/
 jpeg/webp, 1 MB), route /api/merchants/[id]/logo m/ cache-bust, Logo-kort under
