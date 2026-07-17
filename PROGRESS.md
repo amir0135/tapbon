@@ -1,6 +1,16 @@
 # Progress
 
-## Last session (2026-07-17)
+## Last session (2026-07-17, fortsat)
+Valgfri kunde-konto m/ sync bygget (specs/customer-account.md — fremrykket
+fra parkering på brugerens ønske): customers + customer_receipts (migration
+0006), e-mail magic-link via ACS (15 min engangstoken, enumeration-sikker),
+customer_session JWT-cookie (365 d, separat fra merchant-auth), /api/customer/
+verify, /api/archive GET/POST (pull-merge + push, joinet live). /mine har
+SyncCard: login-formular → "Synket som x@y" + Log ud + Slet konto (GDPR-
+sletning). Tap forbliver kontofrit; privatlivspolitik udvidet. E2E: seeded
+token → login → push verificeret i db → slet konto → logget ud.
+
+## Previous session (2026-07-17)
 Personligt kunde-dashboard på /mine (specs/customer-archive.md v2): "Denne
 måned"-kort (forest-baggrund; sum af structured-boner pr. dominerende valuta +
 antal), loyalitetskort-sektion på tværs af forretninger (scanner localStorage
