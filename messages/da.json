@@ -277,7 +277,8 @@
     "hasAccount": "Har du allerede en konto?",
     "signInLink": "Log ind",
     "legalLine": "Ved at fortsætte accepterer du vores <terms>vilkår</terms> og <privacy>privatlivspolitik</privacy>.",
-    "forgotPassword": "Glemt adgangskode?"
+    "forgotPassword": "Glemt adgangskode?",
+    "continueGoogle": "Fortsæt med Google"
   },
   "resetPw": {
     "kicker": "Adgangskode",

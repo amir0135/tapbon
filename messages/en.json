@@ -277,7 +277,8 @@
     "hasAccount": "Already have an account?",
     "signInLink": "Sign in",
     "legalLine": "By continuing you accept our <terms>terms</terms> and <privacy>privacy policy</privacy>.",
-    "forgotPassword": "Forgot password?"
+    "forgotPassword": "Forgot password?",
+    "continueGoogle": "Continue with Google"
   },
   "resetPw": {
     "kicker": "Password",
