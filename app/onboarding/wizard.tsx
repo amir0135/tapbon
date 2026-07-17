@@ -13,6 +13,8 @@ import {
   ArrowLeft,
   Check,
   Loader2,
+  Briefcase,
+  User,
 } from 'lucide-react';
 import { createMerchant } from '@/lib/receipts/actions';
 
@@ -33,7 +35,7 @@ export function OnboardingWizard() {
   const tc = useTranslations('common');
   const tm = useTranslations('merchantSetup');
   const router = useRouter();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [businessType, setBusinessType] = useState<string | null>(null);
   const [posSystem, setPosSystem] = useState<string | null>(null);
   const [dailyReceipts, setDailyReceipts] = useState<string | null>(null);
@@ -66,26 +68,66 @@ export function OnboardingWizard() {
           <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
             {t('kicker')}
           </p>
-          <h1 className="font-sans text-3xl font-bold text-paper">{t('title')}</h1>
-          <p className="text-sm text-white/50">{t('subtitle')}</p>
-        </div>
-
-        {/* Progress */}
-        <div className="mt-8 space-y-2">
-          <div className="h-1.5 w-full rounded-full bg-white/10">
-            <div
-              className="h-1.5 rounded-full bg-mint transition-all"
-              style={{ width: `${(step / 4) * 100}%` }}
-            />
-          </div>
-          <p className="text-center font-mono text-xs text-white/40">
-            {t('stepOf', { step, total: 4 })}
+          <h1 className="font-sans text-3xl font-bold text-paper">
+            {step === 0 ? t('welcomeTitle') : t('title')}
+          </h1>
+          <p className="text-sm text-white/50">
+            {step === 0 ? t('welcomeSubtitle') : t('subtitle')}
           </p>
         </div>
 
+        {/* Progress */}
+        {step >= 1 && (
+          <div className="mt-8 space-y-2">
+            <div className="h-1.5 w-full rounded-full bg-white/10">
+              <div
+                className="h-1.5 rounded-full bg-mint transition-all"
+                style={{ width: `${(step / 4) * 100}%` }}
+              />
+            </div>
+            <p className="text-center font-mono text-xs text-white/40">
+              {t('stepOf', { step, total: 4 })}
+            </p>
+          </div>
+        )}
+
         <h2 className="mt-8 text-base font-semibold text-paper">
-          {stepTitles[step - 1]}
+          {step === 0 ? t('step0Title') : stepTitles[step - 1]}
         </h2>
+
+        {step === 0 && (
+          <div className="mt-4 space-y-3">
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              className={optionClass(false)}
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
+                <Briefcase className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <span className="flex-1">
+                <span className="block font-medium">{t('roleBusiness')}</span>
+                <span className="block text-sm text-white/50">{t('roleBusinessSub')}</span>
+              </span>
+              <ArrowRight className="h-5 w-5 text-white/40" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push('/mine')}
+              className={optionClass(false)}
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
+                <User className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <span className="flex-1">
+                <span className="block font-medium">{t('rolePrivate')}</span>
+                <span className="block text-sm text-white/50">{t('rolePrivateSub')}</span>
+              </span>
+              <ArrowRight className="h-5 w-5 text-white/40" aria-hidden="true" />
+            </button>
+            <p className="pt-2 text-center text-xs text-white/40">{t('roleHint')}</p>
+          </div>
+        )}
 
         {step === 1 && (
           <div className="mt-4 space-y-3">
@@ -231,26 +273,16 @@ export function OnboardingWizard() {
           </form>
         )}
 
-        {step < 4 && (
+        {step >= 1 && step < 4 && (
           <div className="mt-8 flex items-center justify-between">
-            {step === 1 ? (
-              <button
-                type="button"
-                onClick={() => router.push('/dashboard/receipts')}
-                className="rounded-full border border-white/20 px-5 py-2.5 text-sm text-white/60 hover:text-white/90"
-              >
-                {t('skip')}
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setStep(step - 1)}
-                className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white/80"
-              >
-                <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                {t('back')}
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => setStep(step - 1)}
+              className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white/80"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              {t('back')}
+            </button>
             <button
               type="button"
               onClick={() => setStep(step + 1)}

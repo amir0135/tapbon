@@ -1,6 +1,19 @@
 # Progress
 
-## Last session (2026-07-17, fortsat)
+## Last session (2026-07-17, aften)
+(1) **Key Vault i drift**: MG-policyen MCAPSGovDeployPolicies (modify) tvang
+publicNetworkAccess=Disabled — løst med policy exemption "kv-tapbon-exempt"
+(Waiver) på vault-scope. Alle 7 secrets (google-client-id/-secret, stripe-
+secret-key/-webhook-secret, acs-connection-string, postgres-url, auth-secret)
+ligger nu i kv-tapbon-prod; App Service bruger @Microsoft.KeyVault-referencer
+via system-assigned identity (Key Vault Secrets User). Prod smoke-testet OK.
+HUSK: rotér Google client secret (delt i chat) — opdater KV-secret bagefter.
+(2) **Onboarding: forretning/privat-valg** — nyt trin 0 før wizarden:
+"Jeg driver en forretning" → 4-trins wizard (m/ tilbage-knap), "Jeg er
+privatperson" → /mine (ingen CVR/forretningsspørgsmål). Gælder også Google-
+signups. E2E-testet i browser med frisk bruger.
+
+## Previous session (2026-07-17, fortsat)
 Valgfri kunde-konto m/ sync bygget (specs/customer-account.md — fremrykket
 fra parkering på brugerens ønske): customers + customer_receipts (migration
 0006), e-mail magic-link via ACS (15 min engangstoken, enumeration-sikker),
