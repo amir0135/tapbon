@@ -8,7 +8,13 @@ import {
   Image as ImageIcon,
   Forward,
   Star,
-  Leaf
+  Leaf,
+  Hammer,
+  Cog,
+  Hand,
+  Phone,
+  Globe,
+  Lock
 } from 'lucide-react';
 
 /** NFC-style tap arcs */
@@ -85,13 +91,26 @@ export function PhoneMock({
 
 /* ── Screen contents (decorative receipt scenes) ──────────────────────── */
 
-function ReceiptHeader() {
+function ReceiptHeader({ full = false }: { full?: boolean }) {
   return (
-    <div className="space-y-1 text-center">
-      <span className="mx-auto flex h-9 w-9 items-center justify-center rounded-xl bg-mint">
-        <span className="h-3 w-3 rounded-full bg-paper" />
+    <div className="space-y-1.5 text-center">
+      <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-forest">
+        <Leaf className="h-4 w-4 text-forest" aria-hidden="true" />
       </span>
-      <p className="text-[14px] font-semibold tracking-tight text-ink">Café Solsort</p>
+      <p className="text-[13px] font-semibold tracking-[0.22em] text-ink">HOLM ISENKRAM</p>
+      {full && (
+        <>
+          <div className="flex items-center justify-center gap-2 whitespace-nowrap text-[8px] text-muted-foreground">
+            <span className="inline-flex items-center gap-1">
+              <Phone className="h-2.5 w-2.5" aria-hidden="true" /> 38 12 90 45
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Globe className="h-2.5 w-2.5" aria-hidden="true" /> holmisenkram.dk
+            </span>
+          </div>
+          <p className="whitespace-nowrap text-[8px] text-muted-foreground">Jægersborggade 14, 2200 Kbh N</p>
+        </>
+      )}
       <p className="font-mono text-[9px] text-muted-foreground">CVR-nr. 12345678</p>
     </div>
   );
@@ -101,25 +120,82 @@ function Dashed() {
   return <div className="border-t border-dashed border-border" />;
 }
 
+function ItemRow({
+  icon: Icon,
+  name,
+  variant,
+  qty,
+  price
+}: {
+  icon: typeof Hammer;
+  name: string;
+  variant: string;
+  qty: number;
+  price: string;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#f1efe9]">
+        <Icon className="h-3.5 w-3.5 text-ink/60" aria-hidden="true" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block whitespace-nowrap font-sans text-[10.5px] font-semibold text-ink">{name}</span>
+        <span className="block whitespace-nowrap text-[8px] text-muted-foreground">{variant}</span>
+      </span>
+      <span className="w-3 shrink-0 text-center text-[9px] text-muted-foreground">{qty}</span>
+      <span className="w-11 shrink-0 text-right text-[10.5px] font-medium text-ink">{price}</span>
+    </div>
+  );
+}
+
+function Barcode() {
+  const widths = [2, 1, 3, 1, 2, 2, 1, 3, 2, 1, 1, 3, 2, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 1, 3, 2];
+  return (
+    <div className="space-y-1" aria-hidden="true">
+      <div className="flex h-7 items-stretch justify-center gap-[2px]">
+        {widths.map((w, i) => (
+          <span key={i} className="bg-ink" style={{ width: w }} />
+        ))}
+      </div>
+      <p className="text-center font-mono text-[8px] tracking-[0.5em] text-ink">A1042</p>
+    </div>
+  );
+}
+
 export function ScreenReceipt() {
   return (
-    <div className="mx-4 rounded-2xl bg-paper p-4 font-mono text-[11px] text-ink shadow-sm space-y-2.5">
-      <ReceiptHeader />
+    <div className="mx-4 rounded-2xl bg-paper px-4 py-4 font-mono text-[11px] text-ink shadow-sm space-y-2.5">
+      <ReceiptHeader full />
       <Dashed />
-      <div className="space-y-1">
-        <div className="flex justify-between"><span>Cappuccino ×2</span><span>84,00</span></div>
-        <div className="flex justify-between"><span>Kanelsnegl</span><span>38,00</span></div>
-        <div className="flex justify-between"><span>Iskaffe</span><span>45,00</span></div>
+      <div className="space-y-2">
+        <ItemRow icon={Hammer} name="Hammer" variant="Glasfiber 450 g" qty={1} price="129,00" />
+        <ItemRow icon={Cog} name="Skruer 4×40" variant="200 stk." qty={1} price="89,00" />
+        <ItemRow icon={Hand} name="Handsker" variant="Str. 9, læder" qty={1} price="49,00" />
       </div>
       <Dashed />
-      <div className="flex justify-between text-[13px] font-semibold">
-        <span>TOTAL DKK</span><span>167,00</span>
-      </div>
-      <div className="flex justify-between text-[9px] text-muted-foreground">
-        <span>Heraf moms 25%</span><span>33,40</span>
+      <div className="space-y-0.5">
+        <div className="flex justify-between text-[9px] text-muted-foreground">
+          <span>Heraf moms 25%</span><span>53,40</span>
+        </div>
+        <div className="flex items-baseline justify-between">
+          <span className="font-sans text-[15px] font-bold">Total</span>
+          <span className="font-sans text-[15px] font-bold">267,00 kr.</span>
+        </div>
       </div>
       <Dashed />
-      <p className="text-center text-[9px] text-muted-foreground">14.07.2026 · 10:24 · #01824</p>
+      <div className="space-y-0.5 text-[9px]">
+        <div className="flex justify-between"><span className="text-muted-foreground">Betaling</span><span>Dankort •••• 4321</span></div>
+        <div className="flex justify-between"><span className="text-muted-foreground">Betalt</span><span>267,00</span></div>
+        <div className="flex justify-between"><span className="text-muted-foreground">Godkendt</span><span>008812</span></div>
+      </div>
+      <Barcode />
+      <p className="text-center text-[8.5px] text-muted-foreground">14.07.2026 · 10:24 · Bon #A1042</p>
+      <div className="flex w-full items-center justify-center gap-2 rounded-full bg-forest py-2.5 font-sans text-[11px] font-semibold text-paper">
+        Hent kvittering <Download className="h-3.5 w-3.5" aria-hidden="true" />
+      </div>
+      <p className="flex items-center justify-center gap-1 whitespace-nowrap text-center text-[8px] text-muted-foreground">
+        <Lock className="h-2.5 w-2.5 shrink-0" aria-hidden="true" /> Sikker · Privat · Papirløs ·&nbsp;<span className="font-semibold text-forest">Tapbon</span>
+      </p>
     </div>
   );
 }
@@ -188,7 +264,7 @@ export function ScreenLoyalty() {
         </div>
         <p className="text-center font-mono text-[10px] text-muted-foreground">6 af 10 stempler</p>
         <div className="mx-auto w-fit rounded-full bg-mint-tint px-4 py-1.5 font-mono text-[10px] font-semibold text-forest">
-          4 køb til gratis kaffe
+          4 køb til 10 % rabat
         </div>
       </div>
     </div>
@@ -201,9 +277,9 @@ export function ScreenVat() {
       <ReceiptHeader />
       <Dashed />
       <div className="space-y-1">
-        <div className="flex justify-between"><span>Moms 25%</span><span>33,40</span></div>
+        <div className="flex justify-between"><span>Moms 25%</span><span>53,40</span></div>
         <div className="flex justify-between"><span>Moms 0%</span><span>0,00</span></div>
-        <div className="flex justify-between font-semibold"><span>Total moms</span><span>33,40</span></div>
+        <div className="flex justify-between font-semibold"><span>Total moms</span><span>53,40</span></div>
       </div>
       <Dashed />
       <div className="flex items-center justify-center gap-1.5 rounded-xl bg-mint-tint px-3 py-2 text-[9px] text-forest">
@@ -221,9 +297,9 @@ export function ScreenBrand() {
         <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border border-paper/40">
           <Leaf className="h-4 w-4 text-paper" />
         </span>
-        <p className="text-[15px] font-semibold tracking-[0.18em] text-paper">CAFÉ SOLSORT</p>
+        <p className="text-[15px] font-semibold tracking-[0.18em] text-paper">HOLM ISENKRAM</p>
         <div className="mx-auto w-fit rounded-full bg-paper px-4 py-1.5 text-[10px] font-semibold text-forest">
-          Se menukortet
+          Se vores sortiment
         </div>
       </div>
       <div className="rounded-2xl bg-paper p-4 shadow-sm">
