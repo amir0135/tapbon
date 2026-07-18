@@ -22,54 +22,94 @@ function rng(seed: number) {
   };
 }
 
-type Strip = { left: number; bottom: number; w: number; h: number; rot: number; o: number; tint: boolean };
+type Strip = { left: number; bottom: number; w: number; h: number; rot: number; o: number; tint: boolean; z: number };
 type Pixel = { left: number; bottom: number; s: number; o: number };
 
-/** Bølgeprofil (0–100 % højde): lav mod venstre, høj kam mod højre. */
-function crest(x: number) {
-  const t = Math.min(Math.max((x - 4) / 78, 0), 1);
-  const s = t * t * (3 - 2 * t); // smoothstep
-  return 7 + 88 * Math.pow(s, 1.35);
+/** Grundbunkens profil (0–100 % højde): lav hale mod venstre, massiv ved bølgens fod. */
+function ground(x: number) {
+  const t = Math.min(Math.max((x - 2) / 76, 0), 1);
+  const s = t * t * (3 - 2 * t);
+  return 4 + 30 * Math.pow(s, 1.1);
 }
 
-/** Bølge af bon-strimler + pixel-opløsning ved kammen — beregnet ved modul-load. */
+/** Bølgens rygrad: kvadratisk bezier der rejser sig til højre og krøller mod venstre (brydende bølge). */
+function spine(t: number) {
+  const p0 = { x: 84, y: 10 };
+  const p1 = { x: 78, y: 108 };
+  const p2 = { x: 42, y: 62 };
+  const u = 1 - t;
+  return {
+    x: u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
+    y: u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y,
+    // tangent (til rotation der følger bølgen)
+    dx: 2 * u * (p1.x - p0.x) + 2 * t * (p2.x - p1.x),
+    dy: 2 * u * (p1.y - p0.y) + 2 * t * (p2.y - p1.y),
+  };
+}
+
+/** Brydende bølge af kvitteringer + pixel-opløsning — beregnet ved modul-load. */
 const { WAVE, PIXELS } = (() => {
   const rand = rng(20260718);
   const wave: Strip[] = [];
-  for (let i = 0; i < 520; i++) {
-    const x = Math.pow(rand(), 0.85) * 100; // let bias mod højre
-    const h = crest(x);
-    const depth = Math.pow(rand(), 0.65); // 0 = top af bølgen, 1 = bund (tættere i bunden)
-    const y = (1 - depth) * h;
-    const nearTop = y > h - 14;
+
+  // 1) Grundbunke: tæt tæppe af boner langs gulvet
+  for (let i = 0; i < 300; i++) {
+    const x = Math.pow(rand(), 0.8) * 104 - 2;
+    const h = ground(Math.max(x, 0));
+    const y = Math.pow(rand(), 0.75) * h;
     wave.push({
       left: x,
       bottom: y,
-      w: 18 + rand() * 34,
-      h: 10 + rand() * 14,
-      rot: (rand() - 0.5) * (nearTop ? 150 : 80),
-      o: 0.65 + rand() * 0.35,
-      tint: nearTop && x > 45 && rand() < 0.35,
+      w: 20 + rand() * 34,
+      h: 11 + rand() * 15,
+      rot: (rand() - 0.5) * 90,
+      o: 0.75 + rand() * 0.25,
+      tint: false,
+      z: 1,
     });
   }
+
+  // 2) Bølgekroppen: tyk søjle langs rygraden, der krøller over mod venstre
+  for (let i = 0; i < 380; i++) {
+    const t = Math.pow(rand(), 0.9); // lidt tættere ved foden
+    const sp = spine(t);
+    const thick = 16 - 10 * t; // tykkelse i %, smaller mod spidsen
+    const ox = (rand() - 0.5) * 2 * thick;
+    const oy = (rand() - 0.5) * 2 * thick * 0.7;
+    const angle = -Math.atan2(sp.dy, sp.dx) * (180 / Math.PI); // følger kurven (CSS-y er nedad)
+    const nearTip = t > 0.62;
+    wave.push({
+      left: sp.x + ox,
+      bottom: Math.max(0, sp.y + oy),
+      w: 18 + rand() * 30,
+      h: 10 + rand() * 14,
+      rot: angle + (rand() - 0.5) * (nearTip ? 120 : 55),
+      o: 0.7 + rand() * 0.3,
+      tint: nearTip && rand() < 0.4,
+      z: 2,
+    });
+  }
+
+  // 3) Pixel-opløsning: langs kammens yderside, driver op og ud mod højre
   const pixels: Pixel[] = [];
-  for (let i = 0; i < 110; i++) {
-    const x = 48 + Math.pow(rand(), 0.8) * 58; // fra kammen og ud over højre kant
-    const h = crest(Math.min(x, 100));
+  for (let i = 0; i < 150; i++) {
+    const t = 0.15 + rand() * 0.75;
+    const sp = spine(t);
+    const drift = Math.pow(rand(), 0.7);
     pixels.push({
-      left: x,
-      bottom: h - 6 + rand() * 26,
+      left: sp.x + 6 + drift * (26 + 20 * t) + (rand() - 0.5) * 8,
+      bottom: sp.y + (rand() - 0.35) * 18 + drift * 10,
       s: 3 + rand() * 7,
-      o: 0.15 + rand() * 0.6,
+      o: Math.max(0.08, 0.7 - drift * 0.6) * (0.5 + rand() * 0.5),
     });
   }
   return { WAVE: wave, PIXELS: pixels };
 })();
 
-/** Skulpturel bølge af kvitteringer, der opløses i pixels ved kammen. */
+/** Brydende bølge af kvitteringer, der opløses i pixels ved kammen. */
 function ReceiptWave() {
   return (
-    <div aria-hidden="true" className="absolute inset-x-[-10%] bottom-0 top-0">
+    <div aria-hidden="true" className="absolute inset-x-[-6%] bottom-0 top-0">
       {WAVE.map((s, i) => (
         <span
           key={i}
@@ -82,6 +122,7 @@ function ReceiptWave() {
             width: s.w,
             height: s.h,
             opacity: s.o,
+            zIndex: s.z,
             transform: `rotate(${s.rot}deg)`,
           }}
         >
