@@ -123,7 +123,14 @@ export default async function LandingPage() {
     rest: t('missionRest'),
     paragraphs: [t('missionP1'), t('missionP2'), t('missionP3'), t('missionP4')],
     bold: t('missionBold'),
-    cta: t('missionCta')
+    cta: t('missionCta'),
+    factsHeader: t('missionFactsHeader'),
+    facts: [
+      { value: t('missionFact1V'), label: t('missionFact1L') },
+      { value: t('missionFact2V'), label: t('missionFact2L') },
+      { value: t('missionFact3V'), label: t('missionFact3L') },
+      { value: t('missionFact4V'), label: t('missionFact4L') }
+    ]
   };
 
   const faq: FaqStrings = {
