@@ -1,6 +1,16 @@
 # Progress
 
-## Last session (2026-07-18, fortsat)
+## Last session (2026-07-18, aften)
+**Prod-502 fixet**: MG-policyen havde SLETTET policy-exemptionen og sat
+kv-tapbon-prod publicNetworkAccess=Disabled igen → alle KV-referencer
+"AccessToKeyVaultDenied" → appen fik den rå @Microsoft.KeyVault(...)-streng
+som POSTGRES_URL → "Invalid URL" → 502 på alt. Fix: exemption genoprettet,
+pna=Enabled, og app setting-tick (KV_REFRESH_TICK) for at tvinge
+re-resolution — restart alene var ikke nok. Prod verificeret 200 (/,
+/pricing, compare-billeder). OBS: exemptionen kan blive slettet igen —
+tjek configreferences først ved pludselig 502.
+
+## Previous session (2026-07-18, fortsat)
 **Compare-sektionen portet fra Replit-designet**: de geometriske CSS-scener
 erstattet af rigtige fotos (beskåret fra brugerens Replit-screenshot på
 Desktop → public/images/compare-old/new.webp). Indbagte $-chips i fotoene
