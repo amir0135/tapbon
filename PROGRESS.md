@@ -1,6 +1,17 @@
 # Progress
 
-## Last session (2026-07-18)
+## Last session (2026-07-18, fortsat)
+**Compare-sektionen portet fra Replit-designet**: de geometriske CSS-scener
+erstattet af rigtige fotos (beskåret fra brugerens Replit-screenshot på
+Desktop → public/images/compare-old/new.webp). Indbagte $-chips i fotoene
+dækkes af lokaliserede PriceChip-overlays (da/en kr.-priser via next-intl)
+på målte procent-positioner; VS-badge nu pille-formet som i Replit-designet.
+Mission-sektionen var allerede portet tidligere på dagen (mission-receipt-
+wave.webp). Verificeret desktop + mobil. Udestår: evt. øvrige Replit-
+sektioner — intet referencemateriale fundet ud over compare + mission
+(bed brugeren om screenshots/URL).
+
+## Previous session (2026-07-18)
 **Kvitteringssiden restylet til landing-mockup'ernes design** (bruger-ønske:
 "tag UI'et fra landingssiden — behold den detaljerede bon"): /r/[id] matcher
 nu telefon-mockup'en fra forsiden — canvas-baggrund, tracked uppercase

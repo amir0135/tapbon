@@ -1,7 +1,7 @@
-import { CircleCheck, CircleX, Printer, Stamp, Star, QrCode } from 'lucide-react';
+import Image from 'next/image';
+import { CircleCheck, CircleX } from 'lucide-react';
 import { FadeIn } from './fade-in';
 import { PillLink } from './pill-link';
-import { TapArcs } from './mocks';
 
 export type CompareStrings = {
   oldWay: string;
@@ -28,60 +28,43 @@ export type CompareStrings = {
 function PriceChip({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <span
-      className={`absolute rounded-lg bg-ink-deep/90 px-2.5 py-1 font-mono text-[12px] font-semibold text-paper shadow-lg ring-1 ring-white/10 ${className}`}
+      className={`absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-lg bg-ink-deep px-2.5 py-1.5 font-mono text-[12px] font-semibold text-paper shadow-lg ring-1 ring-white/20 ${className}`}
     >
       {children}
     </span>
   );
 }
 
-/** Cluttered counter — geometric scene */
+/** Cluttered counter — printer, stamp, review stand (photo). Chips are localized overlays. */
 function OldCounter({ s }: { s: CompareStrings }) {
   return (
-    <div
-      aria-hidden="true"
-      className="relative aspect-[16/9] overflow-hidden rounded-[20px] bg-gradient-to-b from-[#39404d] to-[#252b36]"
-    >
-      {/* counter surface */}
-      <div className="absolute inset-x-0 bottom-0 h-[38%] bg-gradient-to-b from-[#c9ccd2] to-[#b4b8bf]" />
-      {/* printer */}
-      <div className="absolute bottom-[30%] left-[46%] h-[34%] w-[26%] rounded-lg bg-[#191d25] shadow-xl">
-        <div className="absolute left-1/2 top-1.5 h-2 w-3/5 -translate-x-1/2 rounded-sm bg-[#0e1117]" />
-        <div className="absolute -top-9 left-1/2 h-10 w-2/5 -translate-x-1/2 rounded-t-sm bg-paper [clip-path:polygon(0_0,100%_8%,92%_100%,8%_96%)]" />
-        <Printer className="absolute bottom-2 left-1/2 h-5 w-5 -translate-x-1/2 text-white/30" />
-      </div>
-      {/* review stand */}
-      <div className="absolute bottom-[32%] left-[12%] h-[30%] w-[16%] rounded-md bg-[#1f242e] shadow-lg ring-1 ring-white/10">
-        <Star className="absolute left-1/2 top-2.5 h-4 w-4 -translate-x-1/2 fill-amber-400 text-amber-400" />
-        <QrCode className="absolute bottom-2 left-1/2 h-6 w-6 -translate-x-1/2 text-white/50" />
-      </div>
-      {/* stamp */}
-      <div className="absolute bottom-[31%] left-[33%] h-[18%] w-[9%]">
-        <div className="absolute inset-x-0 top-0 h-1/2 rounded-t-full bg-[#2b323e]" />
-        <div className="absolute inset-x-1 bottom-0 h-1/2 rounded-sm bg-[#1c212a]" />
-        <Stamp className="absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 text-white/30" />
-      </div>
-      <PriceChip className="left-[10%] top-[22%]">{s.oldChipSign}</PriceChip>
-      <PriceChip className="left-[31%] top-[46%]">{s.oldChipStamp}</PriceChip>
-      <PriceChip className="right-[18%] top-[14%]">{s.oldChipPrinter}</PriceChip>
+    <div aria-hidden="true" className="relative aspect-[1043/658] overflow-hidden rounded-[20px]">
+      <Image
+        src="/images/compare-old.webp"
+        alt=""
+        fill
+        sizes="(min-width: 768px) 543px, 100vw"
+        className="object-cover"
+      />
+      <PriceChip className="left-[15.9%] top-[17%]">{s.oldChipSign}</PriceChip>
+      <PriceChip className="left-[51.4%] top-[14.9%]">{s.oldChipPrinter}</PriceChip>
+      <PriceChip className="left-[41.1%] top-[72.4%] py-2">{s.oldChipStamp}</PriceChip>
     </div>
   );
 }
 
-/** Clean counter with a single tile */
+/** Clean counter with a single tile (photo). */
 function NewCounter({ s }: { s: CompareStrings }) {
   return (
-    <div
-      aria-hidden="true"
-      className="relative aspect-[16/9] overflow-hidden rounded-[20px] bg-gradient-to-b from-[#3d444f] to-[#272d38]"
-    >
-      <div className="absolute inset-x-0 bottom-0 h-[38%] bg-gradient-to-b from-[#d3d6db] to-[#bec2c9]" />
-      <div className="absolute bottom-[26%] left-1/2 flex h-[42%] w-[30%] -translate-x-1/2 -rotate-3 flex-col items-center justify-center gap-1.5 rounded-2xl border border-black/5 bg-gradient-to-br from-white to-[#eef1f4] shadow-2xl">
-        <TapArcs className="h-8 w-8 scale-75" />
-        <span className="text-[11px] font-semibold text-ink">Kvittering?</span>
-        <span className="h-1.5 w-1.5 rounded-full bg-mint" />
-      </div>
-      <PriceChip className="right-[22%] top-[26%]">{s.newChipTile}</PriceChip>
+    <div aria-hidden="true" className="relative aspect-[1074/658] overflow-hidden rounded-[20px]">
+      <Image
+        src="/images/compare-new.webp"
+        alt=""
+        fill
+        sizes="(min-width: 768px) 543px, 100vw"
+        className="object-cover"
+      />
+      <PriceChip className="left-[58.7%] top-[44.2%]">{s.newChipTile}</PriceChip>
     </div>
   );
 }
@@ -126,7 +109,7 @@ export function CompareSection({ s }: { s: CompareStrings }) {
         <div aria-hidden="true" className="absolute inset-y-24 left-1/2 hidden border-l border-dashed border-white/15 md:block" />
         <div
           aria-hidden="true"
-          className="absolute left-1/2 top-1/2 z-10 hidden h-[70px] w-[70px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-paper text-[17px] font-semibold text-ink shadow-xl md:flex"
+          className="absolute left-1/2 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-paper px-7 py-4 text-[17px] font-semibold text-ink shadow-xl md:flex"
         >
           {s.vsBadge}
         </div>
