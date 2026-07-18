@@ -9,8 +9,6 @@ export type MissionStrings = {
   paragraphs: string[];
   bold: string;
   cta: string;
-  factsHeader: string;
-  facts: { value: string; label: string }[];
 };
 
 /* Deterministisk pseudo-random (mulberry32) — identisk på server og klient */
@@ -24,35 +22,60 @@ function rng(seed: number) {
   };
 }
 
-type Strip = { left: number; bottom: number; w: number; h: number; rot: number; o: number };
+type Strip = { left: number; bottom: number; w: number; h: number; rot: number; o: number; tint: boolean };
+type Pixel = { left: number; bottom: number; s: number; o: number };
 
-/** Bølge/bunke af små bon-strimler — positioner beregnet én gang ved modul-load. */
-const PILE: Strip[] = (() => {
+/** Bølgeprofil (0–100 % højde): lav mod venstre, høj kam mod højre. */
+function crest(x: number) {
+  const t = Math.min(Math.max((x - 4) / 78, 0), 1);
+  const s = t * t * (3 - 2 * t); // smoothstep
+  return 7 + 88 * Math.pow(s, 1.35);
+}
+
+/** Bølge af bon-strimler + pixel-opløsning ved kammen — beregnet ved modul-load. */
+const { WAVE, PIXELS } = (() => {
   const rand = rng(20260718);
-  const strips: Strip[] = [];
-  for (let i = 0; i < 130; i++) {
-    const x = rand() * 100; // 0–100 %
-    // bølgeprofil: højere mod midten/højre, ebber ud mod venstre
-    const crest = 26 + 20 * Math.sin((x / 100) * Math.PI * 1.15 + 0.35);
-    strips.push({
+  const wave: Strip[] = [];
+  for (let i = 0; i < 520; i++) {
+    const x = Math.pow(rand(), 0.85) * 100; // let bias mod højre
+    const h = crest(x);
+    const depth = Math.pow(rand(), 0.65); // 0 = top af bølgen, 1 = bund (tættere i bunden)
+    const y = (1 - depth) * h;
+    const nearTop = y > h - 14;
+    wave.push({
       left: x,
-      bottom: rand() * rand() * crest,
-      w: 22 + rand() * 34,
-      h: 7 + rand() * 9,
-      rot: (rand() - 0.5) * 70,
-      o: 0.45 + rand() * 0.55,
+      bottom: y,
+      w: 18 + rand() * 34,
+      h: 10 + rand() * 14,
+      rot: (rand() - 0.5) * (nearTop ? 150 : 80),
+      o: 0.65 + rand() * 0.35,
+      tint: nearTop && x > 45 && rand() < 0.35,
     });
   }
-  return strips;
+  const pixels: Pixel[] = [];
+  for (let i = 0; i < 110; i++) {
+    const x = 48 + Math.pow(rand(), 0.8) * 58; // fra kammen og ud over højre kant
+    const h = crest(Math.min(x, 100));
+    pixels.push({
+      left: x,
+      bottom: h - 6 + rand() * 26,
+      s: 3 + rand() * 7,
+      o: 0.15 + rand() * 0.6,
+    });
+  }
+  return { WAVE: wave, PIXELS: pixels };
 })();
 
-function ReceiptPile() {
+/** Skulpturel bølge af kvitteringer, der opløses i pixels ved kammen. */
+function ReceiptWave() {
   return (
-    <div aria-hidden="true" className="absolute inset-x-[-8%] bottom-0 h-[46%]">
-      {PILE.map((s, i) => (
+    <div aria-hidden="true" className="absolute inset-x-[-10%] bottom-0 top-0">
+      {WAVE.map((s, i) => (
         <span
           key={i}
-          className="absolute rounded-[3px] border border-black/[0.07] bg-paper shadow-[0_1px_2px_rgb(16_21_29/0.10)]"
+          className={`absolute rounded-[3px] border shadow-[0_2px_5px_rgb(16_21_29/0.16)] ${
+            s.tint ? 'border-mint/30 bg-mint-tint' : 'border-black/10 bg-paper'
+          }`}
           style={{
             left: `${s.left}%`,
             bottom: `${s.bottom}%`,
@@ -64,35 +87,22 @@ function ReceiptPile() {
         >
           <span className="absolute inset-x-1 top-1 h-px bg-ink/15" />
           <span className="absolute inset-x-1 top-2.5 h-px bg-ink/10" />
+          <span className="absolute left-1 right-2.5 top-[16px] h-px bg-ink/10" />
         </span>
       ))}
-    </div>
-  );
-}
-
-/** Lodret bon-strimmel der stikker ud over sektionen, med store fakta printet på. */
-function FactStrip({ header, facts }: { header: string; facts: MissionStrings['facts'] }) {
-  return (
-    <div className="relative mx-auto w-[240px] md:w-[260px]">
-      <div
-        className="relative z-10 -mt-24 -mb-24 bg-paper px-6 pb-14 pt-16 font-mono text-ink shadow-[0_32px_64px_-32px_rgb(16_21_29/0.35)] ring-1 ring-black/5 [clip-path:polygon(0_0,100%_0,100%_calc(100%-10px),96%_100%,88%_calc(100%-9px),79%_100%,71%_calc(100%-10px),62%_100%,54%_calc(100%-9px),46%_100%,38%_calc(100%-10px),29%_100%,21%_calc(100%-9px),12%_100%,4%_calc(100%-10px),0_100%)]"
-      >
-        <p className="text-center text-[10px] font-semibold uppercase tracking-[0.25em] text-ink/40">
-          {header}
-        </p>
-        <div className="mt-4 border-t border-dashed border-ink/15" />
-        {facts.map((f) => (
-          <div key={f.value} className="border-b border-dashed border-ink/15 py-6 text-center">
-            <p className="text-[34px] font-bold leading-none tracking-tight md:text-[38px]">
-              {f.value}
-            </p>
-            <p className="mt-2 text-[11px] leading-snug text-ink/55">{f.label}</p>
-          </div>
-        ))}
-        <p className="mt-5 text-center text-[9px] uppercase tracking-[0.3em] text-ink/30">
-          Tapbon
-        </p>
-      </div>
+      {PIXELS.map((p, i) => (
+        <span
+          key={`px-${i}`}
+          className="absolute rounded-[1.5px] bg-mint"
+          style={{
+            left: `${p.left}%`,
+            bottom: `${p.bottom}%`,
+            width: p.s,
+            height: p.s,
+            opacity: p.o,
+          }}
+        />
+      ))}
     </div>
   );
 }
@@ -118,15 +128,8 @@ export function MissionSection({ s }: { s: MissionStrings }) {
           </PillLink>
         </FadeIn>
         <FadeIn delay={0.15}>
-          <div aria-hidden="true" className="relative min-h-[560px] md:min-h-[640px]">
-            {/* Svævende tal — delvist bag strimlen */}
-            <p className="pointer-events-none absolute left-1/2 top-[16%] z-0 -translate-x-[72%] whitespace-nowrap font-sans text-[88px] font-bold leading-none tracking-[-0.04em] text-ink/[0.08] md:text-[120px]">
-              {s.strong}
-            </p>
-            <ReceiptPile />
-            <div className="absolute inset-x-0 top-0 z-10 flex justify-center">
-              <FactStrip header={s.factsHeader} facts={s.facts} />
-            </div>
+          <div aria-hidden="true" className="relative min-h-[520px] md:min-h-[660px]">
+            <ReceiptWave />
           </div>
         </FadeIn>
       </div>
