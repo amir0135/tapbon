@@ -57,14 +57,14 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
-  /* Tapbon brand tokens (see lib/design/tokens.ts) */
-  --color-ink: #232b38;
+  /* Tapbon brand tokens — Vibe C "Soft Minimal" */
+  --color-ink: #2d3139;
   --color-ink-deep: #10151d;
   --color-ink-raised: #1a202b;
-  --color-canvas: #f8fafb;
+  --color-canvas: #f5f5f3;
   --color-paper: #ffffff;
-  --color-mint: #34c97b;
-  --color-mint-tint: #e5f8ee;
+  --color-mint: #5a8a6a;
+  --color-mint-tint: #e4ede7;
   --color-forest: #3e624c;
 
   --font-sans: var(--font-grotesk), Arial, Helvetica, sans-serif;
