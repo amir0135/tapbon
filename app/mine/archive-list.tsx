@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import {
   ArrowRight,
+  Check,
   CloudUpload,
   Loader2,
   LogOut,
@@ -83,9 +84,11 @@ function SyncCard({ customerEmail }: { customerEmail: string | null }) {
     return (
       <div className="bg-paper rounded-2xl shadow-sm p-4 space-y-3">
         <div className="flex items-center gap-3">
-          <CloudUpload className="h-5 w-5 text-accent shrink-0" aria-hidden="true" />
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-mint-tint">
+            <CloudUpload className="h-4 w-4 text-forest" aria-hidden="true" />
+          </span>
           <div className="flex-1 min-w-0">
-            <p className="font-medium">{t('syncedTitle')}</p>
+            <p className="font-semibold text-ink">{t('syncedTitle')}</p>
             <p className="text-sm text-muted-foreground truncate">{customerEmail}</p>
           </div>
         </div>
@@ -124,9 +127,11 @@ function SyncCard({ customerEmail }: { customerEmail: string | null }) {
   return (
     <div className="bg-paper rounded-2xl shadow-sm p-4 space-y-3">
       <div className="flex items-center gap-3">
-        <CloudUpload className="h-5 w-5 text-accent shrink-0" aria-hidden="true" />
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-mint-tint">
+          <CloudUpload className="h-4 w-4 text-forest" aria-hidden="true" />
+        </span>
         <div>
-          <p className="font-medium">{t('pitchTitle')}</p>
+          <p className="font-semibold text-ink">{t('pitchTitle')}</p>
           <p className="text-sm text-muted-foreground">{t('pitchSub')}</p>
         </div>
       </div>
@@ -206,7 +211,7 @@ export function ArchiveList({
   const stats = monthStats(entries);
 
   return (
-    <main className="min-h-dvh bg-secondary">
+    <main className="min-h-dvh bg-canvas">
       <div className="mx-auto max-w-md p-4 pb-12 space-y-4">
         <header className="pt-4 text-center space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
@@ -263,8 +268,10 @@ export function ArchiveList({
                 className="bg-paper rounded-2xl shadow-sm p-4 space-y-3"
               >
                 <div className="flex items-center gap-3">
-                  <Stamp className="h-5 w-5 text-accent shrink-0" aria-hidden="true" />
-                  <span className="font-medium truncate">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-mint-tint">
+                    <Stamp className="h-4 w-4 text-forest" aria-hidden="true" />
+                  </span>
+                  <span className="font-semibold text-ink truncate">
                     {card.merchantName ?? t('loyaltyUnknown')}
                   </span>
                   <span className="ml-auto text-sm text-muted-foreground font-mono shrink-0">
@@ -273,12 +280,16 @@ export function ArchiveList({
                 </div>
                 <div className="grid grid-cols-10 gap-1.5">
                   {Array.from({ length: card.stampsRequired }).map((_, i) => (
-                    <div
+                    <span
                       key={i}
-                      className={`aspect-square rounded-full border-2 ${
-                        i < card.stamps ? 'bg-accent border-accent' : 'border-border'
+                      className={`flex aspect-square items-center justify-center rounded-full ${
+                        i < card.stamps ? 'bg-mint' : 'border-2 border-dashed border-border'
                       }`}
-                    />
+                    >
+                      {i < card.stamps && (
+                        <Check className="h-3 w-3 text-paper" aria-hidden="true" />
+                      )}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -293,8 +304,10 @@ export function ArchiveList({
           </h2>
           {entries.length === 0 ? (
             <div className="bg-paper rounded-2xl shadow-sm p-8 text-center space-y-2">
-              <ReceiptText className="h-8 w-8 text-accent mx-auto" aria-hidden="true" />
-              <h3 className="font-medium">{t('emptyTitle')}</h3>
+              <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-forest">
+                <ReceiptText className="h-4 w-4 text-forest" aria-hidden="true" />
+              </span>
+              <h3 className="font-semibold text-ink">{t('emptyTitle')}</h3>
               <p className="text-sm text-muted-foreground">{t('emptyBody')}</p>
             </div>
           ) : (
@@ -321,7 +334,7 @@ export function ArchiveList({
                   <Link
                     href={`/r/${e.id}`}
                     aria-label={t('open')}
-                    className="text-accent shrink-0"
+                    className="text-forest shrink-0"
                   >
                     <ArrowRight className="h-5 w-5" aria-hidden="true" />
                   </Link>

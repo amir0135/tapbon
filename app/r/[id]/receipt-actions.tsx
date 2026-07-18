@@ -2,7 +2,48 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { FileDown, Star, Stamp } from 'lucide-react';
+import { Check, Download, Lock, Stamp, Star } from 'lucide-react';
+
+/** Forest download pill — matches the landing phone mock's CTA. */
+export function DownloadPill({ label }: { label: string }) {
+  return (
+    <button
+      onClick={() => window.print()}
+      className="flex w-full items-center justify-center gap-2 rounded-full bg-forest py-3 text-sm font-semibold text-paper active:scale-[0.99] transition print:hidden"
+    >
+      {label} <Download className="h-4 w-4" aria-hidden="true" />
+    </button>
+  );
+}
+
+/** "Sikker · Privat · Papirløs · Tapbon" trust line from the mock. */
+export function TrustLine({ label, appName }: { label: string; appName: string }) {
+  return (
+    <p className="flex items-center justify-center gap-1 whitespace-nowrap text-center text-[10px] text-muted-foreground print:hidden">
+      <Lock className="h-3 w-3 shrink-0" aria-hidden="true" /> {label} ·&nbsp;
+      <span className="font-semibold text-forest">{appName}</span>
+    </p>
+  );
+}
+
+/** Mint-tint sealed-hash chip from the mock's VAT screen. */
+export function SealedChip({ label }: { label: string }) {
+  return (
+    <div className="flex items-center justify-center gap-1.5 rounded-xl bg-mint-tint px-3 py-2 font-mono text-[11px] text-forest">
+      <Check className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+      <span>{label}</span>
+    </div>
+  );
+}
+
+/** Mint-tint icon tile used on action cards (mock's ScreenSave rows). */
+function IconTile({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-mint-tint">
+      {children}
+    </span>
+  );
+}
 
 type LoyaltyState = {
   cardToken: string;
@@ -55,70 +96,74 @@ export function ReceiptActions({
   const alreadyStamped =
     typeof window !== 'undefined' && !!localStorage.getItem(stampedKey);
   const isFull = loyalty !== null && loyalty.stamps >= loyalty.stampsRequired;
+  const stampsRequired = loyalty?.stampsRequired ?? 10;
+  const stamps = loyalty?.stamps ?? 0;
 
   return (
     <div className="space-y-3 print:hidden">
-      {/* PDF / print */}
-      <button
-        onClick={() => window.print()}
-        className="w-full bg-paper rounded-2xl shadow-sm p-4 flex items-center gap-3 text-left active:scale-[0.99] transition"
-      >
-        <FileDown className="h-5 w-5 text-accent shrink-0" />
-        <span className="font-medium">{t('receipt.downloadPdf')}</span>
-      </button>
-
-      {/* Loyalty card */}
+      {/* Loyalty card — mock's ScreenLoyalty */}
       <div className="w-full bg-paper rounded-2xl shadow-sm p-4 space-y-3">
         <div className="flex items-center gap-3">
-          <Stamp className="h-5 w-5 text-accent shrink-0" />
-          <span className="font-medium">{t('loyalty.title')}</span>
-          {loyalty && (
-            <span className="ml-auto text-sm text-muted-foreground font-mono">
-              {t('loyalty.stamps', {
-                count: loyalty.stamps,
-                total: loyalty.stampsRequired,
-              })}
-            </span>
-          )}
+          <IconTile>
+            <Stamp className="h-4 w-4 text-forest" aria-hidden="true" />
+          </IconTile>
+          <span className="text-[15px] font-semibold text-ink">{t('loyalty.title')}</span>
         </div>
         <div className="grid grid-cols-5 gap-2">
-          {Array.from({ length: loyalty?.stampsRequired ?? 10 }).map((_, i) => (
-            <div
+          {Array.from({ length: stampsRequired }).map((_, i) => (
+            <span
               key={i}
-              className={`aspect-square rounded-full border-2 transition ${
-                loyalty && i < loyalty.stamps
-                  ? 'bg-accent border-accent'
-                  : 'border-border'
+              className={`mx-auto flex aspect-square w-full max-w-10 items-center justify-center rounded-full transition ${
+                i < stamps ? 'bg-mint' : 'border-2 border-dashed border-border'
               }`}
-            />
+            >
+              {i < stamps && <Check className="h-4 w-4 text-paper" aria-hidden="true" />}
+            </span>
           ))}
         </div>
+        <p className="text-center font-mono text-[11px] text-muted-foreground">
+          {t('loyalty.stamps', { count: stamps, total: stampsRequired })}
+        </p>
         {isFull ? (
-          <p className="text-sm text-forest font-medium">{t('loyalty.full')}</p>
+          <div className="mx-auto w-fit rounded-full bg-mint-tint px-4 py-1.5 font-mono text-xs font-semibold text-forest">
+            {t('loyalty.full')}
+          </div>
         ) : justStamped ? (
-          <p className="text-sm text-accent font-medium">{t('loyalty.added')}</p>
+          <div className="mx-auto w-fit rounded-full bg-mint-tint px-4 py-1.5 font-mono text-xs font-semibold text-forest">
+            {t('loyalty.added')}
+          </div>
         ) : (
           <button
             onClick={collectStamp}
             disabled={alreadyStamped}
-            className="w-full rounded-full bg-primary text-primary-foreground py-2.5 font-medium disabled:opacity-50 active:scale-[0.99] transition"
+            className="w-full rounded-full bg-ink text-paper py-2.5 text-sm font-semibold disabled:opacity-50 active:scale-[0.99] transition"
           >
             {t('loyalty.add')}
           </button>
         )}
       </div>
 
-      {/* Google review */}
+      {/* Google review — mock's ScreenReview */}
       {googleReviewUrl && (
-        <a
-          href={googleReviewUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full bg-paper rounded-2xl shadow-sm p-4 flex items-center gap-3 active:scale-[0.99] transition"
-        >
-          <Star className="h-5 w-5 text-accent shrink-0" />
-          <span className="font-medium">{t('review.cta')}</span>
-        </a>
+        <div className="w-full bg-paper rounded-2xl shadow-sm p-5 text-center space-y-3">
+          <p className="text-[15px] font-semibold text-ink">{t('review.question')}</p>
+          <div className="flex justify-center gap-1.5" aria-hidden="true">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star
+                key={i}
+                className={`h-6 w-6 ${i < 4 ? 'fill-amber-400 text-amber-400' : 'text-border'}`}
+              />
+            ))}
+          </div>
+          <a
+            href={googleReviewUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mx-auto block w-fit rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-paper active:scale-[0.99] transition"
+          >
+            {t('review.cta')}
+          </a>
+        </div>
       )}
     </div>
   );

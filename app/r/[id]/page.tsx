@@ -1,9 +1,10 @@
 import { getTranslations, getLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
+import { Store } from 'lucide-react';
 import { getReceiptWithDetails } from '@/lib/receipts/queries';
 import { renderReceiptSvg } from '@/lib/receipts/render';
 import { formatMoney } from '@/lib/receipts/format';
-import { ReceiptActions } from './receipt-actions';
+import { ReceiptActions, DownloadPill, TrustLine, SealedChip } from './receipt-actions';
 import { ArchiveSaver } from './archive-saver';
 
 export const dynamic = 'force-dynamic';
@@ -26,9 +27,9 @@ export default async function PublicReceiptPage({
 
   if (!data) {
     return (
-      <main className="min-h-dvh bg-secondary flex items-center justify-center p-4">
+      <main className="min-h-dvh bg-canvas flex items-center justify-center p-4">
         <div className="bg-paper rounded-2xl shadow-sm p-8 max-w-sm text-center">
-          <h1 className="font-medium text-lg mb-2">{t('receipt.notFoundTitle')}</h1>
+          <h1 className="font-semibold text-lg mb-2 text-ink">{t('receipt.notFoundTitle')}</h1>
           <p className="text-sm text-muted-foreground">{t('receipt.notFoundBody')}</p>
         </div>
       </main>
@@ -45,32 +46,32 @@ export default async function PublicReceiptPage({
   }).format(receipt.issuedAt);
 
   return (
-    <main className="min-h-dvh bg-secondary print:bg-paper">
-      <div className="mx-auto max-w-md p-4 pb-12 space-y-4">
-        {/* Receipt card */}
-        <div className="bg-paper rounded-2xl shadow-sm p-6 space-y-4">
-          <header className="text-center space-y-1">
-            {merchant.logoUrl && (
+    <main className="min-h-dvh bg-canvas print:bg-paper">
+      <div className="mx-auto max-w-md p-4 pb-12 space-y-3">
+        {/* Receipt card — styled like the landing phone mock */}
+        <div className="bg-paper rounded-2xl shadow-sm px-5 py-6 space-y-4">
+          <header className="text-center space-y-1.5">
+            {merchant.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={merchant.logoUrl}
                 alt={merchant.businessName}
                 className="h-12 mx-auto object-contain"
               />
+            ) : (
+              <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-forest">
+                <Store className="h-4 w-4 text-forest" aria-hidden="true" />
+              </span>
             )}
-            <h1 className="text-xl font-semibold tracking-tight">
+            <h1 className="text-[15px] font-semibold uppercase tracking-[0.22em] text-ink">
               {merchant.businessName}
             </h1>
-            <p className="text-xs text-muted-foreground font-mono">
+            <p className="font-mono text-[11px] text-muted-foreground">
               {t('receipt.cvr', { cvr: merchant.cvrNumber })}
             </p>
-            <p className="text-xs text-muted-foreground">
-              {t('receipt.issuedAt', { date: issuedAtText })}
-            </p>
-            <p className="text-xs text-muted-foreground font-mono">
-              {t('receipt.receiptNumber', { number: receipt.receiptNumber })}
-            </p>
           </header>
+
+          <div className="border-t border-dashed border-border" />
 
           {receipt.confirmationCode && (
             <p className="text-center text-sm font-mono text-muted-foreground">
@@ -85,7 +86,7 @@ export default async function PublicReceiptPage({
                   href={fileHref}
                   target="_blank"
                   rel="noopener"
-                  className="block text-center rounded-xl border py-3 text-sm font-medium"
+                  className="flex w-full items-center justify-center rounded-full bg-forest py-3 text-sm font-semibold text-paper active:scale-[0.99] transition"
                 >
                   {t('receipt.openPdf')}
                 </a>
@@ -94,7 +95,7 @@ export default async function PublicReceiptPage({
                 <img
                   src={fileHref}
                   alt={t('receipt.title')}
-                  className="mx-auto max-w-full rounded-lg border"
+                  className="mx-auto max-w-full rounded-lg border border-border"
                 />
               )}
               <p className="text-center text-[10px] text-muted-foreground">
@@ -103,7 +104,7 @@ export default async function PublicReceiptPage({
             </div>
           ) : (
             <>
-              <div className="text-3xl font-semibold text-center tracking-tight">
+              <div className="text-3xl font-semibold text-center tracking-tight text-ink">
                 {formatMoney(receipt.totalGross, receipt.currency, locale)}
               </div>
 
@@ -114,11 +115,17 @@ export default async function PublicReceiptPage({
             </>
           )}
 
-          <footer className="text-center">
-            <p className="text-[10px] text-muted-foreground font-mono">
-              {t('receipt.verified', { hash: receipt.hash.slice(0, 12) })}
-            </p>
-          </footer>
+          <div className="border-t border-dashed border-border" />
+
+          <SealedChip label={t('receipt.verified', { hash: receipt.hash.slice(0, 12) })} />
+
+          <p className="text-center font-mono text-[10px] text-muted-foreground">
+            {issuedAtText} · {t('receipt.receiptNumber', { number: receipt.receiptNumber })}
+          </p>
+
+          {!isFile && <DownloadPill label={t('receipt.download')} />}
+
+          <TrustLine label={t('receipt.trustLine')} appName={t('common.appName')} />
         </div>
 
         {/* Actions — large tap targets, stacked */}

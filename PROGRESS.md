@@ -1,6 +1,20 @@
 # Progress
 
-## Last session (2026-07-17, aften)
+## Last session (2026-07-18)
+**Kvitteringssiden restylet til landing-mockup'ernes design** (bruger-ønske:
+"tag UI'et fra landingssiden — behold den detaljerede bon"): /r/[id] matcher
+nu telefon-mockup'en fra forsiden — canvas-baggrund, tracked uppercase
+forretningsnavn m/ cirkel-fallback-ikon, stiplede skillelinjer, mint-tint
+"Forseglet · SHA-256 · hash"-chip, forest "Hent kvittering"-pille, "Sikker ·
+Privat · Papirløs · Tapbon"-trustlinje. Loyalitetskort = mint-fyldte stempler
+m/ hvide checks + mono-tæller + ink-pille; Google-review-kort = "Hvordan var
+dit besøg?" + 5 stjerner + ink-pille. /mine + arkiv-kort: mint-tint ikon-
+fliser, forest-pile, bg-canvas. receiptline cpl 32→42 (fixede "TOTAL D KK"-
+ombrydning). Nye i18n-nøgler: receipt.download/trustLine, review.question.
+Bonnens SVG-body (receiptline) uændret. Verificeret i browser (structured +
+fil-bon + /mine). Landing-siden urørt.
+
+## Previous session (2026-07-17, aften)
 (1) **Key Vault i drift**: MG-policyen MCAPSGovDeployPolicies (modify) tvang
 publicNetworkAccess=Disabled — løst med policy exemption "kv-tapbon-exempt"
 (Waiver) på vault-scope. Alle 7 secrets (google-client-id/-secret, stripe-

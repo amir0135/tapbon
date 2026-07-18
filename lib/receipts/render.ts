@@ -33,7 +33,7 @@ export function renderReceiptSvg({
 
   const doc = lines.join('\n');
   return receiptline.transform(doc, {
-    cpl: 32,
+    cpl: 42, // 32 wraps two-column lines (e.g. "TOTAL DKK") at this font size
     encoding: 'multilingual',
     spacing: true,
     command: 'svg',

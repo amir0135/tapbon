@@ -15,9 +15,11 @@
     "net": "Amount excl. VAT",
     "cvr": "CVR no. {cvr}",
     "downloadPdf": "Download PDF",
+    "download": "Download receipt",
+    "trustLine": "Secure · Private · Paperless",
     "issuedAt": "Issued {date}",
     "receiptNumber": "Receipt no. {number}",
-    "verified": "Sealed · {hash}",
+    "verified": "Sealed · SHA-256 · {hash}",
     "confirmationCode": "Receipt {code}",
     "openPdf": "Open PDF",
     "rawNote": "Raw receipt — exactly as printed by the register.",
@@ -68,7 +70,8 @@
     "full": "Card is full! Show it to the staff to get your reward 🎉"
   },
   "review": {
-    "cta": "Review us on Google"
+    "question": "How was your visit?",
+    "cta": "Review on Google"
   },
   "issue": {
     "title": "Receipts",

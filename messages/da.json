@@ -15,9 +15,11 @@
     "net": "Beløb ekskl. moms",
     "cvr": "CVR-nr. {cvr}",
     "downloadPdf": "Hent som PDF",
+    "download": "Hent kvittering",
+    "trustLine": "Sikker · Privat · Papirløs",
     "issuedAt": "Udstedt {date}",
     "receiptNumber": "Kvittering nr. {number}",
-    "verified": "Forseglet · {hash}",
+    "verified": "Forseglet · SHA-256 · {hash}",
     "confirmationCode": "Kvittering {code}",
     "openPdf": "Åbn PDF",
     "rawNote": "Rå kvittering — som printet af kassen.",
@@ -68,7 +70,8 @@
     "full": "Kortet er fuldt! Vis det til personalet og få din belønning 🎉"
   },
   "review": {
-    "cta": "Anmeld os på Google"
+    "question": "Hvordan var dit besøg?",
+    "cta": "Anmeld på Google"
   },
   "issue": {
     "title": "Kvitteringer",

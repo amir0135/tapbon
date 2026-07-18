@@ -27,16 +27,18 @@ export function ArchiveSaver({ entry }: { entry: ArchiveEntry }) {
   return (
     <Link
       href="/mine"
-      className="w-full bg-paper rounded-2xl shadow-sm p-4 flex items-center gap-3 active:scale-[0.99] transition print:hidden"
+      className="w-full bg-paper rounded-2xl shadow-sm p-3.5 flex items-center gap-3 active:scale-[0.99] transition print:hidden"
     >
-      <BookMarked className="h-5 w-5 text-accent shrink-0" aria-hidden="true" />
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-mint-tint">
+        <BookMarked className="h-4 w-4 text-forest" aria-hidden="true" />
+      </span>
       <span className="flex-1 min-w-0">
-        <span className="block font-medium">{t('pitchTitle')}</span>
+        <span className="block text-sm font-semibold text-ink">{t('pitchTitle')}</span>
         <span className="block text-sm text-muted-foreground">
           {t('pitchSub', { count })}
         </span>
       </span>
-      <ArrowRight className="h-5 w-5 text-accent shrink-0" aria-hidden="true" />
+      <ArrowRight className="h-5 w-5 text-forest shrink-0" aria-hidden="true" />
     </Link>
   );
 }
