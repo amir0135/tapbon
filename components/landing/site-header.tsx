@@ -5,15 +5,21 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 export function Logo({ onDark = false }: { onDark?: boolean }) {
+  const color = onDark ? '#ffffff' : '#2d3139';
   return (
-    <span className="inline-flex items-center gap-2">
-      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-mint">
-        <span className="h-2.5 w-2.5 rounded-full bg-paper" />
-      </span>
+    <span className="inline-flex items-center gap-2.5">
+      {/* NFC tap ripple mark */}
+      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+        <circle cx="14" cy="14" r="3" fill={color} />
+        <path d="M9.5 19.5 A6.5 6.5 0 0 1 9.5 8.5" stroke={color} strokeWidth="1.8" strokeLinecap="round" fill="none"/>
+        <path d="M18.5 8.5 A6.5 6.5 0 0 1 18.5 19.5" stroke={color} strokeWidth="1.8" strokeLinecap="round" fill="none"/>
+        <path d="M6 22 A11.3 11.3 0 0 1 6 6" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.25"/>
+        <path d="M22 6 A11.3 11.3 0 0 1 22 22" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.25"/>
+      </svg>
       <span
-        className={`text-[19px] font-semibold tracking-tight transition-colors duration-300 ${onDark ? 'text-paper' : 'text-ink'}`}
+        className={`text-[17px] font-semibold tracking-tight transition-colors duration-300 ${onDark ? 'text-paper' : 'text-ink'}`}
       >
-        Tapbon
+        tapbon
       </span>
     </span>
   );
