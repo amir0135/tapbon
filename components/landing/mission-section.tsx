@@ -16,8 +16,8 @@ export type MissionStrings = {
 export function MissionSection({ s }: { s: MissionStrings }) {
   return (
     <section className="overflow-hidden bg-canvas">
-      <div className="mx-auto grid max-w-[1268px] items-center gap-16 px-6 py-24 md:min-h-[var(--stagevh,100vh)] md:grid-cols-[minmax(0,470px)_minmax(0,540px)] md:justify-between md:px-[86px]">
-        <FadeIn className="space-y-6">
+      <div className="mx-auto grid max-w-[1268px] items-center gap-16 px-6 py-24 md:min-h-[var(--stagevh,100vh)] md:grid-cols-[minmax(0,440px)_minmax(0,620px)] md:justify-between md:px-[86px]">
+        <FadeIn className="relative z-10 space-y-6">
           <Kicker>{s.kicker}</Kicker>
           <h2 className="text-[34px] font-semibold leading-[1.06] tracking-[-0.022em] text-ink md:text-[43px]">
             <strong className="font-semibold">{s.strong}</strong>
@@ -34,12 +34,13 @@ export function MissionSection({ s }: { s: MissionStrings }) {
           </PillLink>
         </FadeIn>
         <FadeIn delay={0.15}>
-          <div aria-hidden="true" className="relative aspect-[4/3] w-full md:scale-[1.18]">
+          <div aria-hidden="true" className="relative aspect-[4/3] w-full md:scale-[1.28]">
             <Image
               src="/images/mission-receipt-wave.webp"
               alt=""
               fill
-              sizes="(min-width: 768px) 640px, 100vw"
+              quality={90}
+              sizes="(min-width: 768px) 900px, 100vw"
               className="object-contain"
             />
           </div>
