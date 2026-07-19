@@ -1,6 +1,15 @@
 # Progress
 
-## Last session (2026-07-18, aften)
+## Last session (2026-07-19)
+**Prod-502 IGEN — samme årsag som i går**: MG-policyen havde endnu en gang
+slettet KV-exemptionen og sat pna=Disabled (holdt <1 døgn). Samme fix:
+exemption + pna=Enabled + KV_REFRESH_TICK. Prod verificeret 200 (/ + DB-rute
+/r/[id]). Vibe C-redesignet (PR #1, ui-redesign) er merged + deployet.
+**Parked decision:** KV-referencer er skrøbelige i denne tenant — overvej at
+flytte secrets til almindelige app settings ELLER privat endpoint, ellers
+rammer 502'eren igen ved næste policy-sweep.
+
+## Previous session (2026-07-18, aften)
 **Prod-502 fixet**: MG-policyen havde SLETTET policy-exemptionen og sat
 kv-tapbon-prod publicNetworkAccess=Disabled igen → alle KV-referencer
 "AccessToKeyVaultDenied" → appen fik den rå @Microsoft.KeyVault(...)-streng
