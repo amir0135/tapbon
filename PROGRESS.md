@@ -1,6 +1,16 @@
 # Progress
 
-## Last session (2026-07-19)
+## Last session (2026-07-19, fortsat)
+**KV-502'eren auto-fixes nu**: Azure Automation-konto aa-tapbon-ops (system-MI)
+kører runbook "kv-guard" (ops/kv-guard-runbook.ps1) hver 6. time: genopretter
+policy-exemptionen, genåbner vaultens publicNetworkAccess og tvinger KV-
+reference-re-resolution via app setting-tick — kun når noget er galt (idempotent).
+MI-roller: Key Vault Contributor + Resource Policy Contributor (vault),
+Website Contributor (app), Resource Policy Contributor (MG-scope — kræves pga.
+LinkedAuthorizationFailed: exemption-write kræver policyAssignments/exempt/action
+på MG'en). E2E-testet: exemption slettet → runbook genoprettede den; prod 200.
+
+## Previous session (2026-07-19)
 **Prod-502 IGEN — samme årsag som i går**: MG-policyen havde endnu en gang
 slettet KV-exemptionen og sat pna=Disabled (holdt <1 døgn). Samme fix:
 exemption + pna=Enabled + KV_REFRESH_TICK. Prod verificeret 200 (/ + DB-rute
