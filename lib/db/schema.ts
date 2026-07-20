@@ -262,6 +262,8 @@ export const loyaltyCards = pgTable('loyalty_cards', {
 export const customers = pgTable('customers', {
   id: serial('id').primaryKey(),
   email: varchar('email', { length: 255 }).notNull().unique(),
+  name: varchar('name', { length: 100 }),
+  phone: varchar('phone', { length: 30 }),
   loginTokenHash: char('login_token_hash', { length: 64 }),
   loginTokenExpires: timestamp('login_token_expires'),
   createdAt: timestamp('created_at').notNull().defaultNow(),

@@ -60,6 +60,9 @@
     "fileReceipt": "Fil-bon",
     "open": "Åbn kvittering",
     "remove": "Fjern fra arkivet",
+    "profileLink": "Profil",
+    "saveManualTitle": "Gem kvitteringen i dit arkiv",
+    "saveManualSub": "Auto-gem er slået fra — tryk for at gemme denne bon",
     "localNote": "Arkivet ligger kun på denne enhed — vi gemmer ingen oplysninger om dig."
   },
   "loyalty": {
@@ -72,6 +75,37 @@
   "review": {
     "question": "Hvordan var dit besøg?",
     "cta": "Anmeld på Google"
+  },
+  "profile": {
+    "title": "Profil",
+    "back": "Tilbage til mine kvitteringer",
+    "accountSection": "Konto",
+    "noName": "Tilføj dit navn",
+    "nameLabel": "Navn",
+    "namePlaceholder": "Dit navn",
+    "phoneLabel": "Telefon",
+    "phonePlaceholder": "Ikke angivet",
+    "emailLabel": "E-mail",
+    "save": "Gem",
+    "saved": "Gemt",
+    "invalidInput": "Tjek felterne og prøv igen.",
+    "notSignedIn": "Du er ikke logget ind.",
+    "planSection": "Din plan",
+    "planLabel": "Din plan",
+    "planName": "Gratis",
+    "planBody": "Alle features med — ubegrænsede kvitteringer, loyalitetskort og synk på tværs af enheder.",
+    "preferencesSection": "Præferencer",
+    "languageLabel": "Sprog",
+    "languageSub": "Dansk eller engelsk",
+    "autoSaveLabel": "Auto-gem kvitteringer",
+    "autoSaveSub": "Boner gemmes automatisk, når du åbner dem",
+    "privacySection": "Data & privatliv",
+    "supportLabel": "Kontakt support",
+    "privacyLabel": "Privatlivspolitik",
+    "termsLabel": "Vilkår",
+    "aboutSection": "Om",
+    "aboutTagline": "Digitale kvitteringer — sikkert og papirløst",
+    "footer": "© 2026 Tapbon"
   },
   "issue": {
     "title": "Kvitteringer",

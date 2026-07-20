@@ -14,6 +14,7 @@ import {
   Store,
   Trash2,
   User,
+  UserRound,
 } from 'lucide-react';
 import {
   mergeIntoArchive,
@@ -213,7 +214,14 @@ export function ArchiveList({
   return (
     <main className="min-h-dvh bg-canvas">
       <div className="mx-auto max-w-md p-4 pb-12 space-y-4">
-        <header className="pt-4 text-center space-y-1">
+        <header className="relative pt-4 text-center space-y-1">
+          <Link
+            href="/mine/profil"
+            aria-label={t('profileLink')}
+            className="absolute right-0 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-paper shadow-sm text-ink"
+          >
+            <UserRound className="h-4 w-4" aria-hidden="true" />
+          </Link>
           <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
           <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
         </header>

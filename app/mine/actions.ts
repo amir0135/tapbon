@@ -3,7 +3,10 @@
 import { z } from 'zod';
 import { createHash, randomBytes } from 'node:crypto';
 import { eq } from 'drizzle-orm';
+import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 import { getTranslations } from 'next-intl/server';
+import { locales, type Locale } from '@/i18n/request';
 import { db } from '@/lib/db/drizzle';
 import { customers, customerReceipts } from '@/lib/db/schema';
 import { sendEmail } from '@/lib/email/send';
@@ -64,6 +67,48 @@ export async function requestCustomerLogin(
 export async function customerLogout() {
   await clearCustomerSession();
   return { success: true as const };
+}
+
+const profileSchema = z.object({
+  name: z.string().trim().max(100),
+  phone: z.string().trim().max(30),
+});
+
+/** Opdater navn/telefon på kundeprofilen (specs/customer-profile.md). */
+export async function updateCustomerProfile(
+  prevState: unknown,
+  formData: FormData
+) {
+  const t = await getTranslations('profile');
+  const session = await getCustomerSession();
+  if (!session) return { error: t('notSignedIn') };
+
+  const parsed = profileSchema.safeParse({
+    name: formData.get('name') ?? '',
+    phone: formData.get('phone') ?? '',
+  });
+  if (!parsed.success) return { error: t('invalidInput') };
+
+  await db
+    .update(customers)
+    .set({
+      name: parsed.data.name || null,
+      phone: parsed.data.phone || null,
+    })
+    .where(eq(customers.id, session.customerId));
+  revalidatePath('/mine/profil');
+  return { success: t('saved') };
+}
+
+/** Sprogvalg — sætter 'locale'-cookien (i18n/request.ts læser den). */
+export async function setLocalePreference(locale: string) {
+  if (!locales.includes(locale as Locale)) return;
+  (await cookies()).set('locale', locale, {
+    maxAge: 365 * 24 * 60 * 60,
+    path: '/',
+    sameSite: 'lax',
+  });
+  revalidatePath('/mine/profil');
 }
 
 /** GDPR: slet kundekontoen og alle kvitteringslinks. Bonerne består hos forretningen. */

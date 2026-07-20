@@ -59,3 +59,22 @@ export function mergeIntoArchive(incoming: ArchiveEntry[]): ArchiveEntry[] {
   } catch {}
   return next;
 }
+
+// Auto-gem-præference (specs/customer-profile.md) — default TIL.
+const AUTOSAVE_KEY = 'tapbon-autosave';
+
+export function readAutoSave(): boolean {
+  if (typeof window === 'undefined') return true;
+  try {
+    return localStorage.getItem(AUTOSAVE_KEY) !== 'off';
+  } catch {
+    return true;
+  }
+}
+
+export function setAutoSave(on: boolean) {
+  try {
+    if (on) localStorage.removeItem(AUTOSAVE_KEY);
+    else localStorage.setItem(AUTOSAVE_KEY, 'off');
+  } catch {}
+}

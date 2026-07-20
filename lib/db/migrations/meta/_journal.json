@@ -50,6 +50,13 @@
       "when": 1784282599585,
       "tag": "0006_short_warpath",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1784545855140,
+      "tag": "0007_happy_ego",
+      "breakpoints": true
     }
   ]
 }

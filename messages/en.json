@@ -60,6 +60,9 @@
     "fileReceipt": "File receipt",
     "open": "Open receipt",
     "remove": "Remove from archive",
+    "profileLink": "Profile",
+    "saveManualTitle": "Save this receipt to your archive",
+    "saveManualSub": "Auto-save is off — tap to save this receipt",
     "localNote": "The archive lives only on this device — we store nothing about you."
   },
   "loyalty": {
@@ -72,6 +75,37 @@
   "review": {
     "question": "How was your visit?",
     "cta": "Review on Google"
+  },
+  "profile": {
+    "title": "Profile",
+    "back": "Back to my receipts",
+    "accountSection": "Account",
+    "noName": "Add your name",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "phoneLabel": "Phone",
+    "phonePlaceholder": "Not set",
+    "emailLabel": "Email",
+    "save": "Save",
+    "saved": "Saved",
+    "invalidInput": "Check the fields and try again.",
+    "notSignedIn": "You are not signed in.",
+    "planSection": "Your plan",
+    "planLabel": "Your plan",
+    "planName": "Free",
+    "planBody": "Everything included — unlimited receipts, loyalty cards and sync across devices.",
+    "preferencesSection": "Preferences",
+    "languageLabel": "Language",
+    "languageSub": "Danish or English",
+    "autoSaveLabel": "Auto-save receipts",
+    "autoSaveSub": "Receipts save automatically when you open them",
+    "privacySection": "Data & privacy",
+    "supportLabel": "Contact support",
+    "privacyLabel": "Privacy policy",
+    "termsLabel": "Terms",
+    "aboutSection": "About",
+    "aboutTagline": "Digital receipts — secure and paperless",
+    "footer": "© 2026 Tapbon"
   },
   "issue": {
     "title": "Receipts",

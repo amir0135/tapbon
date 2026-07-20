@@ -1,6 +1,21 @@
 # Progress
 
-## Last session (2026-07-19, fortsat)
+## Last session (2026-07-20)
+**Kundeprofil-slice bygget** (Receiptile-inspireret, spec: specs/customer-
+profile.md): ny side /mine/profil m/ konto-kort (avatar-initialer, navn +
+telefon redigerbare — migration 0007 tilføjer customers.name/phone, kørt mod
+prod-DB), plan-kort ("Gratis"), præferencer (sprogvælger DA/EN via
+setLocalePreference-action der sætter locale-cookien; auto-gem-toggle via
+localStorage 'tapbon-autosave' — slået fra viser /r/[id] nu en manuel
+"Gem"-knap i ArchiveSaver), data & privatliv (support-mail, /privatliv,
+/vilkaar), om + log ud + slet konto (genbruger GDPR-flowet). Logget ud viser
+siden magic-link-pitch. Profil-ikon tilføjet i /mine-headeren. Nye i18n-
+namespaces: profile (da+en) + archive.saveManualTitle/Sub/profileLink.
+E2E-verificeret i browser: login, gem navn/telefon, persistens efter reload,
+sprogskifte DA↔EN, slet konto. Øvrige Receiptile-features parkeret i
+ROADMAP.md (integrationer SKAL matche DK-markedet: e-conomic/Dinero/Billy).
+
+## Previous session (2026-07-19, fortsat)
 **KV-502'eren auto-fixes nu**: Azure Automation-konto aa-tapbon-ops (system-MI)
 kører runbook "kv-guard" (ops/kv-guard-runbook.ps1) hver 6. time: genopretter
 policy-exemptionen, genåbner vaultens publicNetworkAccess og tvinger KV-
@@ -201,9 +216,11 @@ DKK receipts through the real computeVat+hash path. Seeded to Azure db
 receipt locally.
 
 ## Next up
-Phase 2: pitch pilot-caféer (demo: Loyverse + emulator + NFC-kort + tapbon.dk).
-Bestil NTAG213-stickers til pilot-standere. Roter tb_demo_kaffebar-token før
-første rigtige pilot.
+Push/deploy kundeprofil-slicen (commit ligger lokalt). Beslut næste kunde-
+slice fra ROADMAP (fx Gmail auto-capture eller eksport til e-conomic/Dinero/
+Billy). Phase 2: pitch pilot-caféer (demo: Loyverse + emulator + NFC-kort +
+tapbon.dk). Bestil NTAG213-stickers til pilot-standere. Roter
+tb_demo_kaffebar-token før første rigtige pilot.
 
 ## Parked decisions
 - Printer-emulering spec v2: fase 1 (SaaS) + fase 2 (emulator) BYGGET.
