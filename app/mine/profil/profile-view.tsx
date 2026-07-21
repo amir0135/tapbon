@@ -6,29 +6,52 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {
   ArrowLeft,
+  BarChart3,
   ChevronRight,
   FileText,
+  FolderKanban,
   Globe,
+  KeyRound,
   Loader2,
   LogOut,
   Mail,
   Phone,
+  Repeat,
   Send,
   Shield,
   Sparkles,
+  Store,
   User,
+  Volume2,
   Zap,
 } from 'lucide-react';
-import { readAutoSave, setAutoSave } from '@/lib/archive/local';
+import {
+  readAutoSave,
+  setAutoSave,
+  readSaveConfirm,
+  setSaveConfirm,
+  readSaveSound,
+  setSaveSound,
+} from '@/lib/archive/local';
+import { setPreferredMode } from '@/app/onboarding/actions';
 import {
   requestCustomerLogin,
   customerLogout,
+  customerPasswordLogin,
   deleteCustomerAccount,
   updateCustomerProfile,
   setLocalePreference,
+  setCustomerPassword,
+  setAccountingForwards,
 } from '../actions';
 
-type Customer = { email: string; name: string | null; phone: string | null };
+type Customer = {
+  email: string;
+  name: string | null;
+  phone: string | null;
+  hasPassword: boolean;
+  forwards: { economic?: string; dinero?: string; billy?: string };
+};
 
 function initials(customer: Customer) {
   const source = customer.name?.trim() || customer.email;
@@ -85,9 +108,13 @@ function Toggle({
 export function ProfileView({
   customer,
   locale,
+  hasBusiness,
+  version,
 }: {
   customer: Customer | null;
   locale: string;
+  hasBusiness: boolean;
+  version: string;
 }) {
   const t = useTranslations('profile');
   const tSync = useTranslations('customerSync');
@@ -95,7 +122,16 @@ export function ProfileView({
   const [busy, startTransition] = useTransition();
 
   const [autoSave, setAutoSaveState] = useState(true);
-  useEffect(() => setAutoSaveState(readAutoSave()), []);
+  const [saveConfirm, setSaveConfirmState] = useState(true);
+  const [saveSound, setSaveSoundState] = useState(true);
+  useEffect(() => {
+    setAutoSaveState(readAutoSave());
+    setSaveConfirmState(readSaveConfirm());
+    setSaveSoundState(readSaveSound());
+  }, []);
+
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [usePasswordLogin, setUsePasswordLogin] = useState(false);
 
   const [profileState, profileAction, profilePending] = useActionState<
     { error?: string; success?: string },
@@ -105,6 +141,22 @@ export function ProfileView({
     { error?: string; success?: string },
     FormData
   >(requestCustomerLogin, {});
+  const [pwLoginState, pwLoginAction, pwLoginPending] = useActionState<
+    { error?: string; success?: string },
+    FormData
+  >(async (prev, formData) => {
+    const result = await customerPasswordLogin(prev, formData);
+    if (result.success) router.refresh();
+    return result;
+  }, {});
+  const [passwordState, passwordAction, passwordPending] = useActionState<
+    { error?: string; success?: string },
+    FormData
+  >(setCustomerPassword, {});
+  const [forwardsState, forwardsAction, forwardsPending] = useActionState<
+    { error?: string; success?: string },
+    FormData
+  >(setAccountingForwards, {});
 
   return (
     <main className="min-h-dvh bg-canvas">
@@ -119,6 +171,44 @@ export function ProfileView({
           </Link>
           <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
         </header>
+
+        {/* Visning: privat ↔ forretning (users.preferred_mode) */}
+        <section className="space-y-2">
+          <SectionLabel>{t('viewSection')}</SectionLabel>
+          <div
+            className="grid grid-cols-2 gap-1 rounded-full bg-paper p-1 shadow-sm"
+            role="radiogroup"
+            aria-label={t('viewSection')}
+          >
+            <button
+              role="radio"
+              aria-checked="true"
+              className="flex items-center justify-center gap-2 rounded-full bg-ink px-3 py-2 text-sm font-semibold text-paper"
+            >
+              <User className="h-4 w-4" aria-hidden="true" />
+              {t('viewPersonal')}
+            </button>
+            <button
+              role="radio"
+              aria-checked="false"
+              disabled={busy}
+              onClick={() =>
+                startTransition(async () => {
+                  if (hasBusiness) {
+                    await setPreferredMode('business');
+                    router.push('/dashboard');
+                  } else {
+                    router.push('/sign-up');
+                  }
+                })
+              }
+              className="flex items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-ink"
+            >
+              <Store className="h-4 w-4" aria-hidden="true" />
+              {t('viewBusiness')}
+            </button>
+          </div>
+        </section>
 
         {customer ? (
           <>
@@ -213,6 +303,175 @@ export function ProfileView({
                 <p className="mt-1 text-sm text-paper/80">{t('planBody')}</p>
               </div>
             </section>
+
+            {/* Genveje — projekter, forbrug, abonnementer */}
+            <section className="space-y-2">
+              <SectionLabel>{t('generalSection')}</SectionLabel>
+              <div className="bg-paper rounded-2xl shadow-sm divide-y divide-border/60">
+                <Link href="/mine/projekter" className="flex items-center gap-3 p-4">
+                  <IconTile>
+                    <FolderKanban className="h-4 w-4 text-forest" aria-hidden="true" />
+                  </IconTile>
+                  <p className="flex-1 text-sm font-medium text-ink">{t('projectsLabel')}</p>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                </Link>
+                <Link href="/mine/forbrug" className="flex items-center gap-3 p-4">
+                  <IconTile>
+                    <BarChart3 className="h-4 w-4 text-forest" aria-hidden="true" />
+                  </IconTile>
+                  <p className="flex-1 text-sm font-medium text-ink">{t('spendingLabel')}</p>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                </Link>
+                <Link href="/mine/abonnementer" className="flex items-center gap-3 p-4">
+                  <IconTile>
+                    <Repeat className="h-4 w-4 text-forest" aria-hidden="true" />
+                  </IconTile>
+                  <p className="flex-1 text-sm font-medium text-ink">{t('subscriptionsLabel')}</p>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                </Link>
+              </div>
+            </section>
+
+            {/* Sikkerhed — valgfri adgangskode oven på magic link */}
+            <section className="space-y-2">
+              <SectionLabel>{t('securitySection')}</SectionLabel>
+              <div className="bg-paper rounded-2xl shadow-sm">
+                <button
+                  onClick={() => setShowPasswordForm((v) => !v)}
+                  className="flex w-full items-center gap-3 p-4 text-left"
+                >
+                  <IconTile>
+                    <KeyRound className="h-4 w-4 text-forest" aria-hidden="true" />
+                  </IconTile>
+                  <span className="flex-1 min-w-0">
+                    <span className="block text-sm font-medium text-ink">
+                      {customer.hasPassword ? t('changePasswordLabel') : t('setPasswordLabel')}
+                    </span>
+                    <span className="block text-sm text-muted-foreground">
+                      {t('setPasswordSub')}
+                    </span>
+                  </span>
+                  <ChevronRight
+                    className={`h-4 w-4 text-muted-foreground transition-transform ${
+                      showPasswordForm ? 'rotate-90' : ''
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+                {showPasswordForm && (
+                  <form action={passwordAction} className="border-t border-border/60 p-4 space-y-3">
+                    <input
+                      type="password"
+                      name="password"
+                      required
+                      minLength={8}
+                      maxLength={100}
+                      autoComplete="new-password"
+                      placeholder={t('passwordPlaceholder')}
+                      aria-label={t('passwordPlaceholder')}
+                      className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+                    />
+                    <input
+                      type="password"
+                      name="confirm"
+                      required
+                      minLength={8}
+                      maxLength={100}
+                      autoComplete="new-password"
+                      placeholder={t('passwordConfirmPlaceholder')}
+                      aria-label={t('passwordConfirmPlaceholder')}
+                      className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+                    />
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="submit"
+                        disabled={passwordPending}
+                        className="rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-paper disabled:opacity-60 inline-flex items-center gap-2"
+                      >
+                        {passwordPending && (
+                          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                        )}
+                        {t('save')}
+                      </button>
+                      {passwordState.success && (
+                        <p className="text-sm text-forest">{passwordState.success}</p>
+                      )}
+                      {passwordState.error && (
+                        <p className="text-sm text-red-500">{passwordState.error}</p>
+                      )}
+                    </div>
+                  </form>
+                )}
+              </div>
+            </section>
+
+            {/* Regnskab — auto-forward til e-conomic/Dinero/Billy */}
+            <section className="space-y-2">
+              <SectionLabel>{t('accountingSection')}</SectionLabel>
+              <form
+                action={forwardsAction}
+                className="bg-paper rounded-2xl shadow-sm p-4 space-y-3"
+              >
+                <p className="text-sm text-muted-foreground">{t('accountingIntro')}</p>
+                <label className="block space-y-1">
+                  <span className="text-sm font-medium text-ink">e-conomic</span>
+                  <input
+                    type="email"
+                    name="economic"
+                    defaultValue={customer.forwards.economic ?? ''}
+                    placeholder={t('economicPlaceholder')}
+                    className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+                  />
+                  <span className="block text-xs text-muted-foreground">
+                    {t('economicHint')}
+                  </span>
+                </label>
+                <label className="block space-y-1">
+                  <span className="text-sm font-medium text-ink">Dinero</span>
+                  <input
+                    type="email"
+                    name="dinero"
+                    defaultValue={customer.forwards.dinero ?? ''}
+                    placeholder={t('dineroPlaceholder')}
+                    className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+                  />
+                  <span className="block text-xs text-muted-foreground">
+                    {t('dineroHint')}
+                  </span>
+                </label>
+                <label className="block space-y-1">
+                  <span className="text-sm font-medium text-ink">Billy</span>
+                  <input
+                    type="email"
+                    name="billy"
+                    defaultValue={customer.forwards.billy ?? ''}
+                    placeholder={t('billyPlaceholder')}
+                    className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+                  />
+                  <span className="block text-xs text-muted-foreground">
+                    {t('billyHint')}
+                  </span>
+                </label>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="submit"
+                    disabled={forwardsPending}
+                    className="rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-paper disabled:opacity-60 inline-flex items-center gap-2"
+                  >
+                    {forwardsPending && (
+                      <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                    )}
+                    {t('save')}
+                  </button>
+                  {forwardsState.success && (
+                    <p className="text-sm text-forest">{forwardsState.success}</p>
+                  )}
+                  {forwardsState.error && (
+                    <p className="text-sm text-red-500">{forwardsState.error}</p>
+                  )}
+                </div>
+              </form>
+            </section>
           </>
         ) : (
           /* Logget ud — magic-link pitch (genbruger customerSync-flowet) */
@@ -254,6 +513,50 @@ export function ProfileView({
             )}
             {loginState.error && (
               <p className="text-sm text-red-500">{loginState.error}</p>
+            )}
+            {/* Alternativ: log ind med adgangskode (hvis man har sat en) */}
+            {!loginState.success && (
+              <button
+                onClick={() => setUsePasswordLogin((v) => !v)}
+                className="text-sm font-medium text-forest underline-offset-2 hover:underline"
+              >
+                {usePasswordLogin ? t('useMagicLink') : t('usePassword')}
+              </button>
+            )}
+            {usePasswordLogin && !loginState.success && (
+              <form action={pwLoginAction} className="space-y-2">
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  placeholder={tSync('emailPlaceholder')}
+                  aria-label={tSync('emailPlaceholder')}
+                  autoComplete="email"
+                  className="w-full rounded-full border border-border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+                />
+                <input
+                  type="password"
+                  name="password"
+                  required
+                  placeholder={t('passwordPlaceholder')}
+                  aria-label={t('passwordPlaceholder')}
+                  autoComplete="current-password"
+                  className="w-full rounded-full border border-border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+                />
+                <button
+                  type="submit"
+                  disabled={pwLoginPending}
+                  className="w-full rounded-full bg-forest px-4 py-2.5 text-sm font-semibold text-paper disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                >
+                  {pwLoginPending && (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  )}
+                  {t('loginButton')}
+                </button>
+                {pwLoginState.error && (
+                  <p className="text-sm text-red-500">{pwLoginState.error}</p>
+                )}
+              </form>
             )}
           </section>
         )}
@@ -315,6 +618,40 @@ export function ProfileView({
                 }}
               />
             </div>
+            <div className="flex items-center gap-3 p-4">
+              <IconTile>
+                <Sparkles className="h-4 w-4 text-forest" aria-hidden="true" />
+              </IconTile>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-ink">{t('saveConfirmLabel')}</p>
+                <p className="text-sm text-muted-foreground">{t('saveConfirmSub')}</p>
+              </div>
+              <Toggle
+                on={saveConfirm}
+                label={t('saveConfirmLabel')}
+                onChange={(next) => {
+                  setSaveConfirm(next);
+                  setSaveConfirmState(next);
+                }}
+              />
+            </div>
+            <div className="flex items-center gap-3 p-4">
+              <IconTile>
+                <Volume2 className="h-4 w-4 text-forest" aria-hidden="true" />
+              </IconTile>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-ink">{t('saveSoundLabel')}</p>
+                <p className="text-sm text-muted-foreground">{t('saveSoundSub')}</p>
+              </div>
+              <Toggle
+                on={saveSound}
+                label={t('saveSoundLabel')}
+                onChange={(next) => {
+                  setSaveSound(next);
+                  setSaveSoundState(next);
+                }}
+              />
+            </div>
           </div>
         </section>
 
@@ -360,6 +697,9 @@ export function ProfileView({
               <div className="min-w-0">
                 <p className="text-sm font-medium text-ink">Tapbon</p>
                 <p className="text-sm text-muted-foreground">{t('aboutTagline')}</p>
+                <p className="text-xs text-muted-foreground">
+                  {t('versionLabel', { version })}
+                </p>
               </div>
             </div>
             {customer && (

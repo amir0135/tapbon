@@ -4,6 +4,7 @@ import { desc, eq, inArray } from 'drizzle-orm';
 import { db } from '@/lib/db/drizzle';
 import { customerReceipts, merchants, receipts } from '@/lib/db/schema';
 import { getCustomerSession } from '@/lib/auth/customer';
+import { forwardReceiptToAccounting } from '@/lib/email/forward-receipt';
 
 // Kvitterings-sync for kunde-konti (specs/customer-account.md).
 // GET: hent kontoens arkiv (joinet live — ingen snapshots).
@@ -58,12 +59,19 @@ export async function POST(request: NextRequest) {
     .where(inArray(receipts.id, parsed.data.receiptIds));
 
   if (valid.length > 0) {
-    await db
+    const inserted = await db
       .insert(customerReceipts)
       .values(
         valid.map((r) => ({ customerId: session.customerId, receiptId: r.id }))
       )
-      .onConflictDoNothing();
+      .onConflictDoNothing()
+      .returning({ receiptId: customerReceipts.receiptId });
+
+    // Regnskabs-forwarding: kun NYE gem (dedup via onConflictDoNothing).
+    // Fire-and-forget — må aldrig blokere gem-flowet.
+    for (const row of inserted) {
+      void forwardReceiptToAccounting(session.customerId, row.receiptId);
+    }
   }
 
   return NextResponse.json({ synced: valid.length });

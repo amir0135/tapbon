@@ -59,11 +59,12 @@ Phases are shippable vertical slices. Finish one before starting the next. Detai
   e-mail magic-link, sync via customer_receipts, GDPR-sletning. Tap stadig kontofrit.
   Rest: jurist-tjek af opdateret privatlivspolitik før betalende kunder.
 - Kundeprofil-integrationer (Receiptile-inspireret, 2026-07-20 — skal matche det
-  DANSKE marked): Gmail auto-capture af e-mailboner; auto-forward/eksport til
-  e-conomic, Dinero og Billy (IKKE Xero/Hubdoc/Dext/Expensify); tema-valg
-  (lys/mørk/system); Projects (gruppér boner pr. job/kunde/momsperiode);
-  abonnements-detektion (samme forretning betalt 2+ gange). Profil-siden selv:
-  specs/customer-profile.md.
+  DANSKE marked): BYGGET 2026-07-21 — e-mail-forwarding til e-conomic/Dinero/
+  Billy, Projects, abonnements-detektion, forbrug, adgangskode, toggles.
+  Fortsat parkeret: Gmail auto-capture af e-mailboner (OAuth + GDPR-scope),
+  tema-valg (lys/mørk/system — kræver dark-tokens), OAuth-baserede regnskabs-
+  integrationer (auto-udkast via e-conomic/Dinero/Billy API = v2). Profil-siden
+  selv: specs/customer-profile.md.
 - github/spec-kit: overvejet 2026-07-14 — afvist; repoet har allerede spec-first-systemet
   (build-plan/specs/ROADMAP/PROGRESS/DECISIONS). Genbesøg kun hvis workflowet knækker.
 - (park new tool/service ideas here mid-phase)

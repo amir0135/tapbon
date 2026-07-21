@@ -78,3 +78,28 @@ export function setAutoSave(on: boolean) {
     else localStorage.setItem(AUTOSAVE_KEY, 'off');
   } catch {}
 }
+
+// Gem-bekræftelse + lydeffekt (specs/customer-profile.md) — begge default TIL.
+const SAVE_CONFIRM_KEY = 'tapbon-save-confirm';
+const SAVE_SOUND_KEY = 'tapbon-save-sound';
+
+function readOnPref(key: string): boolean {
+  if (typeof window === 'undefined') return true;
+  try {
+    return localStorage.getItem(key) !== 'off';
+  } catch {
+    return true;
+  }
+}
+
+function setOnPref(key: string, on: boolean) {
+  try {
+    if (on) localStorage.removeItem(key);
+    else localStorage.setItem(key, 'off');
+  } catch {}
+}
+
+export const readSaveConfirm = () => readOnPref(SAVE_CONFIRM_KEY);
+export const setSaveConfirm = (on: boolean) => setOnPref(SAVE_CONFIRM_KEY, on);
+export const readSaveSound = () => readOnPref(SAVE_SOUND_KEY);
+export const setSaveSound = (on: boolean) => setOnPref(SAVE_SOUND_KEY, on);

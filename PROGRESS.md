@@ -1,6 +1,39 @@
 # Progress
 
-## Last session (2026-07-21)
+## Last session (2026-07-21, fortsat)
+**Receiptile-paritet på kundeprofilen — 6 slices bygget på én gang** (bruger-
+ønske "execute alt"; Xero/Hubdoc/Dext/Expensify erstattet af DK: e-conomic/
+Dinero/Billy). Specs: customer-profile.md (v2), customer-insights.md,
+customer-projects.md. Migration 0009 (kørt via az webapp ssh — 5432 stadig
+blokeret lokalt; npm-pitfall "Tracker idealTree already exists" fixes med
+npm cache clean --force + npm init -y; heredocs garbles over SSH-tunnellen →
+brug base64):
+- **Profil**: Privat/Forretning-toggle (setPreferredMode → /dashboard el.
+  /sign-up), genveje til Projekter/Forbrug/Abonnementer, version fra
+  package.json ("version" tilføjet), gem-bekræftelses- + lyd-toggles
+  (localStorage 'tapbon-save-confirm'/'tapbon-save-sound', default TIL —
+  ArchiveSaver viser toast + WebAudio-printerklik).
+- **Adgangskode**: customers.password_hash; setCustomerPassword +
+  customerPasswordLogin (enumeration-sikker) i app/mine/actions.ts; sæt/skift-
+  kort i profilen + "log ind med adgangskode"-flow på logget ud-visning.
+- **Regnskabs-forwarding**: customers.accounting_forwards (jsonb) m/ e-conomic/
+  Dinero/Billy indbakke-e-mails; /api/archive POST forwester NYE gem (returning
+  på onConflictDoNothing) via lib/email/forward-receipt.ts (ACS; fil-boner
+  vedhæftes, strukturerede som HTML m/ moms pr. sats + CVR; blød fejl).
+  sendEmail understøtter nu attachments.
+- **/mine/forbrug**: måneds-hero, 6-mdr. CSS-søjler, pr.-forretning-top-8
+  (lib/receipts/customer-queries.ts — getCustomerSpending).
+- **/mine/abonnementer**: forhandlere m/ 2+ boner (getRecurringMerchants).
+- **/mine/projekter** (+ [id]): customer_projects-tabel + customer_receipts.
+  project_id; opret/slet/tilføj/fjern (deleteProject nulstiller kun project_id
+  — boner slettes aldrig). deleteCustomerAccount rydder også projekter.
+- i18n: profile-ns udvidet + nye ns spending/subscriptions/projects (da+en).
+Build + tsc grøn; migration verificeret i prod-DB. IKKE committet/pushet endnu
+ved sessionsafslutning — commit først.
+OBS: sessionens start fandt ucommittede SLETNINGER af hele profil-slicen
+(stale buffers-pitfall igen) — gendannet med git checkout HEAD før byggeriet.
+
+## Previous session (2026-07-21)
 **Rollevalg huskes nu** (bruger-klage: "den spørger hver gang"): migration 0008
 tilføjer users.preferred_mode ('private'|'business'). Onboarding-step 0 gemmer
 valget (app/onboarding/actions.ts setPreferredMode); /onboarding, sign-in og

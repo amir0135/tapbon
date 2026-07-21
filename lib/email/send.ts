@@ -19,11 +19,13 @@ export async function sendEmail({
   subject,
   plainText,
   html,
+  attachments,
 }: {
   to: string;
   subject: string;
   plainText: string;
   html: string;
+  attachments?: { name: string; contentType: string; contentInBase64: string }[];
 }): Promise<boolean> {
   const emailClient = getClient();
   const sender = process.env.ACS_SENDER_ADDRESS;
@@ -36,6 +38,7 @@ export async function sendEmail({
       senderAddress: sender,
       content: { subject, plainText, html },
       recipients: { to: [{ address: to }] },
+      attachments,
     });
     const result = await poller.pollUntilDone();
     return result.status === 'Succeeded';

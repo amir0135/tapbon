@@ -260,14 +260,36 @@ export const loyaltyCards = pgTable('loyalty_cards', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
+// Regnskabs-forwarding (specs/customer-profile.md) — indbakke-e-mails hos de
+// tre store danske regnskabsprogrammer. Alle felter valgfri.
+export type AccountingForwards = {
+  economic?: string;
+  dinero?: string;
+  billy?: string;
+};
+
 // ── Valgfri kunde-konto (specs/customer-account.md) — opt-in, kun e-mail ────
 export const customers = pgTable('customers', {
   id: serial('id').primaryKey(),
   email: varchar('email', { length: 255 }).notNull().unique(),
   name: varchar('name', { length: 100 }),
   phone: varchar('phone', { length: 30 }),
+  // Valgfri adgangskode (specs/customer-profile.md) — magic link forbliver default
+  passwordHash: text('password_hash'),
+  // Auto-forward gemte boner til e-conomic/Dinero/Billy-indbakker
+  accountingForwards: jsonb('accounting_forwards').$type<AccountingForwards>(),
   loginTokenHash: char('login_token_hash', { length: 64 }),
   loginTokenExpires: timestamp('login_token_expires'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// ── Projekter: gruppér gemte boner pr. job/kunde/momsperiode (customer-projects) ──
+export const customerProjects = pgTable('customer_projects', {
+  id: serial('id').primaryKey(),
+  customerId: integer('customer_id')
+    .notNull()
+    .references(() => customers.id),
+  name: varchar('name', { length: 80 }).notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
@@ -281,6 +303,8 @@ export const customerReceipts = pgTable(
     receiptId: uuid('receipt_id')
       .notNull()
       .references(() => receipts.id),
+    // Valgfrit projekt (null = ikke i noget projekt)
+    projectId: integer('project_id').references(() => customerProjects.id),
     savedAt: timestamp('saved_at').notNull().defaultNow(),
   },
   (table) => [
@@ -334,6 +358,8 @@ export type ReceiptItem = typeof receiptItems.$inferSelect;
 export type NewReceiptItem = typeof receiptItems.$inferInsert;
 export type ReceiptFile = typeof receiptFiles.$inferSelect;
 export type LoyaltyCard = typeof loyaltyCards.$inferSelect;
+export type Customer = typeof customers.$inferSelect;
+export type CustomerProject = typeof customerProjects.$inferSelect;
 export type VatBreakdownEntry = {
   rate: number;
   gross: number;
