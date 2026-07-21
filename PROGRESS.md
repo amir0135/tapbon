@@ -30,6 +30,14 @@ brug base64):
 - i18n: profile-ns udvidet + nye ns spending/subscriptions/projects (da+en).
 Build + tsc grøn; migration verificeret i prod-DB. PUSHET + DEPLOYET (grønt
 run; /mine/profil, /forbrug, /abonnementer, /projekter alle 200 i prod).
+**UI/UX-polish efter visuel prod-review** (screenshots via playwright m/ forget
+customer_session-JWT — signeret lokalt m/ AUTH_SECRET fra .env, customerId 2):
+4 manglende i18n-nøgler (saveConfirm/saveSound viste rå keys i prod!), konto-
+kort ændret til klik-for-redigér-rækker (Navn/Telefon + Annullér, lukker ved
+gem), regnskabssektion nu sammenklappelig m/ "Ikke forbundet"/"n forbundet"-
+statuschip, fælles SignInGate-komponent (lås-ikon-kort) på alle gated sider.
+E2E i prod: opret/slet projekt OK, regnskabsudklap OK, gate OK. Screenshot-
+artefakter fjernet fra repo (/*.png gitignoret).
 OBS: sessionens start fandt ucommittede SLETNINGER af hele profil-slicen
 (stale buffers-pitfall igen) — gendannet med git checkout HEAD før byggeriet.
 
