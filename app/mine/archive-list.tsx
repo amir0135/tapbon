@@ -264,7 +264,9 @@ export function ArchiveList({
           )}
         </section>
 
-        <p className="text-center text-xs text-muted-foreground">{t('localNote')}</p>
+        {!customerEmail && (
+          <p className="text-center text-xs text-muted-foreground">{t('localNote')}</p>
+        )}
       </div>
     </main>
   );
