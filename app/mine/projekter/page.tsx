@@ -5,6 +5,7 @@ import { ArrowLeft, ChevronRight, FolderKanban } from 'lucide-react';
 import { getCustomerSession } from '@/lib/auth/customer';
 import { listProjects } from '@/lib/receipts/customer-queries';
 import { CreateProjectForm } from './project-forms';
+import { SignInGate } from '../sign-in-gate';
 
 export const metadata: Metadata = {
   title: 'Projekter — Tapbon',
@@ -22,14 +23,12 @@ export default async function ProjectsPage() {
 
   if (!session) {
     return (
-      <main className="min-h-dvh bg-canvas">
-        <div className="mx-auto max-w-md p-4 pt-8 space-y-4 text-center">
-          <p className="text-muted-foreground">{t('signInPrompt')}</p>
-          <Link href="/mine/profil" className="inline-block rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-paper">
-            {t('goToProfile')}
-          </Link>
-        </div>
-      </main>
+      <SignInGate
+        title={t('title')}
+        message={t('signInPrompt')}
+        cta={t('goToProfile')}
+        backLabel={t('back')}
+      />
     );
   }
 

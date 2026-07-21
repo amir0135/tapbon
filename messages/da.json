@@ -136,7 +136,16 @@
     "dineroHint": "Find den i Dinero → Upload bilag → E-mail.",
     "billyPlaceholder": "din-indbakke@billy.dk",
     "billyHint": "Find den i Billy → Bilag → Indsend via e-mail.",
-    "versionLabel": "Version {version}"
+    "versionLabel": "Version {version}",
+    "saveConfirmLabel": "Gem-bekræftelse",
+    "saveConfirmSub": "Vis en bekræftelse, når en bon gemmes",
+    "saveSoundLabel": "Lydeffekter",
+    "saveSoundSub": "Kvitteringsprinter-lyd ved gem",
+    "cancel": "Annullér",
+    "accountingLabel": "Regnskabsprogram",
+    "accountingSub": "e-conomic, Dinero eller Billy",
+    "accountingConnected": "{count, plural, one {# forbundet} other {# forbundet}}",
+    "accountingNotConnected": "Ikke forbundet"
   },
   "issue": {
     "title": "Kvitteringer",

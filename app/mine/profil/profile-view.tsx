@@ -12,6 +12,7 @@ import {
   FolderKanban,
   Globe,
   KeyRound,
+  Landmark,
   Loader2,
   LogOut,
   Mail,
@@ -132,6 +133,8 @@ export function ProfileView({
 
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [usePasswordLogin, setUsePasswordLogin] = useState(false);
+  const [editingAccount, setEditingAccount] = useState(false);
+  const [showAccounting, setShowAccounting] = useState(false);
 
   const [profileState, profileAction, profilePending] = useActionState<
     { error?: string; success?: string },
@@ -157,6 +160,15 @@ export function ProfileView({
     { error?: string; success?: string },
     FormData
   >(setAccountingForwards, {});
+
+  // Luk redigér-formen når gem lykkes
+  useEffect(() => {
+    if (profileState.success) setEditingAccount(false);
+  }, [profileState]);
+
+  const forwardsCount = customer
+    ? [customer.forwards.economic, customer.forwards.dinero, customer.forwards.billy].filter(Boolean).length
+    : 0;
 
   return (
     <main className="min-h-dvh bg-canvas">
@@ -229,53 +241,87 @@ export function ProfileView({
                     </p>
                   </div>
                 </div>
-                <form action={profileAction} className="p-4 space-y-3">
-                  <label className="block space-y-1">
-                    <span className="flex items-center gap-2 text-sm font-medium text-ink">
-                      <User className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                      {t('nameLabel')}
-                    </span>
-                    <input
-                      name="name"
-                      defaultValue={customer.name ?? ''}
-                      maxLength={100}
-                      placeholder={t('namePlaceholder')}
-                      className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
-                    />
-                  </label>
-                  <label className="block space-y-1">
-                    <span className="flex items-center gap-2 text-sm font-medium text-ink">
-                      <Phone className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                      {t('phoneLabel')}
-                    </span>
-                    <input
-                      name="phone"
-                      type="tel"
-                      defaultValue={customer.phone ?? ''}
-                      maxLength={30}
-                      placeholder={t('phonePlaceholder')}
-                      className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
-                    />
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="submit"
-                      disabled={profilePending}
-                      className="rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-paper disabled:opacity-60 inline-flex items-center gap-2"
-                    >
-                      {profilePending && (
-                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                {editingAccount ? (
+                  <form action={profileAction} className="p-4 space-y-3">
+                    <label className="block space-y-1">
+                      <span className="text-sm font-medium text-ink">{t('nameLabel')}</span>
+                      <input
+                        name="name"
+                        defaultValue={customer.name ?? ''}
+                        maxLength={100}
+                        autoFocus
+                        placeholder={t('namePlaceholder')}
+                        className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+                      />
+                    </label>
+                    <label className="block space-y-1">
+                      <span className="text-sm font-medium text-ink">{t('phoneLabel')}</span>
+                      <input
+                        name="phone"
+                        type="tel"
+                        defaultValue={customer.phone ?? ''}
+                        maxLength={30}
+                        placeholder={t('phonePlaceholder')}
+                        className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+                      />
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="submit"
+                        disabled={profilePending}
+                        className="rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-paper disabled:opacity-60 inline-flex items-center gap-2"
+                      >
+                        {profilePending && (
+                          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                        )}
+                        {t('save')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingAccount(false)}
+                        className="rounded-full px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-ink"
+                      >
+                        {t('cancel')}
+                      </button>
+                      {profileState.error && (
+                        <p className="text-sm text-red-500">{profileState.error}</p>
                       )}
-                      {t('save')}
+                    </div>
+                  </form>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => setEditingAccount(true)}
+                      className="flex w-full items-center gap-3 p-4 text-left"
+                    >
+                      <IconTile>
+                        <User className="h-4 w-4 text-forest" aria-hidden="true" />
+                      </IconTile>
+                      <span className="flex-1 min-w-0">
+                        <span className="block text-sm font-medium text-ink">{t('nameLabel')}</span>
+                        <span className="block text-sm text-muted-foreground truncate">
+                          {customer.name || t('namePlaceholder')}
+                        </span>
+                      </span>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                     </button>
-                    {profileState.success && (
-                      <p className="text-sm text-forest">{profileState.success}</p>
-                    )}
-                    {profileState.error && (
-                      <p className="text-sm text-red-500">{profileState.error}</p>
-                    )}
-                  </div>
-                </form>
+                    <button
+                      onClick={() => setEditingAccount(true)}
+                      className="flex w-full items-center gap-3 p-4 text-left"
+                    >
+                      <IconTile>
+                        <Phone className="h-4 w-4 text-forest" aria-hidden="true" />
+                      </IconTile>
+                      <span className="flex-1 min-w-0">
+                        <span className="block text-sm font-medium text-ink">{t('phoneLabel')}</span>
+                        <span className="block text-sm text-muted-foreground truncate">
+                          {customer.phone || t('phonePlaceholder')}
+                        </span>
+                      </span>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                    </button>
+                  </>
+                )}
                 <div className="flex items-center gap-3 p-4">
                   <IconTile>
                     <Mail className="h-4 w-4 text-forest" aria-hidden="true" />
@@ -408,11 +454,44 @@ export function ProfileView({
             {/* Regnskab — auto-forward til e-conomic/Dinero/Billy */}
             <section className="space-y-2">
               <SectionLabel>{t('accountingSection')}</SectionLabel>
-              <form
-                action={forwardsAction}
-                className="bg-paper rounded-2xl shadow-sm p-4 space-y-3"
-              >
-                <p className="text-sm text-muted-foreground">{t('accountingIntro')}</p>
+              <div className="bg-paper rounded-2xl shadow-sm">
+                <button
+                  onClick={() => setShowAccounting((v) => !v)}
+                  className="flex w-full items-center gap-3 p-4 text-left"
+                >
+                  <IconTile>
+                    <Landmark className="h-4 w-4 text-forest" aria-hidden="true" />
+                  </IconTile>
+                  <span className="flex-1 min-w-0">
+                    <span className="block text-sm font-medium text-ink">
+                      {t('accountingLabel')}
+                    </span>
+                    <span className="block text-sm text-muted-foreground">
+                      {t('accountingSub')}
+                    </span>
+                  </span>
+                  {forwardsCount > 0 ? (
+                    <span className="shrink-0 rounded-full bg-mint-tint px-2.5 py-1 text-xs font-semibold text-forest">
+                      {t('accountingConnected', { count: forwardsCount })}
+                    </span>
+                  ) : (
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {t('accountingNotConnected')}
+                    </span>
+                  )}
+                  <ChevronRight
+                    className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${
+                      showAccounting ? 'rotate-90' : ''
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+                {showAccounting && (
+                  <form
+                    action={forwardsAction}
+                    className="border-t border-border/60 p-4 space-y-3"
+                  >
+                    <p className="text-sm text-muted-foreground">{t('accountingIntro')}</p>
                 <label className="block space-y-1">
                   <span className="text-sm font-medium text-ink">e-conomic</span>
                   <input
@@ -452,25 +531,27 @@ export function ProfileView({
                     {t('billyHint')}
                   </span>
                 </label>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="submit"
-                    disabled={forwardsPending}
-                    className="rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-paper disabled:opacity-60 inline-flex items-center gap-2"
-                  >
-                    {forwardsPending && (
-                      <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                    )}
-                    {t('save')}
-                  </button>
-                  {forwardsState.success && (
-                    <p className="text-sm text-forest">{forwardsState.success}</p>
-                  )}
-                  {forwardsState.error && (
-                    <p className="text-sm text-red-500">{forwardsState.error}</p>
-                  )}
-                </div>
-              </form>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="submit"
+                        disabled={forwardsPending}
+                        className="rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-paper disabled:opacity-60 inline-flex items-center gap-2"
+                      >
+                        {forwardsPending && (
+                          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                        )}
+                        {t('save')}
+                      </button>
+                      {forwardsState.success && (
+                        <p className="text-sm text-forest">{forwardsState.success}</p>
+                      )}
+                      {forwardsState.error && (
+                        <p className="text-sm text-red-500">{forwardsState.error}</p>
+                      )}
+                    </div>
+                  </form>
+                )}
+              </div>
             </section>
           </>
         ) : (

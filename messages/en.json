@@ -136,7 +136,16 @@
     "dineroHint": "Find it in Dinero → Upload receipts → Email.",
     "billyPlaceholder": "your-inbox@billy.dk",
     "billyHint": "Find it in Billy → Vouchers → Submit by email.",
-    "versionLabel": "Version {version}"
+    "versionLabel": "Version {version}",
+    "saveConfirmLabel": "Save confirmation",
+    "saveConfirmSub": "Show a confirmation when a receipt is saved",
+    "saveSoundLabel": "Sound effects",
+    "saveSoundSub": "Receipt printer sound on save",
+    "cancel": "Cancel",
+    "accountingLabel": "Accounting software",
+    "accountingSub": "e-conomic, Dinero or Billy",
+    "accountingConnected": "{count, plural, one {# connected} other {# connected}}",
+    "accountingNotConnected": "Not connected"
   },
   "issue": {
     "title": "Receipts",
