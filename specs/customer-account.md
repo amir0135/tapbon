@@ -18,9 +18,11 @@ logget ind ⇒ (1) PULL: GET /api/archive (joinet liste) merges ind i localStora
 ArchiveSaver på /r POST'er fire-and-forget (no-op uden session). localStorage
 forbliver sandhed for anonyme.
 
-**UI på /mine:** logget ud → kort "Gem dine kvitteringer på alle enheder" m/
-e-mail-felt + "vi sender et link"; logget ind → "Synket som x@y" + Log ud +
-Slet konto (GDPR: sletter customer + links; boner består hos forretningen).
+**UI på /mine (v2, 2026-07-21):** INTET login-kort på dashboardet — enten har
+man en konto (alle features, diskret "Synkroniseret som x@y"-linje), eller også
+har man ikke (lokalt arkiv + pitch på bon-siden /r efter print/tap). Konto
+oprettes/administreres KUN via /mine/profil (magic link eller adgangskode) og
+bon-sidens arkiv-link. Log ud + Slet konto bor i profilen.
 
 **Privatlivspolitik** udvides: valgfri kundekonto-sektion (e-mail gemmes,
 kvitteringslinks, sletning). Alle strings da/en.

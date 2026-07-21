@@ -64,7 +64,8 @@
     "saveManualTitle": "Save this receipt to your archive",
     "saveManualSub": "Auto-save is off — tap to save this receipt",
     "localNote": "The archive lives only on this device — we store nothing about you.",
-    "savedToast": "Receipt saved"
+    "savedToast": "Receipt saved",
+    "syncedAs": "Synced as {email}"
   },
   "loyalty": {
     "title": "Loyalty card",
