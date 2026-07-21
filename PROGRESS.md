@@ -28,8 +28,8 @@ brug base64):
   project_id; opret/slet/tilføj/fjern (deleteProject nulstiller kun project_id
   — boner slettes aldrig). deleteCustomerAccount rydder også projekter.
 - i18n: profile-ns udvidet + nye ns spending/subscriptions/projects (da+en).
-Build + tsc grøn; migration verificeret i prod-DB. IKKE committet/pushet endnu
-ved sessionsafslutning — commit først.
+Build + tsc grøn; migration verificeret i prod-DB. PUSHET + DEPLOYET (grønt
+run; /mine/profil, /forbrug, /abonnementer, /projekter alle 200 i prod).
 OBS: sessionens start fandt ucommittede SLETNINGER af hele profil-slicen
 (stale buffers-pitfall igen) — gendannet med git checkout HEAD før byggeriet.
 
