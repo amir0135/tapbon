@@ -49,9 +49,13 @@ export async function GET(request: NextRequest) {
   if (existing[0] && !existing[0].deletedAt) {
     await setSession(existing[0]);
     const merchant = await getMerchantForUser(existing[0].id);
-    return NextResponse.redirect(
-      `${base}${merchant ? '/dashboard' : '/onboarding'}`
-    );
+    // Privatpersoner (onboarding-valg) skal ikke spørges igen → /mine
+    const dest = merchant
+      ? '/dashboard'
+      : existing[0].preferredMode === 'private'
+        ? '/mine'
+        : '/onboarding';
+    return NextResponse.redirect(`${base}${dest}`);
   }
 
   // Ny bruger → opret (tilfældig adgangskode-hash; login sker via Google)

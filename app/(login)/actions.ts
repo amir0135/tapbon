@@ -101,6 +101,9 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
     return createCheckoutSession({ team: foundTeam, priceId });
   }
 
+  // Privatpersoner (onboarding-valg, migration 0008) lander på deres arkiv
+  if (foundUser.preferredMode === 'private') redirect('/mine');
+
   redirect('/dashboard/receipts');
 });
 

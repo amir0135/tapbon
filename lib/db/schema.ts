@@ -23,6 +23,8 @@ export const users = pgTable('users', {
   email: varchar('email', { length: 255 }).notNull().unique(),
   passwordHash: text('password_hash').notNull(),
   role: varchar('role', { length: 20 }).notNull().default('member'),
+  // Onboarding-rollevalg huskes: 'private' → /mine, 'business' → dashboard (null = ikke valgt endnu)
+  preferredMode: varchar('preferred_mode', { length: 10 }),
   // Glemt adgangskode (specs/legal-pages.md): SHA-256 af engangstoken + udløb
   resetTokenHash: char('reset_token_hash', { length: 64 }),
   resetTokenExpires: timestamp('reset_token_expires'),

@@ -17,6 +17,7 @@ import {
   User,
 } from 'lucide-react';
 import { createMerchant } from '@/lib/receipts/actions';
+import { setPreferredMode } from './actions';
 
 const BUSINESS_TYPES = [
   { id: 'cafe', icon: Coffee },
@@ -99,7 +100,10 @@ export function OnboardingWizard() {
           <div className="mt-4 space-y-3">
             <button
               type="button"
-              onClick={() => setStep(1)}
+              onClick={() => {
+                void setPreferredMode('business');
+                setStep(1);
+              }}
               className={optionClass(false)}
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
@@ -113,7 +117,13 @@ export function OnboardingWizard() {
             </button>
             <button
               type="button"
-              onClick={() => router.push('/mine')}
+              onClick={() =>
+                startTransition(async () => {
+                  // Husk valget, så næste login går direkte til /mine
+                  await setPreferredMode('private');
+                  router.push('/mine');
+                })
+              }
               className={optionClass(false)}
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">

@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "preferred_mode" varchar(10);

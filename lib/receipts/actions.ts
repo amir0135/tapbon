@@ -5,7 +5,7 @@ import { createHash, randomBytes, randomInt } from 'node:crypto';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db/drizzle';
-import { merchants, merchantLogos, receipts, receiptItems, terminals } from '@/lib/db/schema';
+import { merchants, merchantLogos, receipts, receiptItems, terminals, users } from '@/lib/db/schema';
 import { getUser } from '@/lib/db/queries';
 import { getMerchantForUser, getDefaultTerminal } from './queries';
 import { computeVat, lineTotalGross } from '@/lib/vat';
@@ -69,6 +69,9 @@ export async function createMerchant(formData: FormData) {
     publicId: randomBytes(6).toString('base64url').slice(0, 8),
     name: 'Kasse 1',
   });
+
+  // Husk rollevalget — fremtidige logins går direkte til dashboardet
+  await db.update(users).set({ preferredMode: 'business' }).where(eq(users.id, user.id));
 
   revalidatePath('/dashboard/receipts');
   return { success: true };

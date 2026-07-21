@@ -13,5 +13,8 @@ export default async function OnboardingPage() {
   const merchant = await getMerchantForUser(user.id);
   if (merchant) redirect('/dashboard');
 
+  // Har tidligere valgt "privatperson" → spørg ikke igen (migration 0008)
+  if (user.preferredMode === 'private') redirect('/mine');
+
   return <OnboardingWizard />;
 }
