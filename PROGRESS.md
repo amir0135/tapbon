@@ -1,6 +1,17 @@
 # Progress
 
-## Last session (2026-07-20)
+## Last session (2026-07-21)
+**Rollevalg huskes nu** (bruger-klage: "den spørger hver gang"): migration 0008
+tilføjer users.preferred_mode ('private'|'business'). Onboarding-step 0 gemmer
+valget (app/onboarding/actions.ts setPreferredMode); /onboarding, sign-in og
+Google-callback sender 'private'-brugere direkte til /mine; createMerchant
+sætter 'business'. OBS: lokalt netværk (MS corp) blokerer port 5432 → migration
+kørt via `az webapp ssh` på tapbon-app (npm i postgres i /tmp + manuel INSERT i
+drizzle.__drizzle_migrations med filens sha256). ALT PUSHET + DEPLOYET (grønt
+run, prod verificeret 200): profil-slicen fra i går er nu også live på
+tapbon.dk.
+
+## Previous session (2026-07-20)
 **Kundeprofil-slice bygget** (Receiptile-inspireret, spec: specs/customer-
 profile.md): ny side /mine/profil m/ konto-kort (avatar-initialer, navn +
 telefon redigerbare — migration 0007 tilføjer customers.name/phone, kørt mod
@@ -216,9 +227,8 @@ DKK receipts through the real computeVat+hash path. Seeded to Azure db
 receipt locally.
 
 ## Next up
-Push/deploy kundeprofil-slicen (commit ligger lokalt). Beslut næste kunde-
-slice fra ROADMAP (fx Gmail auto-capture eller eksport til e-conomic/Dinero/
-Billy). Phase 2: pitch pilot-caféer (demo: Loyverse + emulator + NFC-kort +
+Beslut næste kunde-slice fra ROADMAP (fx Gmail auto-capture eller eksport til
+e-conomic/Dinero/Billy). Phase 2: pitch pilot-caféer (demo: Loyverse + emulator + NFC-kort +
 tapbon.dk). Bestil NTAG213-stickers til pilot-standere. Roter
 tb_demo_kaffebar-token før første rigtige pilot.
 
