@@ -2,14 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowRight, ReceiptText, Trash2 } from 'lucide-react';
-import {
-  mergeIntoArchive,
-  readArchive,
-  removeFromArchive,
-  type ArchiveEntry,
-} from '@/lib/archive/local';
+import { clearArchive, readArchive, type ArchiveEntry } from '@/lib/archive/local';
 import { formatMoney } from '@/lib/receipts/format';
 import { BottomNav } from './bottom-nav';
 
@@ -36,36 +32,43 @@ function monthStats(entries: ArchiveEntry[]) {
   };
 }
 
-/** Personligt dashboard — arkiv og forbrug, alt fra enheden (specs/customer-archive.md v2). */
-export function ArchiveList({ customerEmail }: { customerEmail: string | null }) {
+/** Personligt dashboard — kontoens arkiv, server-fed (specs/customer-account.md v3). */
+export function ArchiveList({
+  customerEmail,
+  entries: serverEntries,
+}: {
+  customerEmail: string;
+  entries: ArchiveEntry[];
+}) {
   const t = useTranslations('archive');
   const locale = useLocale();
-  const [entries, setEntries] = useState<ArchiveEntry[] | null>(null);
+  const router = useRouter();
+  const [entries, setEntries] = useState<ArchiveEntry[]>(serverEntries);
+  useEffect(() => setEntries(serverEntries), [serverEntries]);
 
+  // Engangsmigrering: gammelt localStorage-arkiv → kontoen, ryd, refresh.
   useEffect(() => {
     const local = readArchive();
-    setEntries(local);
-
-    if (customerEmail) {
-      // PULL: server-arkiv → merge lokalt; PUSH: lokale ids op
-      fetch('/api/archive')
-        .then((r) => (r.ok ? r.json() : null))
-        .then((data) => {
-          if (data?.entries) setEntries(mergeIntoArchive(data.entries));
-        })
-        .catch(() => {});
-      if (local.length > 0) {
-        fetch('/api/archive', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ receiptIds: local.map((e) => e.id) }),
-        }).catch(() => {});
-      }
-    }
+    if (local.length === 0) return;
+    fetch('/api/archive', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ receiptIds: local.map((e) => e.id) }),
+    })
+      .then((r) => {
+        if (r.ok) {
+          clearArchive();
+          router.refresh();
+        }
+      })
+      .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (entries === null) return null;
+  const remove = (id: string) => {
+    setEntries((prev) => prev.filter((e) => e.id !== id));
+    fetch(`/api/archive?id=${id}`, { method: 'DELETE' }).catch(() => {});
+  };
 
   const stats = monthStats(entries);
 
@@ -97,12 +100,10 @@ export function ArchiveList({ customerEmail }: { customerEmail: string | null })
           </div>
         </div>
 
-        {/* Synk-status — diskret linje, ikke et login-kort (login bor på bon-siden + profilen) */}
-        {customerEmail && (
-          <p className="px-1 text-center text-xs text-muted-foreground">
-            {t('syncedAs', { email: customerEmail })}
-          </p>
-        )}
+        {/* Diskret synk-linje — alle er logget ind i konto-først-modellen */}
+        <p className="px-1 text-center text-xs text-muted-foreground">
+          {t('syncedAs', { email: customerEmail })}
+        </p>
 
         {/* Kvitteringer */}
         <section className="space-y-2">
@@ -146,7 +147,7 @@ export function ArchiveList({ customerEmail }: { customerEmail: string | null })
                     <ArrowRight className="h-5 w-5" aria-hidden="true" />
                   </Link>
                   <button
-                    onClick={() => setEntries(removeFromArchive(e.id))}
+                    onClick={() => remove(e.id)}
                     aria-label={t('remove')}
                     className="text-muted-foreground/50 hover:text-red-500 shrink-0"
                   >
@@ -157,10 +158,6 @@ export function ArchiveList({ customerEmail }: { customerEmail: string | null })
             </ul>
           )}
         </section>
-
-        {!customerEmail && (
-          <p className="text-center text-xs text-muted-foreground">{t('localNote')}</p>
-        )}
       </div>
       <BottomNav />
     </main>

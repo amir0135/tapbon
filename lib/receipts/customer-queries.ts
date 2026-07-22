@@ -115,6 +115,31 @@ export async function getRecurringMerchants(customerId: number) {
   }));
 }
 
+/** Kontoens arkiv (specs/customer-account.md v3) — joinet live, nyeste først. */
+export async function getCustomerArchive(customerId: number) {
+  const rows = await db
+    .select({
+      id: receipts.id,
+      merchant: merchants.businessName,
+      totalGross: receipts.totalGross,
+      currency: receipts.currency,
+      kind: receipts.kind,
+      issuedAt: receipts.issuedAt,
+    })
+    .from(customerReceipts)
+    .innerJoin(receipts, eq(receipts.id, customerReceipts.receiptId))
+    .innerJoin(merchants, eq(merchants.id, receipts.merchantId))
+    .where(eq(customerReceipts.customerId, customerId))
+    .orderBy(desc(receipts.issuedAt))
+    .limit(500);
+
+  return rows.map((r) => ({
+    ...r,
+    kind: (r.kind === 'file' ? 'file' : 'structured') as 'file' | 'structured',
+    issuedAt: r.issuedAt.toISOString(),
+  }));
+}
+
 // ── Projekter (specs/customer-projects.md) ──────────────────────────────────
 
 export async function listProjects(customerId: number) {

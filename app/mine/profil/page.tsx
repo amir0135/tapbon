@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { eq } from 'drizzle-orm';
+import { redirect } from 'next/navigation';
 import { getLocale } from 'next-intl/server';
 import { getCustomerSession } from '@/lib/auth/customer';
 import { db } from '@/lib/db/drizzle';
@@ -14,12 +15,14 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-/** Kundeprofil (specs/customer-profile.md). */
+/** Kundeprofil (specs/customer-profile.md) — konto-først: kræver login. */
 export default async function ProfilePage() {
   const [session, locale] = await Promise.all([
     getCustomerSession(),
     getLocale(),
   ]);
+
+  if (!session) redirect('/mine');
 
   let customer:
     | {

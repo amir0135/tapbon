@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { ArrowLeft, ChevronRight, FolderKanban } from 'lucide-react';
 import { getCustomerSession } from '@/lib/auth/customer';
 import { listProjects } from '@/lib/receipts/customer-queries';
 import { CreateProjectForm } from './project-forms';
-import { SignInGate } from '../sign-in-gate';
 import { BottomNav } from '../bottom-nav';
 
 export const metadata: Metadata = {
@@ -22,16 +22,7 @@ export default async function ProjectsPage() {
     getTranslations('projects'),
   ]);
 
-  if (!session) {
-    return (
-      <SignInGate
-        title={t('title')}
-        message={t('signInPrompt')}
-        cta={t('goToProfile')}
-        backLabel={t('back')}
-      />
-    );
-  }
+  if (!session) redirect('/mine');
 
   const projects = await listProjects(session.customerId);
 

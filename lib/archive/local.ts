@@ -1,6 +1,8 @@
 'use client';
 
-// Kunde-arkiv på telefonen — uden konto, nul PII (specs/customer-archive.md).
+// Device-lokale rester efter konto-først-skiftet (specs/customer-account.md v3):
+// arkiv-læsning bruges KUN til engangsmigrering til kontoen; præferencer
+// (auto-gem, bekræftelse, lyd) er stadig lokale.
 // localStorage 'tapbon-archive': [{id, merchant, totalGross, currency, kind, issuedAt}]
 
 export type ArchiveEntry = {
@@ -13,7 +15,6 @@ export type ArchiveEntry = {
 };
 
 const KEY = 'tapbon-archive';
-const MAX_ENTRIES = 300;
 
 export function readArchive(): ArchiveEntry[] {
   if (typeof window === 'undefined') return [];
@@ -26,38 +27,11 @@ export function readArchive(): ArchiveEntry[] {
   }
 }
 
-export function saveToArchive(entry: ArchiveEntry): ArchiveEntry[] {
-  const rest = readArchive().filter((e) => e.id !== entry.id);
-  const next = [entry, ...rest].slice(0, MAX_ENTRIES);
+/** Ryd det lokale arkiv — kaldes efter vellykket migrering til kontoen. */
+export function clearArchive() {
   try {
-    localStorage.setItem(KEY, JSON.stringify(next));
-  } catch {
-    // Storage fuld/blokeret — arkivet er best effort
-  }
-  return next;
-}
-
-export function removeFromArchive(id: string): ArchiveEntry[] {
-  const next = readArchive().filter((e) => e.id !== id);
-  try {
-    localStorage.setItem(KEY, JSON.stringify(next));
+    localStorage.removeItem(KEY);
   } catch {}
-  return next;
-}
-
-/** Merge server-entries ind (sync) — union på id, nyeste først. */
-export function mergeIntoArchive(incoming: ArchiveEntry[]): ArchiveEntry[] {
-  const byId = new Map<string, ArchiveEntry>();
-  for (const e of [...incoming, ...readArchive()]) {
-    if (!byId.has(e.id)) byId.set(e.id, e);
-  }
-  const next = [...byId.values()]
-    .sort((a, b) => new Date(b.issuedAt).getTime() - new Date(a.issuedAt).getTime())
-    .slice(0, MAX_ENTRIES);
-  try {
-    localStorage.setItem(KEY, JSON.stringify(next));
-  } catch {}
-  return next;
 }
 
 // Auto-gem-præference (specs/customer-profile.md) — default TIL.

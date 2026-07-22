@@ -1,29 +1,38 @@
-# Spec: Kunde-konto med sync (valgfrit lag — Receiptile-modellen)
+# Spec: Kunde-konto (konto-først — Receiptile-vejen, v3 2026-07-22)
 
-Tap forbliver ALTID kontofrit. Kontoen er et valgfrit lag til "gem på tværs af
-enheder": e-mail magic-link (ACS), ingen adgangskode.
+Kundesiden er **konto-først**: /mine og alle undersider kræver kunde-login.
+Det kontofri localStorage-arkiv er droppet (DECISIONS.md 2026-07-22 pm).
+Bonen på /r/[id] er stadig offentlig at SE — kontoen skal kun til at GEMME.
 
-**Datamodel:** `customers` (id, email unik, loginTokenHash/loginTokenExpires
-til magic-link — 15 min, SHA-256) + `customer_receipts` (customerId, receiptId,
-savedAt; unik pr. par). Ingen snapshots — arkivdata joines live fra receipts/
-merchants ved hentning.
+**Datamodel:** `customers` (id, email unik, loginTokenHash/-Expires til magic-link
+— 15 min, SHA-256; valgfri passwordHash) + `customer_receipts` (customerId,
+receiptId, savedAt; unik pr. par). Ingen snapshots — arkivet joines live.
 
-**Auth:** separat fra merchant-auth. Magic-link → GET /api/customer/verify?token=
-→ sætter httpOnly-cookie `customer_session` (jose JWT m/ customerId+email,
-365 dage, AUTH_SECRET). Helper lib/auth/customer.ts (getCustomer()).
+**Auth:** separat fra merchant-auth (gennem piloten). Magic-link →
+GET /api/customer/verify?token= → httpOnly-cookie `customer_session` (jose JWT,
+365 dage, AUTH_SECRET). Alternativ: adgangskode-login. Helper lib/auth/customer.ts.
 
-**Sync:** /mine (server component læser customer-session → props til client):
-logget ind ⇒ (1) PULL: GET /api/archive (joinet liste) merges ind i localStorage;
-(2) PUSH: lokale entries POST'es (kun receipt-ids; server validerer eksistens).
-ArchiveSaver på /r POST'er fire-and-forget (no-op uden session). localStorage
-forbliver sandhed for anonyme.
+**/mine (logget ud):** SignInLanding — velkomstkort med magic-link-formular
+(+ adgangskode-toggle). Ingen bundnav. Alle /mine-undersider redirecter til
+/mine uden session (sign-in-gate.tsx er slettet).
 
-**UI på /mine (v2, 2026-07-21):** INTET login-kort på dashboardet — enten har
-man en konto (alle features, diskret "Synkroniseret som x@y"-linje), eller også
-har man ikke (lokalt arkiv + pitch på bon-siden /r efter print/tap). Konto
-oprettes/administreres KUN via /mine/profil (magic link eller adgangskode) og
-bon-sidens arkiv-link. Log ud + Slet konto bor i profilen.
+**/mine (logget ind):** arkivet hentes server-side (getCustomerArchive) og
+renderes som liste; sletning = DELETE /api/archive?id=. Diskret
+"Synkroniseret som x"-linje. Bundnav som før.
 
-**Privatlivspolitik** udvides: valgfri kundekonto-sektion (e-mail gemmes,
-kvitteringslinks, sletning). Alle strings da/en.
-Out of scope: Gmail-import, scanning, notifikationer.
+**Migrering:** ved første besøg på /mine med session PUSH'es evt. gammelt
+localStorage-arkiv (POST /api/archive med ids), localStorage ryddes, og
+listen refreshes. Engangsbro — kan fjernes efter piloten.
+
+**/r/[id]:** logget ind ⇒ auto-gem til kontoen (respekterer auto-gem-præference;
+fra ⇒ manuel Gem-knap) + bekræftelses-toast/lyd. Logget ud ⇒ pitch-kort
+"Gem bonen på din konto" → /mine (login). Ingen localStorage-gem.
+
+**Præferencer** (auto-gem, gem-bekræftelse, lyd) forbliver device-lokale
+(lib/archive/local.ts). Loyalitetskort forbliver localStorage indtil videre
+(egen slice at flytte dem til kontoen — ROADMAP).
+
+**Privatlivspolitik**: kundekonto-sektion (e-mail gemmes, kvitteringslinks,
+sletning). Alle strings da/en.
+Out of scope: sammenlægning med merchant-konto (Fase 6), Gmail-import,
+notifikationer.

@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { desc, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { db } from '@/lib/db/drizzle';
-import { customerReceipts, merchants, receipts } from '@/lib/db/schema';
+import { customerReceipts, receipts } from '@/lib/db/schema';
 import { getCustomerSession } from '@/lib/auth/customer';
+import { getCustomerArchive } from '@/lib/receipts/customer-queries';
 import { forwardReceiptToAccounting } from '@/lib/email/forward-receipt';
 
-// Kvitterings-sync for kunde-konti (specs/customer-account.md).
-// GET: hent kontoens arkiv (joinet live — ingen snapshots).
-// POST: tilføj receipt-ids fra enhedens lokale arkiv (dedup, valideret).
+// Kontoens arkiv (specs/customer-account.md v3 — konto-først).
+// GET: hent arkivet (joinet live — ingen snapshots).
+// POST: gem receipt-ids (dedup, valideret) — bruges af /r + engangsmigrering.
+// DELETE: fjern én bon fra kontoen (?id=).
 
 export const dynamic = 'force-dynamic';
 
@@ -16,26 +18,8 @@ export async function GET() {
   const session = await getCustomerSession();
   if (!session) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
-  const rows = await db
-    .select({
-      id: receipts.id,
-      merchant: merchants.businessName,
-      totalGross: receipts.totalGross,
-      currency: receipts.currency,
-      kind: receipts.kind,
-      issuedAt: receipts.issuedAt,
-    })
-    .from(customerReceipts)
-    .innerJoin(receipts, eq(receipts.id, customerReceipts.receiptId))
-    .innerJoin(merchants, eq(merchants.id, receipts.merchantId))
-    .where(eq(customerReceipts.customerId, session.customerId))
-    .orderBy(desc(receipts.issuedAt))
-    .limit(500);
-
-  return NextResponse.json({
-    email: session.email,
-    entries: rows.map((r) => ({ ...r, issuedAt: r.issuedAt.toISOString() })),
-  });
+  const entries = await getCustomerArchive(session.customerId);
+  return NextResponse.json({ email: session.email, entries });
 }
 
 const syncSchema = z.object({
@@ -75,4 +59,26 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ synced: valid.length });
+}
+
+export async function DELETE(request: NextRequest) {
+  const session = await getCustomerSession();
+  if (!session) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+
+  const id = request.nextUrl.searchParams.get('id');
+  const parsed = z.string().uuid().safeParse(id);
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'invalid_input' }, { status: 400 });
+  }
+
+  await db
+    .delete(customerReceipts)
+    .where(
+      and(
+        eq(customerReceipts.customerId, session.customerId),
+        eq(customerReceipts.receiptId, parsed.data)
+      )
+    );
+
+  return NextResponse.json({ removed: true });
 }

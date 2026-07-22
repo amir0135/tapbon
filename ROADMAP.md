@@ -65,9 +65,12 @@ Phases are shippable vertical slices. Finish one before starting the next. Detai
   fanger tap via Universal Links/App Links (apple-app-site-association + assetlinks.json
   på tapbon.dk) — app installeret ⇒ bon gemmes automatisk i appen; ellers browser-fallback.
   Ingen ændring af brikker/backend. Mellemtrin: gør /mine til PWA ("Føj til hjemmeskærm").
-- Valgfri shopper-konto: BYGGET 2026-07-17 (fremrykket på brugerens ønske) —
-  e-mail magic-link, sync via customer_receipts, GDPR-sletning. Tap stadig kontofrit.
+- Valgfri shopper-konto: BYGGET 2026-07-17; OPGRADERET til KONTO-FØRST 2026-07-22 pm
+  ("gå Receiptile-vejen", DECISIONS.md) — /mine kræver login, localStorage-arkivet
+  droppet (engangsmigrering ved første login), bon-siden offentlig m/ konto-pitch.
   Rest: jurist-tjek af opdateret privatlivspolitik før betalende kunder.
+- Loyalitetskort til kontoen: stadig localStorage (tapbon-loyalty-*) — egen slice
+  at flytte dem til serveren nu hvor arkivet er konto-baseret.
 - Kundeprofil-integrationer (Receiptile-inspireret, 2026-07-20 — skal matche det
   DANSKE marked): BYGGET 2026-07-21 — e-mail-forwarding til e-conomic/Dinero/
   Billy, Projects, abonnements-detektion, forbrug, adgangskode, toggles.

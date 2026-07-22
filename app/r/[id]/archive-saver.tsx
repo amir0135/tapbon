@@ -3,22 +3,15 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { BookMarked, ArrowRight, BookmarkPlus, Check } from 'lucide-react';
-import {
-  readAutoSave,
-  readSaveConfirm,
-  readSaveSound,
-  saveToArchive,
-  type ArchiveEntry,
-} from '@/lib/archive/local';
+import { BookMarked, ArrowRight, BookmarkPlus, Check, UserPlus } from 'lucide-react';
+import { readAutoSave, readSaveConfirm, readSaveSound } from '@/lib/archive/local';
 
-function pushToAccount(id: string) {
-  // Synk til kunde-konto hvis logget ind (no-op ellers — 401 ignoreres)
-  fetch('/api/archive', {
+function saveToAccount(id: string) {
+  return fetch('/api/archive', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ receiptIds: [id] }),
-  }).catch(() => {});
+  });
 }
 
 /** Kort „kvitteringsprinter“-klik via WebAudio — ingen lyd-asset nødvendig. */
@@ -45,11 +38,17 @@ function playPrinterClick() {
   }
 }
 
-/** Gemmer kvitteringen i telefonens arkiv ved visning + tilbud om "alle ét sted".
- *  Respekterer auto-gem-præferencen (specs/customer-profile.md) — fra ⇒ manuel Gem-knap. */
-export function ArchiveSaver({ entry }: { entry: ArchiveEntry }) {
+/** Konto-først (specs/customer-account.md v3): logget ind ⇒ gem på kontoen
+ *  (auto eller manuelt efter præference); logget ud ⇒ konto-pitch → /mine. */
+export function ArchiveSaver({
+  receiptId,
+  signedIn,
+}: {
+  receiptId: string;
+  signedIn: boolean;
+}) {
   const t = useTranslations('archive');
-  const [count, setCount] = useState<number | null>(null);
+  const [saved, setSaved] = useState(false);
   const [needsSave, setNeedsSave] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
 
@@ -62,16 +61,24 @@ export function ArchiveSaver({ entry }: { entry: ArchiveEntry }) {
     }
   };
 
+  const doSave = () => {
+    saveToAccount(receiptId)
+      .then((r) => {
+        if (r.ok) {
+          setSaved(true);
+          setNeedsSave(false);
+          celebrate();
+        }
+      })
+      .catch(() => {});
+  };
+
   useEffect(() => {
-    if (readAutoSave()) {
-      setCount(saveToArchive(entry).length);
-      pushToAccount(entry.id);
-      celebrate();
-    } else {
-      setNeedsSave(true);
-    }
+    if (!signedIn) return;
+    if (readAutoSave()) doSave();
+    else setNeedsSave(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entry.id]);
+  }, [receiptId, signedIn]);
 
   const toast = confirmed ? (
     <div
@@ -83,33 +90,51 @@ export function ArchiveSaver({ entry }: { entry: ArchiveEntry }) {
     </div>
   ) : null;
 
+  if (!signedIn) {
+    // Konto-pitch — bonen er set, men gem kræver konto (Receiptile-vejen)
+    return (
+      <Link
+        href="/mine"
+        className="w-full bg-paper rounded-2xl shadow-sm p-3.5 flex items-center gap-3 active:scale-[0.99] transition print:hidden"
+      >
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-mint-tint">
+          <UserPlus className="h-4 w-4 text-forest" aria-hidden="true" />
+        </span>
+        <span className="flex-1 min-w-0">
+          <span className="block text-sm font-semibold text-ink">
+            {t('accountPitchTitle')}
+          </span>
+          <span className="block text-sm text-muted-foreground">
+            {t('accountPitchSub')}
+          </span>
+        </span>
+        <ArrowRight className="h-5 w-5 text-forest shrink-0" aria-hidden="true" />
+      </Link>
+    );
+  }
+
   if (needsSave) {
     return (
       <>
         {toast}
         <button
-          onClick={() => {
-            setCount(saveToArchive(entry).length);
-            pushToAccount(entry.id);
-            setNeedsSave(false);
-            celebrate();
-          }}
+          onClick={doSave}
           className="w-full bg-paper rounded-2xl shadow-sm p-3.5 flex items-center gap-3 active:scale-[0.99] transition print:hidden text-left"
         >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-mint-tint">
-          <BookmarkPlus className="h-4 w-4 text-forest" aria-hidden="true" />
-        </span>
-        <span className="flex-1 min-w-0">
-          <span className="block text-sm font-semibold text-ink">{t('saveManualTitle')}</span>
-          <span className="block text-sm text-muted-foreground">{t('saveManualSub')}</span>
-        </span>
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-mint-tint">
+            <BookmarkPlus className="h-4 w-4 text-forest" aria-hidden="true" />
+          </span>
+          <span className="flex-1 min-w-0">
+            <span className="block text-sm font-semibold text-ink">{t('saveManualTitle')}</span>
+            <span className="block text-sm text-muted-foreground">{t('saveManualSub')}</span>
+          </span>
           <ArrowRight className="h-5 w-5 text-forest shrink-0" aria-hidden="true" />
         </button>
       </>
     );
   }
 
-  if (count === null || count < 1) return toast;
+  if (!saved) return toast;
 
   return (
     <>
@@ -123,9 +148,7 @@ export function ArchiveSaver({ entry }: { entry: ArchiveEntry }) {
         </span>
         <span className="flex-1 min-w-0">
           <span className="block text-sm font-semibold text-ink">{t('pitchTitle')}</span>
-          <span className="block text-sm text-muted-foreground">
-            {t('pitchSub', { count })}
-          </span>
+          <span className="block text-sm text-muted-foreground">{t('savedSub')}</span>
         </span>
         <ArrowRight className="h-5 w-5 text-forest shrink-0" aria-hidden="true" />
       </Link>

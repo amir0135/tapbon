@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { ArrowLeft, BarChart3 } from 'lucide-react';
 import { getCustomerSession } from '@/lib/auth/customer';
 import { getCustomerSpending } from '@/lib/receipts/customer-queries';
 import { formatMoney } from '@/lib/receipts/format';
-import { SignInGate } from '../sign-in-gate';
 import { BottomNav } from '../bottom-nav';
 
 export const metadata: Metadata = {
@@ -24,16 +24,7 @@ export default async function SpendingPage() {
   ]);
   const fmtLocale = locale === 'da' ? 'da-DK' : 'en-DK';
 
-  if (!session) {
-    return (
-      <SignInGate
-        title={t('title')}
-        message={t('signInPrompt')}
-        cta={t('goToProfile')}
-        backLabel={t('back')}
-      />
-    );
-  }
+  if (!session) redirect('/mine');
 
   const data = await getCustomerSpending(session.customerId);
   const maxMonth = Math.max(1, ...data.months.map((m) => m.total));

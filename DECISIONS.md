@@ -18,3 +18,9 @@ One line per irreversible choice. Do not re-litigate.
   app. MEN adskilt auth beholdes gennem piloten; sammenlægningen sker i Fase 6 (tre trin
   parkeret i ROADMAP: freemium-budskab → e-mail-bro → fuld sammenlægning). Ingen
   self-serve-funnel før der er noget at self-serve.
+- 2026-07-22 (pm): Kundesiden = **konto-først** (Receiptile-vejen). Det kontofri
+  localStorage-arkiv droppes: /mine kræver kunde-login (magic link eller adgangskode),
+  boner gemmes på serveren (customer_receipts), og SignInGaterne forsvinder (hele
+  /mine-fladen er bag login). Bonen på /r/[id] forbliver offentlig at SE; logget ud
+  vises "opret konto for at gemme"-pitch i stedet for lokalt gem. Eksisterende lokale
+  arkiver synkroniseres op ved første login og localStorage ryddes.

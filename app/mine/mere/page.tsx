@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import {
   BarChart3,
@@ -9,6 +10,7 @@ import {
   Settings,
   Stamp,
 } from 'lucide-react';
+import { getCustomerSession } from '@/lib/auth/customer';
 import { getUser } from '@/lib/db/queries';
 import { ViewToggle } from '../view-toggle';
 import { BottomNav } from '../bottom-nav';
@@ -22,10 +24,13 @@ export const dynamic = 'force-dynamic';
 
 /** "Mere"-hub (Receiptile-mønster): view-skifter + genveje + indstillinger. */
 export default async function MorePage() {
-  const [t, merchantUser] = await Promise.all([
+  const [session, t, merchantUser] = await Promise.all([
+    getCustomerSession(),
     getTranslations('more'),
     getUser().catch(() => null),
   ]);
+
+  if (!session) redirect('/mine');
 
   const rows = [
     { href: '/mine/projekter', icon: FolderKanban, label: t('projects') },

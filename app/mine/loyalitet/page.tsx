@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { ArrowLeft } from 'lucide-react';
+import { getCustomerSession } from '@/lib/auth/customer';
 import { LoyaltyCards } from './loyalty-cards';
 import { BottomNav } from '../bottom-nav';
 
@@ -14,7 +16,13 @@ export const dynamic = 'force-dynamic';
 
 /** "Mine kort" — stempelkort samlet ét sted (Receiptile-mønster). */
 export default async function LoyaltyPage() {
-  const t = await getTranslations('loyaltyPage');
+  const [session, t] = await Promise.all([
+    getCustomerSession(),
+    getTranslations('loyaltyPage'),
+  ]);
+
+  if (!session) redirect('/mine');
+
   return (
     <main className="min-h-dvh bg-canvas">
       <div className="mx-auto max-w-md p-4 pb-28 space-y-5">

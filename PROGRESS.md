@@ -1,6 +1,43 @@
 # Progress
 
-## Last session (2026-07-22)
+## Last session (2026-07-22, pm)
+**Konto-først på kundesiden — "gå Receiptile-vejen" (brugerbeslutning).**
+Det kontofri localStorage-arkiv er droppet (DECISIONS.md; spec
+customer-account.md v3). Bruger var væk under implementering — anbefalede
+valg truffet autonomt: scope A (kun kundesiden; merchant-auth stadig separat),
+lokale arkiver synces ved første login, bonen forbliver offentlig at SE.
+- **/mine logget ud** = SignInLanding (app/mine/sign-in-landing.tsx): magic
+  link primært + adgangskode-toggle (genbruger requestCustomerLogin/
+  customerPasswordLogin). Ingen bundnav.
+- **/mine logget ind** = server-fed arkiv (getCustomerArchive i
+  lib/receipts/customer-queries.ts); sletning via nyt DELETE /api/archive?id=.
+  Engangsmigrering i ArchiveList: gammelt localStorage-arkiv POST'es op,
+  localStorage ryddes, router.refresh().
+- **Alle /mine-undersider** (forbrug/abonnementer/projekter(+[id])/mere/
+  loyalitet/profil) redirecter til /mine uden session; sign-in-gate.tsx
+  SLETTET + signInPrompt/goToProfile-nøgler fjernet.
+- **/r/[id]**: siden er stadig offentlig; ArchiveSaver omskrevet — logget ind
+  ⇒ gem på kontoen (auto/manuel efter præference, toast+lyd bevaret); logget
+  ud ⇒ "Gem bonen på din konto"-pitch → /mine. Ingen localStorage-gem;
+  saveToArchive/mergeIntoArchive/removeFromArchive fjernet fra
+  lib/archive/local.ts (readArchive+clearArchive består til migreringen;
+  præferencer stadig lokale).
+- i18n: customerSync.landing*-nøgler + archive.accountPitch*/savedSub (da+en);
+  localNote/pitchSub(archive) fjernet.
+- Testet lokalt (dev :3457): /mine logget ud viser login, /r logget ud viser
+  pitch, JWT-trick (customerId 2) → /mine viser serverarkiv, POST/GET/DELETE
+  /api/archive E2E OK, alle 6 undersider 307 → /mine. Build grøn.
+  DB-firewall-reglen skulle opdateres til ny IP (37.96.78.137) — 5432 var
+  ÅBEN på dette netværk (ikke corp-blokeret).
+- COMMITTET men IKKE pushet (bruger væk — reviewbar før prod-deploy).
+
+## Next up
+- Push + verificér i prod (deploy kører på push).
+- Loyalitetskort til kontoen (localStorage → server) — egen slice.
+- Profilens døde logget ud-branch i profile-view.tsx kan prunes.
+- Overvej redirect tilbage til bon efter login fra /r (returnTo-param).
+
+## Previous session (2026-07-22)
 **Receiptile-navigationsarkitektur portet efter LIVE gennemgang af deres app**
 (bruger logget ind på app.receiptile.com i playwright — screenshots af alle
 sider): fast flydende bundnav på alle /mine-sider (app/mine/bottom-nav.tsx,
@@ -282,7 +319,7 @@ DKK receipts through the real computeVat+hash path. Seeded to Azure db
 (firewall rule re-pointed to new local IP). Verified stand 200 + claim 307 →
 receipt locally.
 
-## Next up
+## Older next-up (superseded — se "Next up" øverst)
 Beslut næste kunde-slice fra ROADMAP (fx Gmail auto-capture eller eksport til
 e-conomic/Dinero/Billy). Phase 2: pitch pilot-caféer (demo: Loyverse + emulator + NFC-kort +
 tapbon.dk). Bestil NTAG213-stickers til pilot-standere. Roter

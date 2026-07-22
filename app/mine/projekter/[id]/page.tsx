@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { ArrowLeft, ReceiptText } from 'lucide-react';
 import { getCustomerSession } from '@/lib/auth/customer';
@@ -68,7 +68,7 @@ export default async function ProjectDetailPage({
     getLocale(),
     getTranslations('projects'),
   ]);
-  if (!session) notFound();
+  if (!session) redirect('/mine');
   const fmtLocale = locale === 'da' ? 'da-DK' : 'en-DK';
 
   const project = await getProject(session.customerId, projectId);

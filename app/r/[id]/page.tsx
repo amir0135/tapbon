@@ -1,6 +1,7 @@
 import { getTranslations, getLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { Store } from 'lucide-react';
+import { getCustomerSession } from '@/lib/auth/customer';
 import { getReceiptWithDetails } from '@/lib/receipts/queries';
 import { renderReceiptSvg } from '@/lib/receipts/render';
 import { formatMoney } from '@/lib/receipts/format';
@@ -19,7 +20,11 @@ export default async function PublicReceiptPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
+  const [t, locale, session] = await Promise.all([
+    getTranslations(),
+    getLocale(),
+    getCustomerSession(),
+  ]);
 
   const uuidRe =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -135,17 +140,8 @@ export default async function PublicReceiptPage({
           googleReviewUrl={merchant.googleReviewUrl}
         />
 
-        {/* Gem i telefonens arkiv + link til /mine */}
-        <ArchiveSaver
-          entry={{
-            id: receipt.id,
-            merchant: merchant.businessName,
-            totalGross: receipt.totalGross,
-            currency: receipt.currency,
-            kind: receipt.kind === 'file' ? 'file' : 'structured',
-            issuedAt: receipt.issuedAt.toISOString(),
-          }}
-        />
+        {/* Gem på kontoen (logget ind) eller konto-pitch (logget ud) */}
+        <ArchiveSaver receiptId={receipt.id} signedIn={Boolean(session)} />
 
         <p className="text-center text-xs text-muted-foreground print:hidden">
           {t('common.appName')} · {t('common.tagline')}
