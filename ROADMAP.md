@@ -64,7 +64,9 @@ Phases are shippable vertical slices. Finish one before starting the next. Detai
   Fortsat parkeret: Gmail auto-capture af e-mailboner (OAuth + GDPR-scope),
   tema-valg (lys/mørk/system — kræver dark-tokens), OAuth-baserede regnskabs-
   integrationer (auto-udkast via e-conomic/Dinero/Billy API = v2). Profil-siden
-  selv: specs/customer-profile.md.
+  selv: specs/customer-profile.md. Fra live-gennemgang af Receiptile 2026-07-22:
+  Setup Progress-tjekliste på /mine (opret konto → gem første bon → forbind
+  regnskab) og Capture-side (foto/upload af papirboner — kræver OCR-beslutning).
 - github/spec-kit: overvejet 2026-07-14 — afvist; repoet har allerede spec-first-systemet
   (build-plan/specs/ROADMAP/PROGRESS/DECISIONS). Genbesøg kun hvis workflowet knækker.
 - (park new tool/service ideas here mid-phase)

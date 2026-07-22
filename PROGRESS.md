@@ -1,6 +1,21 @@
 # Progress
 
-## Last session (2026-07-21, fortsat)
+## Last session (2026-07-22)
+**Receiptile-navigationsarkitektur portet efter LIVE gennemgang af deres app**
+(bruger logget ind på app.receiptile.com i playwright — screenshots af alle
+sider): fast flydende bundnav på alle /mine-sider (app/mine/bottom-nav.tsx,
+Boner + Mere — Capture-fanen er ikke relevant for Tapbon), ny hub /mine/mere
+(view-skifter + Projekter/Loyalitetskort/Dit forbrug/Abonnementer/
+Indstillinger), loyalitetskort flyttet fra arkivet til egen side
+/mine/loyalitet ("Mine kort"), profilen er nu en REN indstillingsside
+(kicker "Profil" / titel "Indstillinger"; view-toggle + genveje fjernet — de
+bor i Mere-hubben), alle /mine-sider har venstrestillet kicker-header
+(mono uppercase) som Receiptile. i18n: nye ns nav/more/loyaltyPage +
+kicker-nøgler. Verificeret visuelt i prod (390px): /mine, /mine/mere,
+/mine/profil matcher Receiptile-strukturen. Parkeret i ROADMAP: Setup
+Progress-tjekliste og Capture-side (foto-upload).
+
+## Previous session (2026-07-21, fortsat)
 **Receiptile-paritet på kundeprofilen — 6 slices bygget på én gang** (bruger-
 ønske "execute alt"; Xero/Hubdoc/Dext/Expensify erstattet af DK: e-conomic/
 Dinero/Billy). Specs: customer-profile.md (v2), customer-insights.md,
