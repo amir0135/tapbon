@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { eq } from 'drizzle-orm';
 import { getLocale } from 'next-intl/server';
 import { getCustomerSession } from '@/lib/auth/customer';
-import { getUser } from '@/lib/db/queries';
 import { db } from '@/lib/db/drizzle';
 import { customers } from '@/lib/db/schema';
 import { ProfileView } from './profile-view';
@@ -17,10 +16,9 @@ export const dynamic = 'force-dynamic';
 
 /** Kundeprofil (specs/customer-profile.md). */
 export default async function ProfilePage() {
-  const [session, locale, merchantUser] = await Promise.all([
+  const [session, locale] = await Promise.all([
     getCustomerSession(),
     getLocale(),
-    getUser().catch(() => null),
   ]);
 
   let customer:
@@ -60,7 +58,6 @@ export default async function ProfilePage() {
     <ProfileView
       customer={customer}
       locale={locale}
-      hasBusiness={Boolean(merchantUser)}
       version={pkg.version}
     />
   );

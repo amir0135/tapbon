@@ -3,16 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import {
-  ArrowRight,
-  Check,
-  ReceiptText,
-  Stamp,
-  Store,
-  Trash2,
-  User,
-  UserRound,
-} from 'lucide-react';
+import { ArrowRight, ReceiptText, Trash2 } from 'lucide-react';
 import {
   mergeIntoArchive,
   readArchive,
@@ -20,14 +11,7 @@ import {
   type ArchiveEntry,
 } from '@/lib/archive/local';
 import { formatMoney } from '@/lib/receipts/format';
-
-type LoyaltyCard = {
-  cardToken: string;
-  stamps: number;
-  stampsRequired: number;
-  merchantId: number;
-  merchantName: string | null;
-};
+import { BottomNav } from './bottom-nav';
 
 function monthStats(entries: ArchiveEntry[]) {
   const now = new Date();
@@ -52,30 +36,11 @@ function monthStats(entries: ArchiveEntry[]) {
   };
 }
 
-function readLoyaltyTokens(): string[] {
-  const tokens: string[] = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key?.startsWith('tapbon-loyalty-')) {
-      const v = localStorage.getItem(key);
-      if (v) tokens.push(v);
-    }
-  }
-  return tokens;
-}
-
-/** Personligt dashboard — arkiv, forbrug og loyalitet, alt fra enheden (specs/customer-archive.md v2). */
-export function ArchiveList({
-  customerEmail,
-  hasBusiness = false,
-}: {
-  customerEmail: string | null;
-  hasBusiness?: boolean;
-}) {
+/** Personligt dashboard — arkiv og forbrug, alt fra enheden (specs/customer-archive.md v2). */
+export function ArchiveList({ customerEmail }: { customerEmail: string | null }) {
   const t = useTranslations('archive');
   const locale = useLocale();
   const [entries, setEntries] = useState<ArchiveEntry[] | null>(null);
-  const [cards, setCards] = useState<LoyaltyCard[]>([]);
 
   useEffect(() => {
     const local = readArchive();
@@ -97,14 +62,6 @@ export function ArchiveList({
         }).catch(() => {});
       }
     }
-
-    Promise.all(
-      readLoyaltyTokens().map((token) =>
-        fetch(`/api/loyalty?token=${encodeURIComponent(token)}`)
-          .then((r) => (r.ok ? r.json() : null))
-          .catch(() => null)
-      )
-    ).then((results) => setCards(results.filter(Boolean)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -114,35 +71,13 @@ export function ArchiveList({
 
   return (
     <main className="min-h-dvh bg-canvas">
-      <div className="mx-auto max-w-md p-4 pb-12 space-y-4">
-        <header className="relative pt-4 text-center space-y-1">
-          <Link
-            href="/mine/profil"
-            aria-label={t('profileLink')}
-            className="absolute right-0 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-paper shadow-sm text-ink"
-          >
-            <UserRound className="h-4 w-4" aria-hidden="true" />
-          </Link>
-          <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
-          <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
+      <div className="mx-auto max-w-md p-4 pb-28 space-y-4">
+        <header className="pt-4 space-y-1">
+          <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+            {t('kicker')}
+          </p>
+          <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
         </header>
-
-        {/* Personlig/Forretning-skifter (Receiptile-mønster) — kun når begge findes */}
-        {hasBusiness && (
-          <div className="grid grid-cols-2 gap-1 rounded-full bg-paper p-1 shadow-sm" role="navigation" aria-label={t('viewToggle')}>
-            <span className="inline-flex items-center justify-center gap-2 rounded-full bg-ink text-paper py-2 text-sm font-medium">
-              <User className="h-4 w-4" aria-hidden="true" />
-              {t('viewPersonal')}
-            </span>
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center justify-center gap-2 rounded-full py-2 text-sm font-medium text-muted-foreground hover:text-ink"
-            >
-              <Store className="h-4 w-4" aria-hidden="true" />
-              {t('viewBusiness')}
-            </Link>
-          </div>
-        )}
 
         {/* Denne måned */}
         <div className="rounded-2xl bg-forest text-paper shadow-sm p-5 flex items-end justify-between">
@@ -167,47 +102,6 @@ export function ArchiveList({
           <p className="px-1 text-center text-xs text-muted-foreground">
             {t('syncedAs', { email: customerEmail })}
           </p>
-        )}
-
-        {/* Loyalitetskort */}
-        {cards.length > 0 && (
-          <section className="space-y-2">
-            <h2 className="px-1 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
-              {t('loyaltyTitle')}
-            </h2>
-            {cards.map((card) => (
-              <div
-                key={card.cardToken}
-                className="bg-paper rounded-2xl shadow-sm p-4 space-y-3"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-mint-tint">
-                    <Stamp className="h-4 w-4 text-forest" aria-hidden="true" />
-                  </span>
-                  <span className="font-semibold text-ink truncate">
-                    {card.merchantName ?? t('loyaltyUnknown')}
-                  </span>
-                  <span className="ml-auto text-sm text-muted-foreground font-mono shrink-0">
-                    {card.stamps}/{card.stampsRequired}
-                  </span>
-                </div>
-                <div className="grid grid-cols-10 gap-1.5">
-                  {Array.from({ length: card.stampsRequired }).map((_, i) => (
-                    <span
-                      key={i}
-                      className={`flex aspect-square items-center justify-center rounded-full ${
-                        i < card.stamps ? 'bg-mint' : 'border-2 border-dashed border-border'
-                      }`}
-                    >
-                      {i < card.stamps && (
-                        <Check className="h-3 w-3 text-paper" aria-hidden="true" />
-                      )}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </section>
         )}
 
         {/* Kvitteringer */}
@@ -268,6 +162,7 @@ export function ArchiveList({
           <p className="text-center text-xs text-muted-foreground">{t('localNote')}</p>
         )}
       </div>
+      <BottomNav />
     </main>
   );
 }

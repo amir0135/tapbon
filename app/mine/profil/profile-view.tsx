@@ -6,10 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {
   ArrowLeft,
-  BarChart3,
   ChevronRight,
   FileText,
-  FolderKanban,
   Globe,
   KeyRound,
   Landmark,
@@ -17,11 +15,9 @@ import {
   LogOut,
   Mail,
   Phone,
-  Repeat,
   Send,
   Shield,
   Sparkles,
-  Store,
   User,
   Volume2,
   Zap,
@@ -34,7 +30,7 @@ import {
   readSaveSound,
   setSaveSound,
 } from '@/lib/archive/local';
-import { setPreferredMode } from '@/app/onboarding/actions';
+import { BottomNav } from '../bottom-nav';
 import {
   requestCustomerLogin,
   customerLogout,
@@ -109,12 +105,10 @@ function Toggle({
 export function ProfileView({
   customer,
   locale,
-  hasBusiness,
   version,
 }: {
   customer: Customer | null;
   locale: string;
-  hasBusiness: boolean;
   version: string;
 }) {
   const t = useTranslations('profile');
@@ -172,55 +166,20 @@ export function ProfileView({
 
   return (
     <main className="min-h-dvh bg-canvas">
-      <div className="mx-auto max-w-md p-4 pb-12 space-y-5">
-        <header className="relative pt-4 text-center">
+      <div className="mx-auto max-w-md p-4 pb-28 space-y-5">
+        <header className="relative pt-4 space-y-1">
           <Link
-            href="/mine"
+            href="/mine/mere"
             aria-label={t('back')}
-            className="absolute left-0 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-paper shadow-sm text-ink"
+            className="absolute right-0 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-paper shadow-sm text-ink"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           </Link>
-          <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
+          <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+            {t('kicker')}
+          </p>
+          <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
         </header>
-
-        {/* Visning: privat ↔ forretning (users.preferred_mode) */}
-        <section className="space-y-2">
-          <SectionLabel>{t('viewSection')}</SectionLabel>
-          <div
-            className="grid grid-cols-2 gap-1 rounded-full bg-paper p-1 shadow-sm"
-            role="radiogroup"
-            aria-label={t('viewSection')}
-          >
-            <button
-              role="radio"
-              aria-checked="true"
-              className="flex items-center justify-center gap-2 rounded-full bg-ink px-3 py-2 text-sm font-semibold text-paper"
-            >
-              <User className="h-4 w-4" aria-hidden="true" />
-              {t('viewPersonal')}
-            </button>
-            <button
-              role="radio"
-              aria-checked="false"
-              disabled={busy}
-              onClick={() =>
-                startTransition(async () => {
-                  if (hasBusiness) {
-                    await setPreferredMode('business');
-                    router.push('/dashboard');
-                  } else {
-                    router.push('/sign-up');
-                  }
-                })
-              }
-              className="flex items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-ink"
-            >
-              <Store className="h-4 w-4" aria-hidden="true" />
-              {t('viewBusiness')}
-            </button>
-          </div>
-        </section>
 
         {customer ? (
           <>
@@ -347,34 +306,6 @@ export function ProfileView({
                   {t('planName')}
                 </p>
                 <p className="mt-1 text-sm text-paper/80">{t('planBody')}</p>
-              </div>
-            </section>
-
-            {/* Genveje — projekter, forbrug, abonnementer */}
-            <section className="space-y-2">
-              <SectionLabel>{t('generalSection')}</SectionLabel>
-              <div className="bg-paper rounded-2xl shadow-sm divide-y divide-border/60">
-                <Link href="/mine/projekter" className="flex items-center gap-3 p-4">
-                  <IconTile>
-                    <FolderKanban className="h-4 w-4 text-forest" aria-hidden="true" />
-                  </IconTile>
-                  <p className="flex-1 text-sm font-medium text-ink">{t('projectsLabel')}</p>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                </Link>
-                <Link href="/mine/forbrug" className="flex items-center gap-3 p-4">
-                  <IconTile>
-                    <BarChart3 className="h-4 w-4 text-forest" aria-hidden="true" />
-                  </IconTile>
-                  <p className="flex-1 text-sm font-medium text-ink">{t('spendingLabel')}</p>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                </Link>
-                <Link href="/mine/abonnementer" className="flex items-center gap-3 p-4">
-                  <IconTile>
-                    <Repeat className="h-4 w-4 text-forest" aria-hidden="true" />
-                  </IconTile>
-                  <p className="flex-1 text-sm font-medium text-ink">{t('subscriptionsLabel')}</p>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                </Link>
               </div>
             </section>
 
@@ -827,6 +758,7 @@ export function ProfileView({
 
         <p className="text-center text-xs text-muted-foreground">{t('footer')}</p>
       </div>
+      <BottomNav />
     </main>
   );
 }

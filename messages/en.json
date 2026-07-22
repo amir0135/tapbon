@@ -65,7 +65,8 @@
     "saveManualSub": "Auto-save is off — tap to save this receipt",
     "localNote": "The archive lives only on this device — we store nothing about you.",
     "savedToast": "Receipt saved",
-    "syncedAs": "Synced as {email}"
+    "syncedAs": "Synced as {email}",
+    "kicker": "Tapbon"
   },
   "loyalty": {
     "title": "Loyalty card",
@@ -79,7 +80,7 @@
     "cta": "Review on Google"
   },
   "profile": {
-    "title": "Profile",
+    "title": "Settings",
     "back": "Back to my receipts",
     "accountSection": "Account",
     "noName": "Add your name",
@@ -146,7 +147,8 @@
     "accountingLabel": "Accounting software",
     "accountingSub": "e-conomic, Dinero or Billy",
     "accountingConnected": "{count, plural, one {# connected} other {# connected}}",
-    "accountingNotConnected": "Not connected"
+    "accountingNotConnected": "Not connected",
+    "kicker": "Profile"
   },
   "issue": {
     "title": "Receipts",
@@ -563,7 +565,8 @@
     "emptySub": "Save receipts to see your trends.",
     "byMerchantSection": "By merchant",
     "byMerchantTitle": "Where it's going",
-    "receiptCount": "{count, plural, one {# receipt} other {# receipts}}"
+    "receiptCount": "{count, plural, one {# receipt} other {# receipts}}",
+    "kicker": "Analytics"
   },
   "subscriptions": {
     "title": "Subscriptions",
@@ -575,7 +578,8 @@
     "emptySub": "Once you've paid the same merchant twice, it'll show up here.",
     "timesPaid": "{count, plural, one {# payment} other {# payments}}",
     "lastPaid": "last {date}",
-    "average": "avg."
+    "average": "avg.",
+    "kicker": "Analytics"
   },
   "projects": {
     "title": "Projects",
@@ -597,6 +601,31 @@
     "add": "Add",
     "remove": "Remove",
     "delete": "Delete project",
-    "deleteConfirm": "Delete this project? Receipts will not be deleted."
+    "deleteConfirm": "Delete this project? Receipts will not be deleted.",
+    "kicker": "Tapbon"
+  },
+  "nav": {
+    "label": "Navigation",
+    "receipts": "Receipts",
+    "more": "More"
+  },
+  "more": {
+    "kicker": "Menu",
+    "title": "More",
+    "viewSection": "View",
+    "generalSection": "General",
+    "projects": "Projects",
+    "loyalty": "Loyalty cards",
+    "spending": "Track your spending",
+    "subscriptions": "Subscriptions",
+    "settings": "Settings"
+  },
+  "loyaltyPage": {
+    "kicker": "Rewards",
+    "title": "My cards",
+    "back": "Back",
+    "emptyTitle": "No stamp cards yet",
+    "emptySub": "Tap a Tapbon tile at a participating store and your card will appear here.",
+    "unknownMerchant": "Unknown merchant"
   }
 }

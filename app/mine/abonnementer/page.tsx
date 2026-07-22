@@ -6,6 +6,7 @@ import { getCustomerSession } from '@/lib/auth/customer';
 import { getRecurringMerchants } from '@/lib/receipts/customer-queries';
 import { formatMoney } from '@/lib/receipts/format';
 import { SignInGate } from '../sign-in-gate';
+import { BottomNav } from '../bottom-nav';
 
 export const metadata: Metadata = {
   title: 'Abonnementer — Tapbon',
@@ -38,17 +39,20 @@ export default async function SubscriptionsPage() {
 
   return (
     <main className="min-h-dvh bg-canvas">
-      <div className="mx-auto max-w-md p-4 pb-12 space-y-5">
-        <header className="relative pt-4 text-center">
+      <div className="mx-auto max-w-md p-4 pb-28 space-y-5">
+        <header className="relative pt-4 space-y-1">
           <Link
-            href="/mine/profil"
+            href="/mine/mere"
             aria-label={t('back')}
-            className="absolute left-0 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-paper shadow-sm text-ink"
+            className="absolute right-0 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-paper shadow-sm text-ink"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           </Link>
-          <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{t('subtitle')}</p>
+          <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+            {t('kicker')}
+          </p>
+          <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
         </header>
 
         {recurring.length === 0 ? (
@@ -91,6 +95,7 @@ export default async function SubscriptionsPage() {
           </section>
         )}
       </div>
+      <BottomNav />
     </main>
   );
 }

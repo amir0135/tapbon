@@ -65,7 +65,8 @@
     "saveManualSub": "Auto-gem er slået fra — tryk for at gemme denne bon",
     "localNote": "Arkivet ligger kun på denne enhed — vi gemmer ingen oplysninger om dig.",
     "savedToast": "Bon gemt",
-    "syncedAs": "Synkroniseret som {email}"
+    "syncedAs": "Synkroniseret som {email}",
+    "kicker": "Tapbon"
   },
   "loyalty": {
     "title": "Loyalitetskort",
@@ -79,7 +80,7 @@
     "cta": "Anmeld på Google"
   },
   "profile": {
-    "title": "Profil",
+    "title": "Indstillinger",
     "back": "Tilbage til mine kvitteringer",
     "accountSection": "Konto",
     "noName": "Tilføj dit navn",
@@ -146,7 +147,8 @@
     "accountingLabel": "Regnskabsprogram",
     "accountingSub": "e-conomic, Dinero eller Billy",
     "accountingConnected": "{count, plural, one {# forbundet} other {# forbundet}}",
-    "accountingNotConnected": "Ikke forbundet"
+    "accountingNotConnected": "Ikke forbundet",
+    "kicker": "Profil"
   },
   "issue": {
     "title": "Kvitteringer",
@@ -563,7 +565,8 @@
     "emptySub": "Gem boner for at se dine tendenser.",
     "byMerchantSection": "Pr. forretning",
     "byMerchantTitle": "Her bruger du dem",
-    "receiptCount": "{count, plural, one {# bon} other {# boner}}"
+    "receiptCount": "{count, plural, one {# bon} other {# boner}}",
+    "kicker": "Analyse"
   },
   "subscriptions": {
     "title": "Abonnementer",
@@ -575,7 +578,8 @@
     "emptySub": "Når du har betalt samme forretning to gange, dukker den op her.",
     "timesPaid": "{count, plural, one {# betaling} other {# betalinger}}",
     "lastPaid": "senest {date}",
-    "average": "gns."
+    "average": "gns.",
+    "kicker": "Analyse"
   },
   "projects": {
     "title": "Projekter",
@@ -597,6 +601,31 @@
     "add": "Tilføj",
     "remove": "Fjern",
     "delete": "Slet projekt",
-    "deleteConfirm": "Slet projektet? Bonerne bliver ikke slettet."
+    "deleteConfirm": "Slet projektet? Bonerne bliver ikke slettet.",
+    "kicker": "Tapbon"
+  },
+  "nav": {
+    "label": "Navigation",
+    "receipts": "Boner",
+    "more": "Mere"
+  },
+  "more": {
+    "kicker": "Menu",
+    "title": "Mere",
+    "viewSection": "Visning",
+    "generalSection": "Generelt",
+    "projects": "Projekter",
+    "loyalty": "Loyalitetskort",
+    "spending": "Dit forbrug",
+    "subscriptions": "Abonnementer",
+    "settings": "Indstillinger"
+  },
+  "loyaltyPage": {
+    "kicker": "Belønninger",
+    "title": "Mine kort",
+    "back": "Tilbage",
+    "emptyTitle": "Ingen stempelkort endnu",
+    "emptySub": "Tap en Tapbon-brik hos en deltagende forretning, så dukker dit kort op her.",
+    "unknownMerchant": "Ukendt forretning"
   }
 }
