@@ -49,6 +49,16 @@ Phases are shippable vertical slices. Finish one before starting the next. Detai
       webhook, checkout verificeret E2E (live-nøgler + moms/Stripe Tax udestår)
 - [ ] Skift til live-nøgler efter Stripe-kontoverifikation (CVR)
 - [ ] Pilot with 2–3 Copenhagen cafés
+- [ ] Freemium-budskab NU (timer, ikke uger): "Gratis at sætte op — betal først når din
+      brik er forbundet" på /pricing + onboarding (Stripe-trial findes allerede)
+- [ ] E-mail-bro mellem konti (~1 dag): kunde-konto med samme e-mail som merchant-user
+      ⇒ Forretning-toggleren på /mine/mere logger sømløst ind i dashboardet i stedet
+      for at sende til /sign-up
+- [ ] Fuld Receiptile-model (EFTER pilot, sammen med Stripe live): én identitet, business-
+      mode som lag ovenpå kundekontoen (badge/rolle, ikke separat login), "forbind din
+      første brik"-aktivering m/ CVR-tjek, business-bundnav (Oversigt/Enheder/Mere) og
+      låste business-fliser indtil betalingskort er tilføjet — verificeret mønster fra
+      live-gennemgang af app.receiptile.com/merchant 2026-07-22
 
 ## Wishes / not now
 - Kunde-app (EFTER pilot, ovenpå valgfri konto): brikken er bare en URL, så appen

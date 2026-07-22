@@ -13,3 +13,8 @@ One line per irreversible choice. Do not re-litigate.
 - 2026-07: i18n via next-intl from day one; da/en first, sv/no are config.
 - 2026-07: Auth = Auth.js magic link + Google; MitID deferred to enterprise demand.
 - 2026-07: AI features (Foundry, Sweden Central) follow revenue — none in the demo build.
+- 2026-07-22: Målmodel = Receiptile's én-konto-to-modes (business-mode som lag ovenpå
+  kundekontoen + "betal først når brikken forbindes"-freemium) — verificeret live i deres
+  app. MEN adskilt auth beholdes gennem piloten; sammenlægningen sker i Fase 6 (tre trin
+  parkeret i ROADMAP: freemium-budskab → e-mail-bro → fuld sammenlægning). Ingen
+  self-serve-funnel før der er noget at self-serve.
