@@ -53,30 +53,31 @@ export default function DashboardLayout({
         >
           <nav className="h-full overflow-y-auto p-4 flex flex-col">
             {navItems.map((item) => (
-              <Link key={item.href} href={item.href} passHref>
-                <Button
-                  variant={pathname === item.href ? 'secondary' : 'ghost'}
-                  className={`shadow-none my-1 w-full justify-start ${
-                    pathname === item.href ? 'bg-gray-100' : ''
-                  }`}
-                  onClick={() => setIsSidebarOpen(false)}
-                >
+              <Button
+                key={item.href}
+                asChild
+                variant={pathname === item.href ? 'secondary' : 'ghost'}
+                className={`shadow-none my-1 w-full justify-start ${
+                  pathname === item.href ? 'bg-gray-100' : ''
+                }`}
+              >
+                <Link href={item.href} onClick={() => setIsSidebarOpen(false)}>
                   <item.icon className="h-4 w-4" />
                   {item.label}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             ))}
             <div className="mt-auto border-t pt-3">
-              <Link href="/mine" passHref>
-                <Button
-                  variant="ghost"
-                  className="shadow-none w-full justify-start text-muted-foreground"
-                  onClick={() => setIsSidebarOpen(false)}
-                >
+              <Button
+                asChild
+                variant="ghost"
+                className="shadow-none w-full justify-start text-muted-foreground"
+              >
+                <Link href="/mine" onClick={() => setIsSidebarOpen(false)}>
                   <User className="h-4 w-4" />
                   {t('navPersonal')}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </nav>
         </aside>
