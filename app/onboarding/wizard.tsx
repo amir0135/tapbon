@@ -34,14 +34,19 @@ const VOLUMES = ['v25', 'v100', 'v300', 'v300plus'] as const;
  *  skipRoleStep: brugeren har allerede valgt Erhverv — start på trin 1. */
 export function OnboardingWizard({ skipRoleStep = false }: { skipRoleStep?: boolean }) {
   const t = useTranslations('onboarding');
-  const tc = useTranslations('common');
   const tm = useTranslations('merchantSetup');
   const router = useRouter();
   const [step, setStep] = useState(skipRoleStep ? 1 : 0);
   const [businessType, setBusinessType] = useState<string | null>(null);
   const [posSystem, setPosSystem] = useState<string | null>(null);
   const [dailyReceipts, setDailyReceipts] = useState<string | null>(null);
-  const [error, setError] = useState(false);
+  // Trin 4-felter som controlled state — React 19 nulstiller formularer efter
+  // en form-action, så uncontrolled inputs ville miste alt ved fejl.
+  const [businessName, setBusinessName] = useState('');
+  const [cvrNumber, setCvrNumber] = useState('');
+  const [currency, setCurrency] = useState('DKK');
+  const [googleReviewUrl, setGoogleReviewUrl] = useState('');
+  const [error, setError] = useState<'exists' | 'invalid' | null>(null);
   const [pending, startTransition] = useTransition();
 
   const submit = (formData: FormData) =>
@@ -50,8 +55,11 @@ export function OnboardingWizard({ skipRoleStep = false }: { skipRoleStep?: bool
       if (posSystem) formData.set('posSystem', posSystem);
       if (dailyReceipts) formData.set('dailyReceipts', dailyReceipts);
       const result = await createMerchant(formData);
-      if (result?.error) setError(true);
-      else router.push('/dashboard');
+      if (result?.error) {
+        setError(result.error === 'merchant_exists' ? 'exists' : 'invalid');
+      } else {
+        router.push('/dashboard');
+      }
     });
 
   const optionClass = (selected: boolean) =>
@@ -211,6 +219,8 @@ export function OnboardingWizard({ skipRoleStep = false }: { skipRoleStep?: bool
                 name="businessName"
                 required
                 maxLength={200}
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
                 className="block w-full rounded-2xl border border-white/12 bg-ink-deep px-5 py-4 text-base text-paper placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-mint/60 focus:border-transparent"
               />
             </div>
@@ -224,6 +234,8 @@ export function OnboardingWizard({ skipRoleStep = false }: { skipRoleStep?: bool
                 required
                 minLength={4}
                 maxLength={20}
+                value={cvrNumber}
+                onChange={(e) => setCvrNumber(e.target.value)}
                 placeholder={tm('cvrPlaceholder')}
                 className="block w-full rounded-2xl border border-white/12 bg-ink-deep px-5 py-4 text-base text-paper placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-mint/60 focus:border-transparent"
               />
@@ -235,7 +247,8 @@ export function OnboardingWizard({ skipRoleStep = false }: { skipRoleStep?: bool
               <select
                 id="currency"
                 name="currency"
-                defaultValue="DKK"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
                 className="block w-full rounded-2xl border border-white/12 bg-ink-deep px-5 py-4 text-base text-paper focus:outline-none focus:ring-2 focus:ring-mint/60"
               >
                 <option value="DKK">DKK</option>
@@ -252,14 +265,29 @@ export function OnboardingWizard({ skipRoleStep = false }: { skipRoleStep?: bool
                 id="googleReviewUrl"
                 name="googleReviewUrl"
                 type="url"
+                value={googleReviewUrl}
+                onChange={(e) => setGoogleReviewUrl(e.target.value)}
                 placeholder="https://g.page/…"
                 className="block w-full rounded-2xl border border-white/12 bg-ink-deep px-5 py-4 text-base text-paper placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-mint/60 focus:border-transparent"
               />
             </div>
-            {error && (
+            {error === 'invalid' && (
               <p className="text-sm text-red-400" role="alert">
-                {tc('error')}
+                {t('errorInvalid')}
               </p>
+            )}
+            {error === 'exists' && (
+              <div className="rounded-2xl border border-white/12 bg-white/5 p-4 space-y-2" role="alert">
+                <p className="text-sm text-paper">{t('errorExists')}</p>
+                <button
+                  type="button"
+                  onClick={() => router.push('/dashboard')}
+                  className="inline-flex items-center gap-2 rounded-full bg-forest px-4 py-2 text-sm font-semibold text-paper"
+                >
+                  {t('goDashboard')}
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
             )}
             <div className="flex items-center justify-between pt-2">
               <button
