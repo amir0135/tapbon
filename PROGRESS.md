@@ -1,6 +1,21 @@
 # Progress
 
-## Last session (2026-07-23, nat)
+## Last session (2026-07-23, nat 2)
+**Aktiverings-UX fikset** (bruger: "UX skal være bedre, det giver ikke mening"
+— konto m/ Erhverv-valg men uden butik så samme opret-formular på ALLE tabs
+via stille redirects):
+- Alle butiks-løse dashboard-besøg (oversigt/receipts/devices/reports)
+  redirecter nu til /onboarding — ÉT sammenhængende opret-flow (wizarden).
+- Wizarden får skipRoleStep: preferredMode='business' ⇒ starter på trin 1
+  (spørger ikke om rolle igen).
+- Dublet-formularen merchant-setup-form.tsx SLETTET (receipts-sidens
+  indlejrede opret-formular).
+- FIXET SAMME DAG: dashboard-sidebarens <Link passHref><Button>-mønster
+  navigerede ikke under Next 15.6-canary-routeren — nu <Button asChild>.
+- Testet: bruger 5 (Erhverv, ingen butik) → alle 4 tabs 307 → /onboarding,
+  wizard viser "Trin 1 af 4" direkte. Deployet grønt.
+
+## Previous session (2026-07-23, nat)
 **Merchant-backend slice 2: Rapporter** (specs/merchant-reports.md, deployet):
 /dashboard/reports — måneds-hero (omsætning+antal), 14-dages CSS-søjler
 (tomme dage udfyldt), top 8 varer sidste 30 dage (receipt_items), moms pr.
