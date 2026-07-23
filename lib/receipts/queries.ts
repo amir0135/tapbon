@@ -117,6 +117,31 @@ export async function getDefaultTerminal(merchantId: number) {
   return rows[0] ?? null;
 }
 
+/** Merchantens terminaler til Enheder-siden (specs/merchant-devices.md). */
+export async function listTerminals(merchantId: number) {
+  const rows = await db
+    .select({
+      id: terminals.id,
+      name: terminals.name,
+      publicId: terminals.publicId,
+      lastSeenAt: terminals.lastSeenAt,
+      hasToken: sql<boolean>`${terminals.deviceTokenHash} is not null`,
+      // PITFALL: ${terminals.id} renderes ukvalificeret ("id") og fanges af
+      // subqueryens scope (r.id er uuid) — kvalificér identifieren råt.
+      receiptCount: sql<number>`(select count(*) from receipts r where r.terminal_id = "terminals"."id")::int`,
+    })
+    .from(terminals)
+    .where(eq(terminals.merchantId, merchantId))
+    .orderBy(terminals.createdAt);
+
+  return rows.map((r) => ({
+    ...r,
+    hasToken: Boolean(r.hasToken),
+    receiptCount: Number(r.receiptCount),
+    lastSeenAt: r.lastSeenAt ? r.lastSeenAt.toISOString() : null,
+  }));
+}
+
 /** Terminal + its merchant by public slug (QR stand, claim page). */
 export async function getTerminalWithMerchant(publicId: string) {
   const rows = await db

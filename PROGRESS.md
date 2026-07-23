@@ -1,6 +1,25 @@
 # Progress
 
-## Last session (2026-07-23, fortsat)
+## Last session (2026-07-23, aften)
+**Merchant-backend slice 1: Enheder-siden** (bruger: "still don't see a strong
+backend like receiptile" — gap-analyse viste Enheder/Rapporter/aktivering
+mangler; Enheder valgt som pilot-kritisk; spec specs/merchant-devices.md):
+- /dashboard/devices: terminal-kort m/ online-chip (lastSeenAt < 3 min),
+  klik-for-omdøb, publicId + bon-antal, links til tap-side + QR-stand,
+  token-chip + Generér/Rotér (plaintext én gang m/ kopiér; confirm ved
+  rotation). Opret terminal-kort (publicId-mønster fra createMerchant).
+- Actions: createTerminal/renameTerminal (ejerskabs-tjek);
+  generateDeviceToken(terminalId?) — valgfrit id, Bridge-kortet på Oversigt
+  uændret. Query listTerminals i lib/receipts/queries.ts.
+- Sidebar "Enheder" (Nfc-ikon); i18n-ns 'devices' + dash.navDevices (da+en).
+- PITFALL: drizzle sql`` renderer ${terminals.id} UKVALIFICERET ("id") inde i
+  subqueries — den bandt til subqueryens r.id (uuid) → "integer = uuid".
+  Fix: skriv "terminals"."id" råt i fragmentet.
+- Testet lokalt m/ demo-merchant-session (fpFALI-3 vises m/ token-chip).
+Rest af merchant-gap (parkeret): Rapporter/salgsoverblik, business-navigation,
+aktiverings-/freemium-flow (Fase 6).
+
+## Previous session (2026-07-23, fortsat)
 **E-mail-broen lukket helt** (bruger-klage: "logger ind med Google og bliver
 bedt om at logge ind igen"). ensureCustomerSession fandtes allerede (9bc845e,
 bygget tidligere i dag i anden session — kørte kun når dest='/mine'):

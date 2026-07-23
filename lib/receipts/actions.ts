@@ -10,7 +10,7 @@ import { getUser } from '@/lib/db/queries';
 import { getMerchantForUser, getDefaultTerminal } from './queries';
 import { computeVat, lineTotalGross } from '@/lib/vat';
 import { hashReceipt } from './hash';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 // Claim window for receipts issued manually from the dashboard form.
 // Bridge receipts use 10 min (see /api/bridge/receipts).
@@ -263,17 +263,20 @@ export async function issueReceipt(input: unknown) {
 }
 
 /**
- * Generate (or rotate) the bridge device token for the merchant's default
- * terminal. Only the SHA-256 hash is stored; the plaintext is returned once.
+ * Generate (or rotate) the bridge device token for a terminal (default:
+ * merchantens første terminal — bagudkompatibelt med Bridge-kortet på
+ * Oversigt). Only the SHA-256 hash is stored; the plaintext is returned once.
  */
-export async function generateDeviceToken() {
+export async function generateDeviceToken(terminalId?: number) {
   const user = await getUser();
   if (!user) redirect('/sign-in');
 
   const merchant = await getMerchantForUser(user.id);
   if (!merchant) return { error: 'no_merchant' as const };
 
-  const terminal = await getDefaultTerminal(merchant.id);
+  const terminal = terminalId
+    ? await getOwnedTerminal(merchant.id, terminalId)
+    : await getDefaultTerminal(merchant.id);
   if (!terminal) return { error: 'no_terminal' as const };
 
   const token = `tb_${randomBytes(24).toString('base64url')}`;
@@ -284,5 +287,62 @@ export async function generateDeviceToken() {
     .set({ deviceTokenHash: tokenHash })
     .where(eq(terminals.id, terminal.id));
 
+  revalidatePath('/dashboard/devices');
   return { success: true as const, token };
+}
+
+// ── Enheder (specs/merchant-devices.md) ─────────────────────────────────────
+
+async function getOwnedTerminal(merchantId: number, terminalId: number) {
+  const rows = await db
+    .select()
+    .from(terminals)
+    .where(and(eq(terminals.id, terminalId), eq(terminals.merchantId, merchantId)))
+    .limit(1);
+  return rows[0] ?? null;
+}
+
+const terminalNameSchema = z.string().trim().min(1).max(100);
+
+export async function createTerminal(prevState: unknown, formData: FormData) {
+  const user = await getUser();
+  if (!user) redirect('/sign-in');
+  const merchant = await getMerchantForUser(user.id);
+  if (!merchant) return { error: 'no_merchant' as const };
+
+  const parsed = terminalNameSchema.safeParse(formData.get('name'));
+  if (!parsed.success) return { error: 'invalid_input' as const };
+
+  await db.insert(terminals).values({
+    merchantId: merchant.id,
+    publicId: randomBytes(6).toString('base64url').slice(0, 8),
+    name: parsed.data,
+  });
+
+  revalidatePath('/dashboard/devices');
+  return { success: true as const };
+}
+
+export async function renameTerminal(prevState: unknown, formData: FormData) {
+  const user = await getUser();
+  if (!user) redirect('/sign-in');
+  const merchant = await getMerchantForUser(user.id);
+  if (!merchant) return { error: 'no_merchant' as const };
+
+  const terminalId = Number(formData.get('terminalId'));
+  const parsed = terminalNameSchema.safeParse(formData.get('name'));
+  if (!Number.isInteger(terminalId) || !parsed.success) {
+    return { error: 'invalid_input' as const };
+  }
+
+  const terminal = await getOwnedTerminal(merchant.id, terminalId);
+  if (!terminal) return { error: 'no_terminal' as const };
+
+  await db
+    .update(terminals)
+    .set({ name: parsed.data })
+    .where(eq(terminals.id, terminal.id));
+
+  revalidatePath('/dashboard/devices');
+  return { success: true as const };
 }
