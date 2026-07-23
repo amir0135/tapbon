@@ -56,12 +56,11 @@ export async function GET(request: NextRequest) {
       : existing[0].preferredMode === 'private'
         ? '/mine'
         : '/onboarding';
-    // /mine kører på customer_session — sæt den, ellers mødes brugeren af login igen
-    if (dest === '/mine') {
-      await ensureCustomerSession(existing[0].email, existing[0].name, {
-        emailVerified: true, // Google har verificeret e-mailen (tjekket ovenfor)
-      });
-    }
+    // /mine kører på customer_session — sæt den ALTID ved Google-login, så
+    // også butiksbrugere kan skifte til privat-visning uden nyt login.
+    await ensureCustomerSession(existing[0].email, existing[0].name, {
+      emailVerified: true, // Google har verificeret e-mailen (tjekket ovenfor)
+    });
     return NextResponse.redirect(`${base}${dest}`);
   }
 

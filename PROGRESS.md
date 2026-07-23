@@ -1,6 +1,19 @@
 # Progress
 
-## Last session (2026-07-23)
+## Last session (2026-07-23, fortsat)
+**E-mail-broen lukket helt** (bruger-klage: "logger ind med Google og bliver
+bedt om at logge ind igen"). ensureCustomerSession fandtes allerede (9bc845e,
+bygget tidligere i dag i anden session — kørte kun når dest='/mine'):
+- Google-callback sætter nu kunde-sessionen ALTID (også butiksbrugere →
+  /dashboard), så privat-toggle bagefter virker uden nyt login.
+- Nyt GET /api/customer/bridge: merchant-bruger uden customer_session på
+  /mine redirectes gennem broen (cookies kan ikke sættes under server-render);
+  ?bridged=1 er loop-værn. Uverificeret sti opretter kun NY tom kunde —
+  eksisterende arkiver kræver stadig magic link (arkiv-overtagelses-værn).
+- E2E lokalt: merchant-session → /mine 307 → bro sætter cookie → arkiv vises
+  ("Synkroniseret som …"); ?bridged=1 uden kunde-session = login-landing (intet loop).
+
+## Previous session (2026-07-23)
 **Loyalitetskort på kontoen** (spec specs/customer-loyalty.md, migration 0010
 loyalty_cards.customer_id KØRT i prod — firewall-IP skulle opdateres igen):
 - POST /api/loyalty læser nu customer-session: kontoens kort hos merchanten
