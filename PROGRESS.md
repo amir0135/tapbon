@@ -1,6 +1,18 @@
 # Progress
 
-## Last session (2026-07-23, aften)
+## Last session (2026-07-23, nat)
+**Merchant-backend slice 2: Rapporter** (specs/merchant-reports.md, deployet):
+/dashboard/reports — måneds-hero (omsætning+antal), 14-dages CSS-søjler
+(tomme dage udfyldt), top 8 varer sidste 30 dage (receipt_items), moms pr.
+sats denne måned (vat_breakdown jsonb summeret pr. rate via
+jsonb_array_elements — beløb er allerede afrundet pr. sats ved udstedelse,
+her summeres kun). getSalesReport i lib/receipts/queries.ts; ren server-
+renderet side; sidebar "Rapporter"; i18n-ns 'reports' (da+en). Testet lokalt
+m/ demo-merchant (moms/14-dage/top-varer renderer); prod 307 → sign-in
+(korrekt). Merchant-gap tilbage: business-navigation, aktiverings-/
+freemium-flow (Fase 6).
+
+## Previous session (2026-07-23, aften)
 **Merchant-backend slice 1: Enheder-siden** (bruger: "still don't see a strong
 backend like receiptile" — gap-analyse viste Enheder/Rapporter/aktivering
 mangler; Enheder valgt som pilot-kritisk; spec specs/merchant-devices.md):
