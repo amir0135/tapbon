@@ -10,7 +10,6 @@ import {
 } from '@/lib/receipts/queries';
 import { formatMoney } from '@/lib/receipts/format';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MerchantSetupForm } from './merchant-setup-form';
 import { IssueForm } from './issue-form';
 import { BridgeToken } from './bridge-token';
 
@@ -26,16 +25,8 @@ export default async function ReceiptsPage() {
     getMerchantForUser(user.id),
   ]);
 
-  if (!merchant) {
-    return (
-      <section className="flex-1 p-4 lg:p-8 max-w-xl">
-        <h1 className="text-lg lg:text-2xl font-medium mb-6">
-          {t('merchantSetup.title')}
-        </h1>
-        <MerchantSetupForm />
-      </section>
-    );
-  }
+  // Ingen butik endnu → ét sammenhængende opret-flow (onboarding-wizarden)
+  if (!merchant) redirect('/onboarding');
 
   const [receipts, terminal] = await Promise.all([
     listRecentReceipts(merchant.id),

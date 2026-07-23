@@ -18,7 +18,7 @@ export default async function ReportsPage() {
     getLocale(),
     getMerchantForUser(user.id),
   ]);
-  if (!merchant) redirect('/dashboard/receipts');
+  if (!merchant) redirect('/onboarding');
 
   const data = await getSalesReport(merchant.id);
   const currency = merchant.currency;

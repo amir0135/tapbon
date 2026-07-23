@@ -15,7 +15,7 @@ export default async function DevicesPage() {
     getTranslations('devices'),
     getMerchantForUser(user.id),
   ]);
-  if (!merchant) redirect('/dashboard/receipts');
+  if (!merchant) redirect('/onboarding');
 
   const devices = await listTerminals(merchant.id);
 

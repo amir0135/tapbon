@@ -48,7 +48,7 @@ export default async function DashboardOverviewPage() {
     getMerchantForUser(user.id),
   ]);
 
-  if (!merchant) redirect('/dashboard/receipts');
+  if (!merchant) redirect('/onboarding');
 
   const [stats, terminal, recent] = await Promise.all([
     getDashboardStats(merchant.id),

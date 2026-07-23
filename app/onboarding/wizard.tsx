@@ -30,13 +30,14 @@ const BUSINESS_TYPES = [
 const POS_SYSTEMS = ['zettle', 'onlinepos', 'flatpay', 'shopbox', 'otherPos', 'nonePos'] as const;
 const VOLUMES = ['v25', 'v100', 'v300', 'v300plus'] as const;
 
-/** Receiptile-style onboarding — spec: specs/onboarding-wizard.md */
-export function OnboardingWizard() {
+/** Receiptile-style onboarding — spec: specs/onboarding-wizard.md.
+ *  skipRoleStep: brugeren har allerede valgt Erhverv — start på trin 1. */
+export function OnboardingWizard({ skipRoleStep = false }: { skipRoleStep?: boolean }) {
   const t = useTranslations('onboarding');
   const tc = useTranslations('common');
   const tm = useTranslations('merchantSetup');
   const router = useRouter();
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(skipRoleStep ? 1 : 0);
   const [businessType, setBusinessType] = useState<string | null>(null);
   const [posSystem, setPosSystem] = useState<string | null>(null);
   const [dailyReceipts, setDailyReceipts] = useState<string | null>(null);

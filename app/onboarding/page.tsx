@@ -16,5 +16,6 @@ export default async function OnboardingPage() {
   // Har tidligere valgt "privatperson" → spørg ikke igen (migration 0008)
   if (user.preferredMode === 'private') redirect('/mine');
 
-  return <OnboardingWizard />;
+  // Har allerede valgt "Erhverv" → spring rollevalget over, direkte til opret
+  return <OnboardingWizard skipRoleStep={user.preferredMode === 'business'} />;
 }
