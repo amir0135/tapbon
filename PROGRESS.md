@@ -29,10 +29,11 @@ lokale arkiver synces ved første login, bonen forbliver offentlig at SE.
   /api/archive E2E OK, alle 6 undersider 307 → /mine. Build grøn.
   DB-firewall-reglen skulle opdateres til ny IP (37.96.78.137) — 5432 var
   ÅBEN på dette netværk (ikke corp-blokeret).
-- COMMITTET men IKKE pushet (bruger væk — reviewbar før prod-deploy).
+- COMMITTET 62735bc; PUSHET + DEPLOYET 2026-07-23 (run grønt). Prod verificeret:
+  /mine viser login-landing, undersider redirecter (PPR: redirect() = 200 m/
+  NEXT_REDIRECT i payload — ikke 307), bon-siden viser konto-pitch.
 
 ## Next up
-- Push + verificér i prod (deploy kører på push).
 - Loyalitetskort til kontoen (localStorage → server) — egen slice.
 - Profilens døde logget ud-branch i profile-view.tsx kan prunes.
 - Overvej redirect tilbage til bon efter login fra /r (returnTo-param).
