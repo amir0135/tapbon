@@ -4,6 +4,7 @@ import { db } from '@/lib/db/drizzle';
 import {
   customerProjects,
   customerReceipts,
+  loyaltyCards,
   merchants,
   receipts,
 } from '@/lib/db/schema';
@@ -116,8 +117,7 @@ export async function getRecurringMerchants(customerId: number) {
 }
 
 /** Kontoens arkiv (specs/customer-account.md v3) — joinet live, nyeste først. */
-export async function getCustomerArchive(customerId: number) {
-  const rows = await db
+export async function getCustomerArchive(customerId: number) {  const rows = await db
     .select({
       id: receipts.id,
       merchant: merchants.businessName,
@@ -138,6 +138,37 @@ export async function getCustomerArchive(customerId: number) {
     kind: (r.kind === 'file' ? 'file' : 'structured') as 'file' | 'structured',
     issuedAt: r.issuedAt.toISOString(),
   }));
+}
+
+// ── Loyalitetskort på kontoen (specs/customer-loyalty.md) ────────────────────
+
+export async function listCustomerLoyaltyCards(customerId: number) {
+  return db
+    .select({
+      cardToken: loyaltyCards.cardToken,
+      stamps: loyaltyCards.stamps,
+      stampsRequired: loyaltyCards.stampsRequired,
+      merchantId: loyaltyCards.merchantId,
+      merchantName: merchants.businessName,
+    })
+    .from(loyaltyCards)
+    .innerJoin(merchants, eq(merchants.id, loyaltyCards.merchantId))
+    .where(eq(loyaltyCards.customerId, customerId))
+    .orderBy(desc(loyaltyCards.updatedAt));
+}
+
+export async function getCustomerLoyaltyCard(customerId: number, merchantId: number) {
+  const rows = await db
+    .select()
+    .from(loyaltyCards)
+    .where(
+      and(
+        eq(loyaltyCards.customerId, customerId),
+        eq(loyaltyCards.merchantId, merchantId)
+      )
+    )
+    .limit(1);
+  return rows[0] ?? null;
 }
 
 // ── Projekter (specs/customer-projects.md) ──────────────────────────────────

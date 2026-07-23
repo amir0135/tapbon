@@ -69,8 +69,8 @@ Phases are shippable vertical slices. Finish one before starting the next. Detai
   ("gå Receiptile-vejen", DECISIONS.md) — /mine kræver login, localStorage-arkivet
   droppet (engangsmigrering ved første login), bon-siden offentlig m/ konto-pitch.
   Rest: jurist-tjek af opdateret privatlivspolitik før betalende kunder.
-- Loyalitetskort til kontoen: stadig localStorage (tapbon-loyalty-*) — egen slice
-  at flytte dem til serveren nu hvor arkivet er konto-baseret.
+- Loyalitetskort til kontoen: BYGGET 2026-07-23 (specs/customer-loyalty.md) —
+  loyalty_cards.customer_id, claim/merge-endpoint, server-fed /mine/loyalitet.
 - Kundeprofil-integrationer (Receiptile-inspireret, 2026-07-20 — skal matche det
   DANSKE marked): BYGGET 2026-07-21 — e-mail-forwarding til e-conomic/Dinero/
   Billy, Projects, abonnements-detektion, forbrug, adgangskode, toggles.

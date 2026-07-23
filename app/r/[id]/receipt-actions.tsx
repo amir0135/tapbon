@@ -55,10 +55,12 @@ export function ReceiptActions({
   merchantId,
   receiptId,
   googleReviewUrl,
+  signedIn,
 }: {
   merchantId: number;
   receiptId: string;
   googleReviewUrl: string | null;
+  signedIn: boolean;
 }) {
   const t = useTranslations();
   const [loyalty, setLoyalty] = useState<LoyaltyState | null>(null);
@@ -69,8 +71,14 @@ export function ReceiptActions({
 
   useEffect(() => {
     const token = localStorage.getItem(tokenKey);
-    if (!token) return;
-    fetch(`/api/loyalty?token=${encodeURIComponent(token)}`)
+    // Lokalt token først; ellers kontoens kort (specs/customer-loyalty.md)
+    const url = token
+      ? `/api/loyalty?token=${encodeURIComponent(token)}`
+      : signedIn
+        ? `/api/loyalty?merchantId=${merchantId}`
+        : null;
+    if (!url) return;
+    fetch(url)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => data && setLoyalty(data))
       .catch(() => {});

@@ -1,6 +1,22 @@
 # Progress
 
-## Last session (2026-07-22, pm)
+## Last session (2026-07-23)
+**Loyalitetskort på kontoen** (spec specs/customer-loyalty.md, migration 0010
+loyalty_cards.customer_id KØRT i prod — firewall-IP skulle opdateres igen):
+- POST /api/loyalty læser nu customer-session: kontoens kort hos merchanten
+  vinder over token; nye kort får customer_id; anonyme kort adopteres ved
+  stempling. GET ?merchantId= (m/ session) = kontoens kort.
+- Nyt POST /api/loyalty/claim: engangsmigrering af localStorage-tokens —
+  adopter frie kort, MERGE (stamps cap'et ved required, token-kort slettes)
+  hvis kontoen allerede har kort hos merchanten, skip andres kort.
+- /mine/loyalitet er server-fed (listCustomerLoyaltyCards); LoyaltyCards-
+  klienten claimer localStorage-tokens én gang og rydder dem.
+- /r: ReceiptActions får signedIn-prop — uden lokalt token falder den tilbage
+  til kontoens kort. tapbon-stamped-<id>-værnet er stadig lokalt.
+- E2E lokalt: anonymt stempel → konto-stempel → claim/merge (2 stamps) →
+  GET by merchant → gammelt token 404. Testdata ryddet. Build grøn.
+
+## Previous session (2026-07-22, pm)
 **Konto-først på kundesiden — "gå Receiptile-vejen" (brugerbeslutning).**
 Det kontofri localStorage-arkiv er droppet (DECISIONS.md; spec
 customer-account.md v3). Bruger var væk under implementering — anbefalede
@@ -34,9 +50,9 @@ lokale arkiver synces ved første login, bonen forbliver offentlig at SE.
   NEXT_REDIRECT i payload — ikke 307), bon-siden viser konto-pitch.
 
 ## Next up
-- Loyalitetskort til kontoen (localStorage → server) — egen slice.
 - Profilens døde logget ud-branch i profile-view.tsx kan prunes.
 - Overvej redirect tilbage til bon efter login fra /r (returnTo-param).
+- Pilot-forberedelse: NTAG213-stickers, rotér tb_demo_kaffebar-token.
 
 ## Previous session (2026-07-22)
 **Receiptile-navigationsarkitektur portet efter LIVE gennemgang af deres app**

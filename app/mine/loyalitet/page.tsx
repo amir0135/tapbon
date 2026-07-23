@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { ArrowLeft } from 'lucide-react';
 import { getCustomerSession } from '@/lib/auth/customer';
+import { listCustomerLoyaltyCards } from '@/lib/receipts/customer-queries';
 import { LoyaltyCards } from './loyalty-cards';
 import { BottomNav } from '../bottom-nav';
 
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-/** "Mine kort" — stempelkort samlet ét sted (Receiptile-mønster). */
+/** "Mine kort" — kontoens stempelkort (specs/customer-loyalty.md). */
 export default async function LoyaltyPage() {
   const [session, t] = await Promise.all([
     getCustomerSession(),
@@ -22,6 +23,8 @@ export default async function LoyaltyPage() {
   ]);
 
   if (!session) redirect('/mine');
+
+  const cards = await listCustomerLoyaltyCards(session.customerId);
 
   return (
     <main className="min-h-dvh bg-canvas">
@@ -39,7 +42,7 @@ export default async function LoyaltyPage() {
           </p>
           <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
         </header>
-        <LoyaltyCards />
+        <LoyaltyCards cards={cards} />
       </div>
       <BottomNav />
     </main>

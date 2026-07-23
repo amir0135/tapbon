@@ -256,6 +256,8 @@ export const loyaltyCards = pgTable('loyalty_cards', {
   cardToken: uuid('card_token').notNull().unique().defaultRandom(),
   stamps: integer('stamps').notNull().default(0),
   stampsRequired: integer('stamps_required').notNull().default(10),
+  // Konto-tilknytning (specs/customer-loyalty.md) — null = anonymt token-kort
+  customerId: integer('customer_id').references(() => customers.id),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });

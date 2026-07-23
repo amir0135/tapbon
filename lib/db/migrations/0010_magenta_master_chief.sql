@@ -1,0 +1,2 @@
+ALTER TABLE "loyalty_cards" ADD COLUMN "customer_id" integer;--> statement-breakpoint
+ALTER TABLE "loyalty_cards" ADD CONSTRAINT "loyalty_cards_customer_id_customers_id_fk" FOREIGN KEY ("customer_id") REFERENCES "public"."customers"("id") ON DELETE no action ON UPDATE no action;

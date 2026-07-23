@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Check, Stamp } from 'lucide-react';
 
@@ -12,34 +13,41 @@ type LoyaltyCard = {
   merchantName: string | null;
 };
 
-function readLoyaltyTokens(): string[] {
-  const tokens: string[] = [];
+function readLoyaltyTokenKeys(): { key: string; token: string }[] {
+  const out: { key: string; token: string }[] = [];
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key?.startsWith('tapbon-loyalty-')) {
       const v = localStorage.getItem(key);
-      if (v) tokens.push(v);
+      if (v) out.push({ key, token: v });
     }
   }
-  return tokens;
+  return out;
 }
 
-/** Stempelkort fra enhedens tokens (specs/customer-archive.md). */
-export function LoyaltyCards() {
+/** Kontoens stempelkort, server-fed (specs/customer-loyalty.md).
+ *  Engangsmigrering: anonyme localStorage-tokens claimes til kontoen. */
+export function LoyaltyCards({ cards }: { cards: LoyaltyCard[] }) {
   const t = useTranslations('loyaltyPage');
-  const [cards, setCards] = useState<LoyaltyCard[] | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    Promise.all(
-      readLoyaltyTokens().map((token) =>
-        fetch(`/api/loyalty?token=${encodeURIComponent(token)}`)
-          .then((r) => (r.ok ? r.json() : null))
-          .catch(() => null)
-      )
-    ).then((results) => setCards(results.filter(Boolean)));
+    const local = readLoyaltyTokenKeys();
+    if (local.length === 0) return;
+    fetch('/api/loyalty/claim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tokens: local.map((l) => l.token) }),
+    })
+      .then((r) => {
+        if (r.ok) {
+          for (const { key } of local) localStorage.removeItem(key);
+          router.refresh();
+        }
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  if (cards === null) return null;
 
   if (cards.length === 0) {
     return (

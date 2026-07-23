@@ -138,6 +138,7 @@ export default async function PublicReceiptPage({
           merchantId={merchant.id}
           receiptId={receipt.id}
           googleReviewUrl={merchant.googleReviewUrl}
+          signedIn={Boolean(session)}
         />
 
         {/* Gem på kontoen (logget ind) eller konto-pitch (logget ud) */}
