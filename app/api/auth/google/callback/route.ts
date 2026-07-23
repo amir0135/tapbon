@@ -11,6 +11,7 @@ import {
   ActivityType,
 } from '@/lib/db/schema';
 import { hashPassword, setSession } from '@/lib/auth/session';
+import { ensureCustomerSession } from '@/lib/auth/customer';
 import { exchangeCodeForProfile, googleConfigured } from '@/lib/auth/google';
 import { getMerchantForUser } from '@/lib/receipts/queries';
 
@@ -55,6 +56,12 @@ export async function GET(request: NextRequest) {
       : existing[0].preferredMode === 'private'
         ? '/mine'
         : '/onboarding';
+    // /mine kører på customer_session — sæt den, ellers mødes brugeren af login igen
+    if (dest === '/mine') {
+      await ensureCustomerSession(existing[0].email, existing[0].name, {
+        emailVerified: true, // Google har verificeret e-mailen (tjekket ovenfor)
+      });
+    }
     return NextResponse.redirect(`${base}${dest}`);
   }
 

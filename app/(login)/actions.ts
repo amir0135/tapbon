@@ -18,6 +18,7 @@ import {
   invitations
 } from '@/lib/db/schema';
 import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
+import { ensureCustomerSession } from '@/lib/auth/customer';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
@@ -101,8 +102,15 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
     return createCheckoutSession({ team: foundTeam, priceId });
   }
 
-  // Privatpersoner (onboarding-valg, migration 0008) lander på deres arkiv
-  if (foundUser.preferredMode === 'private') redirect('/mine');
+  // Privatpersoner (onboarding-valg, migration 0008) lander på deres arkiv.
+  // /mine kører på customer_session — sæt den, så de ikke skal logge ind igen.
+  // Sign-up verificerer ikke e-mail → eksisterende arkiver adopteres IKKE her.
+  if (foundUser.preferredMode === 'private') {
+    await ensureCustomerSession(foundUser.email, foundUser.name, {
+      emailVerified: false,
+    });
+    redirect('/mine');
+  }
 
   redirect('/dashboard/receipts');
 });
