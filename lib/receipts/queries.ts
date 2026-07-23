@@ -108,6 +108,99 @@ export async function getDashboardStats(merchantId: number) {
   };
 }
 
+/** Salgsrapport (specs/merchant-reports.md). Alle beløb heltal-øre;
+ *  omsætning = kun structured (fil-boner har totalGross 0). */
+export async function getSalesReport(merchantId: number) {
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const days14 = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 13);
+  const days30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  // Date-params fejler i postgres-js select-kontekst — ISO + ::timestamp
+  const monthIso = monthStart.toISOString();
+  const days14Iso = days14.toISOString();
+  const days30Iso = days30.toISOString();
+
+  const [totals] = await db
+    .select({
+      monthTotal: sql<number>`coalesce(sum(total_gross) filter (where issued_at >= ${monthIso}::timestamp), 0)::bigint`,
+      monthCount: sql<number>`count(*) filter (where issued_at >= ${monthIso}::timestamp)::int`,
+    })
+    .from(receipts)
+    .where(eq(receipts.merchantId, merchantId));
+
+  const dayRows = await db
+    .select({
+      day: sql<string>`to_char(date_trunc('day', issued_at), 'YYYY-MM-DD')`,
+      total: sql<number>`coalesce(sum(total_gross), 0)::bigint`,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(receipts)
+    .where(
+      sql`${receipts.merchantId} = ${merchantId} and issued_at >= ${days14Iso}::timestamp`
+    )
+    .groupBy(sql`1`)
+    .orderBy(sql`1`);
+
+  // Udfyld tomme dage, så diagrammet altid viser 14 søjler
+  const byDay = new Map(dayRows.map((r) => [r.day, r]));
+  const days: { date: string; total: number; count: number }[] = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const row = byDay.get(key);
+    days.push({ date: key, total: Number(row?.total ?? 0), count: Number(row?.count ?? 0) });
+  }
+
+  const topItems = await db
+    .select({
+      name: receiptItems.name,
+      qty: sql<number>`sum(${receiptItems.qty})::int`,
+      total: sql<number>`sum(${receiptItems.lineTotalGross})::bigint`,
+    })
+    .from(receiptItems)
+    .innerJoin(receipts, eq(receipts.id, receiptItems.receiptId))
+    .where(
+      sql`${receipts.merchantId} = ${merchantId} and ${receipts.issuedAt} >= ${days30Iso}::timestamp`
+    )
+    .groupBy(receiptItems.name)
+    .orderBy(sql`3 desc`)
+    .limit(8);
+
+  // Moms pr. sats denne måned — vat_breakdown er allerede afrundet pr. sats
+  // ved udstedelse (lib/vat); her summeres kun (heltal-øre).
+  const vatRows = await db.execute<{
+    rate: number;
+    vat: number;
+    gross: number;
+  }>(sql`
+    select (e->>'rate')::int as rate,
+           sum((e->>'vat')::bigint)::bigint as vat,
+           sum((e->>'gross')::bigint)::bigint as gross
+    from receipts, jsonb_array_elements(vat_breakdown) e
+    where merchant_id = ${merchantId}
+      and issued_at >= ${monthIso}::timestamp
+      and kind = 'structured'
+    group by 1
+    order by 1 desc
+  `);
+
+  return {
+    monthTotal: Number(totals?.monthTotal ?? 0),
+    monthCount: Number(totals?.monthCount ?? 0),
+    days,
+    topItems: topItems.map((r) => ({
+      name: r.name,
+      qty: Number(r.qty),
+      total: Number(r.total),
+    })),
+    vatByRate: [...vatRows].map((r) => ({
+      rate: Number(r.rate),
+      vat: Number(r.vat),
+      gross: Number(r.gross),
+    })),
+  };
+}
+
 export async function getDefaultTerminal(merchantId: number) {
   const rows = await db
     .select()

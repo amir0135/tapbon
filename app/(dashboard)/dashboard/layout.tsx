@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Settings, Shield, Menu, Nfc, ReceiptText, User } from 'lucide-react';
+import { BarChart3, LayoutDashboard, Settings, Shield, Menu, Nfc, ReceiptText, User } from 'lucide-react';
 
 export default function DashboardLayout({
   children
@@ -20,6 +20,7 @@ export default function DashboardLayout({
     { href: '/dashboard', icon: LayoutDashboard, label: t('navOverview') },
     { href: '/dashboard/receipts', icon: ReceiptText, label: t('navReceipts') },
     { href: '/dashboard/devices', icon: Nfc, label: t('navDevices') },
+    { href: '/dashboard/reports', icon: BarChart3, label: t('navReports') },
     { href: '/dashboard/general', icon: Settings, label: t('navSettings') },
     { href: '/dashboard/security', icon: Shield, label: t('navSecurity') }
   ];

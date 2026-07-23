@@ -200,6 +200,19 @@
     "noReceiptTitle": "Ingen ny kvittering",
     "noReceiptBody": "Der er ingen uafhentet kvittering hos {merchant} lige nu. Spørg personalet."
   },
+  "reports": {
+    "title": "Rapporter",
+    "thisMonth": "Denne måned",
+    "receiptsLabel": "Boner",
+    "lastDays": "Sidste 14 dage",
+    "topItems": "Mest solgte varer (30 dage)",
+    "qtySold": "{count, plural, one {# stk.} other {# stk.}}",
+    "vatTitle": "Moms denne måned",
+    "vatRate": "Heraf moms {rate} %",
+    "vatBase": "af {amount}",
+    "emptyTitle": "Ingen salg endnu",
+    "emptySub": "Når der udstedes boner, samles tallene her."
+  },
   "devices": {
     "title": "Enheder",
     "online": "Online",
@@ -228,6 +241,7 @@
     "navOverview": "Oversigt",
     "navReceipts": "Kvitteringer",
     "navDevices": "Enheder",
+    "navReports": "Rapporter",
     "navSettings": "Indstillinger",
     "navSecurity": "Sikkerhed",
     "navPersonal": "Personlig visning",

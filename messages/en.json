@@ -200,6 +200,19 @@
     "noReceiptTitle": "No recent receipt",
     "noReceiptBody": "There is no unclaimed receipt at {merchant} right now. Please ask the staff."
   },
+  "reports": {
+    "title": "Reports",
+    "thisMonth": "This month",
+    "receiptsLabel": "Receipts",
+    "lastDays": "Last 14 days",
+    "topItems": "Top-selling items (30 days)",
+    "qtySold": "{count, plural, one {# pc.} other {# pcs.}}",
+    "vatTitle": "VAT this month",
+    "vatRate": "Of which VAT {rate}%",
+    "vatBase": "of {amount}",
+    "emptyTitle": "No sales yet",
+    "emptySub": "Once receipts are issued, your numbers collect here."
+  },
   "devices": {
     "title": "Devices",
     "online": "Online",
@@ -228,6 +241,7 @@
     "navOverview": "Overview",
     "navReceipts": "Receipts",
     "navDevices": "Devices",
+    "navReports": "Reports",
     "navSettings": "Settings",
     "navSecurity": "Security",
     "navPersonal": "Personal view",
