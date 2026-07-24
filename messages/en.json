@@ -674,5 +674,25 @@
     "emptyTitle": "No stamp cards yet",
     "emptySub": "Tap a Tapbon tile at a participating store and your card will appear here.",
     "unknownMerchant": "Unknown merchant"
+  },
+  "admin": {
+    "kicker": "Admin",
+    "title": "Tapbon overview",
+    "backToDashboard": "To dashboard",
+    "totalUsers": "Total users",
+    "totalCustomers": "Total customers",
+    "totalMerchants": "Total businesses",
+    "totalReceipts": "Total receipts",
+    "weekNewUsers": "New sign-ups, 7 days",
+    "weekReceipts": "Receipts, 7 days",
+    "weekActiveMerchants": "Active businesses, 7 days",
+    "bridgesOnline": "Bridges online",
+    "signupChart": "Sign-ups per day, 14 days",
+    "usersShort": "Users",
+    "customersShort": "Customers",
+    "latestSignups": "Latest sign-ups",
+    "typeBusiness": "Business",
+    "typePrivate": "Private",
+    "empty": "No sign-ups yet."
   }
 }

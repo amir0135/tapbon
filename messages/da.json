@@ -674,5 +674,25 @@
     "emptyTitle": "Ingen stempelkort endnu",
     "emptySub": "Tap en Tapbon-brik hos en deltagende forretning, så dukker dit kort op her.",
     "unknownMerchant": "Ukendt forretning"
+  },
+  "admin": {
+    "kicker": "Admin",
+    "title": "Tapbon-overblik",
+    "backToDashboard": "Til dashboard",
+    "totalUsers": "Brugere i alt",
+    "totalCustomers": "Kunder i alt",
+    "totalMerchants": "Forretninger i alt",
+    "totalReceipts": "Boner i alt",
+    "weekNewUsers": "Nye signups, 7 dage",
+    "weekReceipts": "Boner, 7 dage",
+    "weekActiveMerchants": "Aktive forretninger, 7 dage",
+    "bridgesOnline": "Bridges online",
+    "signupChart": "Signups pr. dag, 14 dage",
+    "usersShort": "Brugere",
+    "customersShort": "Kunder",
+    "latestSignups": "Seneste signups",
+    "typeBusiness": "Forretning",
+    "typePrivate": "Privat",
+    "empty": "Ingen signups endnu."
   }
 }
