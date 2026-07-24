@@ -419,7 +419,8 @@
     "legalLine": "By continuing you accept our <terms>terms</terms> and <privacy>privacy policy</privacy>.",
     "forgotPassword": "Forgot password?",
     "signInFailHint": "New to Tapbon? Maybe you don't have an account yet —",
-    "continueGoogle": "Continue with Google"
+    "continueGoogle": "Continue with Google",
+    "continueMicrosoft": "Continue with Microsoft"
   },
   "resetPw": {
     "kicker": "Password",
