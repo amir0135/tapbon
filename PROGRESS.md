@@ -1,6 +1,27 @@
 # Progress
 
-## Last session (2026-07-23, nat 2)
+## Last session (2026-07-23, sen aften)
+**Privat/Erhverv-opdeling + klar regnskabs-beskrivelse** (bruger-ønsker under
+Loyverse-testen; spec specs/customer-spend-split.md, migration 0011 KØRT):
+- customer_receipts.spend_type ('business' | null = privat) — kundens
+  klassificering, bonen selv forbliver immutabel.
+- PATCH /api/archive { receiptId, business } (ejerskabs-tjek).
+- /mine-arkivet: filter-piller Alle/Privat/Erhverv + kuffert-toggle pr. bon
+  (optimistisk PATCH); måneds-heroen følger filteret.
+- Regnskab-sektionen i profilen har nu klar hjælpetekst: hvor indbakke-
+  adressen findes i Dinero/e-conomic/Billy, hvad der sendes (vedhæftning/
+  HTML m/ moms+CVR), og at gamle boner ikke sendes retroaktivt.
+- E2E lokalt: POST→PATCH true→spendType='business'→PATCH false→null; filter-
+  piller renderer. Deployet grønt. OBS: hotspot-IP skiftede 2x — firewall-
+  reglen opdateret hver gang.
+
+**Loyverse-E2E-testen (samme aften):** KaffeHuset oprettet på amiram.order
+(via wizard), device-token roteret fra Enheder-siden (emulator genstartet
+m/ nyt token — begge tokens verificeret), Loyverse-print uploadér OK
+(raster-striber). Læring: tap-linket er terminal-specifikt (/t/dhzIw7wv),
+nyt print afløser uafhentede boner (by design), 10 min-udløb.
+
+## Previous session (2026-07-23, nat 2)
 **Aktiverings-UX fikset** (bruger: "UX skal være bedre, det giver ikke mening"
 — konto m/ Erhverv-valg men uden butik så samme opret-formular på ALLE tabs
 via stille redirects):
