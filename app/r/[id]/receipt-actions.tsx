@@ -4,13 +4,20 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Check, Download, Lock, Stamp, Star } from 'lucide-react';
 
-/** Forest download pill — matches the landing phone mock's CTA. */
-export function DownloadPill({ label }: { label: string }) {
+/** Forest download pill — matches the landing phone mock's CTA.
+ *  With `href` it downloads the file directly; otherwise it prints. */
+export function DownloadPill({ label, href }: { label: string; href?: string }) {
+  const className =
+    'flex w-full items-center justify-center gap-2 rounded-full bg-forest py-3 text-sm font-semibold text-paper active:scale-[0.99] transition print:hidden';
+  if (href) {
+    return (
+      <a href={href} download className={className}>
+        {label} <Download className="h-4 w-4" aria-hidden="true" />
+      </a>
+    );
+  }
   return (
-    <button
-      onClick={() => window.print()}
-      className="flex w-full items-center justify-center gap-2 rounded-full bg-forest py-3 text-sm font-semibold text-paper active:scale-[0.99] transition print:hidden"
-    >
+    <button onClick={() => window.print()} className={className}>
       {label} <Download className="h-4 w-4" aria-hidden="true" />
     </button>
   );

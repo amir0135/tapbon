@@ -128,7 +128,10 @@ export default async function PublicReceiptPage({
             {issuedAtText} · {t('receipt.receiptNumber', { number: receipt.receiptNumber })}
           </p>
 
-          {!isFile && <DownloadPill label={t('receipt.download')} />}
+          <DownloadPill
+            label={t('receipt.download')}
+            href={isFile ? `${fileHref}?download=1` : undefined}
+          />
 
           <TrustLine label={t('receipt.trustLine')} appName={t('common.appName')} />
         </div>
