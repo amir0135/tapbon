@@ -184,32 +184,42 @@ export function ArchiveList({
                   key={e.id}
                   className="bg-paper rounded-2xl shadow-sm p-4 flex items-center gap-3"
                 >
-                  <Link href={`/r/${e.id}`} className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{e.merchant}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {new Intl.DateTimeFormat(locale, {
-                        dateStyle: 'medium',
-                        timeStyle: 'short',
-                      }).format(new Date(e.issuedAt))}
-                    </p>
-                  </Link>
+                  <div className="flex-1 min-w-0">
+                    <Link href={`/r/${e.id}`} className="block min-w-0">
+                      <p className="font-medium truncate">{e.merchant}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {new Intl.DateTimeFormat(locale, {
+                          dateStyle: 'medium',
+                          timeStyle: 'short',
+                        }).format(new Date(e.issuedAt))}
+                      </p>
+                    </Link>
+                    {/* Klassificerings-chip m/ tekst — tap for at skifte
+                        (specs/customer-spend-split.md). Søskende til linket,
+                        ikke nested (knap-i-anker-pitfall). */}
+                    <button
+                      onClick={() => toggleBusiness(e.id)}
+                      aria-label={t('toggleBusiness')}
+                      aria-pressed={e.spendType === 'business'}
+                      className={`mt-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold transition ${
+                        e.spendType === 'business'
+                          ? 'bg-mint-tint text-forest'
+                          : 'bg-canvas text-muted-foreground'
+                      }`}
+                    >
+                      {e.spendType === 'business' && (
+                        <Briefcase className="h-3 w-3" aria-hidden="true" />
+                      )}
+                      {e.spendType === 'business'
+                        ? t('filter_business')
+                        : t('filter_private')}
+                    </button>
+                  </div>
                   <span className="tabular-nums text-sm font-medium shrink-0">
                     {e.kind === 'file'
                       ? t('fileReceipt')
                       : formatMoney(e.totalGross, e.currency, locale)}
                   </span>
-                  <button
-                    onClick={() => toggleBusiness(e.id)}
-                    aria-label={t('toggleBusiness')}
-                    aria-pressed={e.spendType === 'business'}
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition ${
-                      e.spendType === 'business'
-                        ? 'bg-mint-tint text-forest'
-                        : 'text-muted-foreground/40 hover:text-muted-foreground'
-                    }`}
-                  >
-                    <Briefcase className="h-4 w-4" aria-hidden="true" />
-                  </button>
                   <Link
                     href={`/r/${e.id}`}
                     aria-label={t('open')}
