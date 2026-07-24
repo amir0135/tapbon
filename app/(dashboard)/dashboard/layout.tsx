@@ -26,7 +26,7 @@ export default function DashboardLayout({
   ];
 
   return (
-    <div className="flex flex-col min-h-[calc(100dvh-68px)] max-w-7xl mx-auto w-full">
+    <div className="flex flex-col h-[calc(100dvh-68px)] max-w-7xl mx-auto w-full">
       {/* Mobile header */}
       <div className="lg:hidden flex items-center justify-between bg-white border-b border-gray-200 p-4">
         <div className="flex items-center">
@@ -43,7 +43,8 @@ export default function DashboardLayout({
       </div>
 
       <div className="flex flex-1 overflow-hidden h-full">
-        {/* Sidebar */}
+        {/* Sidebar — fast højde-shell: kun indholdet scroller, så "Personlig
+            visning" i bunden altid er synlig */}
         <aside
           className={`w-64 bg-white lg:bg-gray-50 border-r border-gray-200 lg:block ${
             isSidebarOpen ? 'block' : 'hidden'
