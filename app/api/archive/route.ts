@@ -82,3 +82,33 @@ export async function DELETE(request: NextRequest) {
 
   return NextResponse.json({ removed: true });
 }
+
+const spendSchema = z.object({
+  receiptId: z.string().uuid(),
+  business: z.boolean(),
+});
+
+/** Privat/Erhverv-klassificering (specs/customer-spend-split.md). */
+export async function PATCH(request: NextRequest) {
+  const session = await getCustomerSession();
+  if (!session) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+
+  const body = await request.json().catch(() => null);
+  const parsed = spendSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'invalid_input' }, { status: 400 });
+  }
+
+  const spendType = parsed.data.business ? 'business' : null;
+  await db
+    .update(customerReceipts)
+    .set({ spendType })
+    .where(
+      and(
+        eq(customerReceipts.customerId, session.customerId),
+        eq(customerReceipts.receiptId, parsed.data.receiptId)
+      )
+    );
+
+  return NextResponse.json({ spendType });
+}

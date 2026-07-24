@@ -4,12 +4,24 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { ArrowRight, ReceiptText, Trash2 } from 'lucide-react';
-import { clearArchive, readArchive, type ArchiveEntry } from '@/lib/archive/local';
+import { ArrowRight, Briefcase, ReceiptText, Trash2 } from 'lucide-react';
+import { clearArchive, readArchive } from '@/lib/archive/local';
 import { formatMoney } from '@/lib/receipts/format';
 import { BottomNav } from './bottom-nav';
 
-function monthStats(entries: ArchiveEntry[]) {
+type Entry = {
+  id: string;
+  merchant: string;
+  totalGross: number;
+  currency: string;
+  kind: 'structured' | 'file';
+  issuedAt: string;
+  spendType: 'business' | null;
+};
+
+type Filter = 'all' | 'private' | 'business';
+
+function monthStats(entries: Entry[]) {
   const now = new Date();
   const inMonth = entries.filter((e) => {
     const d = new Date(e.issuedAt);
@@ -32,18 +44,20 @@ function monthStats(entries: ArchiveEntry[]) {
   };
 }
 
-/** Personligt dashboard — kontoens arkiv, server-fed (specs/customer-account.md v3). */
+/** Personligt dashboard — kontoens arkiv, server-fed (specs/customer-account.md v3).
+ *  Privat/Erhverv-opdeling: specs/customer-spend-split.md. */
 export function ArchiveList({
   customerEmail,
   entries: serverEntries,
 }: {
   customerEmail: string;
-  entries: ArchiveEntry[];
+  entries: Entry[];
 }) {
   const t = useTranslations('archive');
   const locale = useLocale();
   const router = useRouter();
-  const [entries, setEntries] = useState<ArchiveEntry[]>(serverEntries);
+  const [entries, setEntries] = useState<Entry[]>(serverEntries);
+  const [filter, setFilter] = useState<Filter>('all');
   useEffect(() => setEntries(serverEntries), [serverEntries]);
 
   // Engangsmigrering: gammelt localStorage-arkiv → kontoen, ryd, refresh.
@@ -70,7 +84,31 @@ export function ArchiveList({
     fetch(`/api/archive?id=${id}`, { method: 'DELETE' }).catch(() => {});
   };
 
-  const stats = monthStats(entries);
+  const toggleBusiness = (id: string) => {
+    const entry = entries.find((e) => e.id === id);
+    if (!entry) return;
+    const business = entry.spendType !== 'business';
+    setEntries((prev) =>
+      prev.map((e) =>
+        e.id === id ? { ...e, spendType: business ? 'business' : null } : e
+      )
+    );
+    fetch('/api/archive', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ receiptId: id, business }),
+    }).catch(() => {});
+  };
+
+  const visible = entries.filter((e) =>
+    filter === 'all'
+      ? true
+      : filter === 'business'
+        ? e.spendType === 'business'
+        : e.spendType !== 'business'
+  );
+
+  const stats = monthStats(visible);
 
   return (
     <main className="min-h-dvh bg-canvas">
@@ -105,12 +143,33 @@ export function ArchiveList({
           {t('syncedAs', { email: customerEmail })}
         </p>
 
+        {/* Privat/Erhverv-filter (specs/customer-spend-split.md) */}
+        <div
+          className="grid grid-cols-3 gap-1 rounded-full bg-paper p-1 shadow-sm"
+          role="radiogroup"
+          aria-label={t('filterLabel')}
+        >
+          {(['all', 'private', 'business'] as const).map((f) => (
+            <button
+              key={f}
+              role="radio"
+              aria-checked={filter === f}
+              onClick={() => setFilter(f)}
+              className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                filter === f ? 'bg-ink text-paper' : 'text-muted-foreground hover:text-ink'
+              }`}
+            >
+              {t(`filter_${f}`)}
+            </button>
+          ))}
+        </div>
+
         {/* Kvitteringer */}
         <section className="space-y-2">
           <h2 className="px-1 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
             {t('allReceipts')}
           </h2>
-          {entries.length === 0 ? (
+          {visible.length === 0 ? (
             <div className="bg-paper rounded-2xl shadow-sm p-8 text-center space-y-2">
               <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-forest">
                 <ReceiptText className="h-4 w-4 text-forest" aria-hidden="true" />
@@ -120,7 +179,7 @@ export function ArchiveList({
             </div>
           ) : (
             <ul className="space-y-3">
-              {entries.map((e) => (
+              {visible.map((e) => (
                 <li
                   key={e.id}
                   className="bg-paper rounded-2xl shadow-sm p-4 flex items-center gap-3"
@@ -139,6 +198,18 @@ export function ArchiveList({
                       ? t('fileReceipt')
                       : formatMoney(e.totalGross, e.currency, locale)}
                   </span>
+                  <button
+                    onClick={() => toggleBusiness(e.id)}
+                    aria-label={t('toggleBusiness')}
+                    aria-pressed={e.spendType === 'business'}
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition ${
+                      e.spendType === 'business'
+                        ? 'bg-mint-tint text-forest'
+                        : 'text-muted-foreground/40 hover:text-muted-foreground'
+                    }`}
+                  >
+                    <Briefcase className="h-4 w-4" aria-hidden="true" />
+                  </button>
                   <Link
                     href={`/r/${e.id}`}
                     aria-label={t('open')}

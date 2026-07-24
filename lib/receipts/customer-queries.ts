@@ -117,7 +117,8 @@ export async function getRecurringMerchants(customerId: number) {
 }
 
 /** Kontoens arkiv (specs/customer-account.md v3) — joinet live, nyeste først. */
-export async function getCustomerArchive(customerId: number) {  const rows = await db
+export async function getCustomerArchive(customerId: number) {
+  const rows = await db
     .select({
       id: receipts.id,
       merchant: merchants.businessName,
@@ -125,6 +126,7 @@ export async function getCustomerArchive(customerId: number) {  const rows = awa
       currency: receipts.currency,
       kind: receipts.kind,
       issuedAt: receipts.issuedAt,
+      spendType: customerReceipts.spendType,
     })
     .from(customerReceipts)
     .innerJoin(receipts, eq(receipts.id, customerReceipts.receiptId))
@@ -136,6 +138,7 @@ export async function getCustomerArchive(customerId: number) {  const rows = awa
   return rows.map((r) => ({
     ...r,
     kind: (r.kind === 'file' ? 'file' : 'structured') as 'file' | 'structured',
+    spendType: (r.spendType === 'business' ? 'business' : null) as 'business' | null,
     issuedAt: r.issuedAt.toISOString(),
   }));
 }

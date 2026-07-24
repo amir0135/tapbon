@@ -78,6 +78,13 @@
       "when": 1784793175888,
       "tag": "0010_magenta_master_chief",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1784815099550,
+      "tag": "0011_next_argent",
+      "breakpoints": true
     }
   ]
 }

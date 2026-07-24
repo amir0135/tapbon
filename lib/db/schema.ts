@@ -307,6 +307,8 @@ export const customerReceipts = pgTable(
       .references(() => receipts.id),
     // Valgfrit projekt (null = ikke i noget projekt)
     projectId: integer('project_id').references(() => customerProjects.id),
+    // Kundens klassificering (specs/customer-spend-split.md): 'business' | null (= privat)
+    spendType: varchar('spend_type', { length: 10 }),
     savedAt: timestamp('saved_at').notNull().defaultNow(),
   },
   (table) => [
